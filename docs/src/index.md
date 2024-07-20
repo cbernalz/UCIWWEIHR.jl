@@ -4,15 +4,15 @@ Welcome to the UCIWWEIHR.jl package documentation!
 
 ## Introduction
 
-UCIWWEIHR.jl is a Julia package for wastewater treatment plant modeling and simulation. It provides a set of tools and functions to analyze and optimize the performance of wastewater treatment processes. [UCIWWEIHR.jl Package License](@ref license)
+UCIWWEIHR.jl is a Julia package for forecasting and nowcasting COVID-19 hospitalizations using pathogen genome concentrations. [UCIWWEIHR.jl Package License](@ref license)
 
 ## Features
 
-- Comprehensive library of wastewater treatment models
-- Simulation of various unit operations and processes
+- Comprehensive library of Bayesian models
+- Simulation of infectious disease 
 - Parameter estimation and model calibration
-- Sensitivity analysis and uncertainty quantification
-- Optimization of process design and operation
+- Sensitivity analysis and uncertainty quantification?
+- Visualization of results and MCMC evaluations(live?)
 
 ## Installation
 
