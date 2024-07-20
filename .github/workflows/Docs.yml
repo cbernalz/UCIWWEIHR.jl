@@ -1,0 +1,39 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+    tags: ["*"]
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.9"
+      - name: Use Julia cache
+        uses: julia-actions/cache@v2
+      - run: |
+          julia --project=docs -e '
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()'
+      - run: |
+          julia --project=docs -e '
+            using Documenter: DocMeta, doctest
+            using UCIWWEIHR
+            DocMeta.setdocmeta!(UCIWWEIHR, :DocTestSetup, :(using UCIWWEIHR); recursive=true)
+            doctest(UCIWWEIHR)'
+      - run: julia --project=docs docs/make.jl
+        env:
+          JULIA_PKG_SERVER: ""
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
