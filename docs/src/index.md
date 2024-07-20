@@ -1,6 +1,7 @@
 # UCIWWEIHR.jl
 
 Welcome to the UCIWWEIHR.jl package documentation!
+
 By : Christian O. Bernal Zelaya & Volodymyr M. Minin.
 
 ## Introduction
