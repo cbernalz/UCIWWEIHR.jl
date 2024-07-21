@@ -1,6 +1,6 @@
 # [UCIWWEIHR.jl Package License](@id license)
 
-The UCIWWEIHR.jl package is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+The UCIWWEIHR.jl package is licensed under the MIT License.
 
 ## MIT License
 

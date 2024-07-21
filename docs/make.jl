@@ -11,7 +11,7 @@ makedocs(;
   sitename = "UCIWWEIHR.jl",
   format = Documenter.HTML(;
     prettyurls = get(ENV, "CI", "false") == "true",
-    canonical = "https://cbernalz.github.io/UCIWWEIHR.jl",
+    repolink = "https://cbernalz.github.io/UCIWWEIHR.jl",
   ),
   pages = [
     "HOME" => "index.md", 
