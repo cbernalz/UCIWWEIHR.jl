@@ -17,13 +17,13 @@ Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 NaNMath = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PreallocationTools = "d236fae5-4411-538c-8e31-a6e3d9e00b46"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
-Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-
 
 [compat]
+Distributions = "0.25"
 julia = "1"
 
 [extras]
