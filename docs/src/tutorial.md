@@ -19,7 +19,7 @@ Pkg.add("UCIWWEIHR")
 
 ## 2. Generating simulated data
 
-This package provides a way to also simulate data using the model specified in the future paper.  The function called `generate_simulation_data_ww_eihr` can be used to generate synthetic data for a given number of samples and features.  Here we provide a way to generate synthetic data for the default settings of `generate_simulation_data_ww_eihr`:
+This package provides a way to also simulate data using the model specified in the future paper.  The function called `generate_simulation_data_ww_eihr` can be used to generate synthetic data for a given number of samples and features.  Here we provide a demonstration using the default settings of `generate_simulation_data_ww_eihr`:
 
 ``` @example tutorial
 using UCIWWEIHR
