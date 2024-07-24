@@ -1,11 +1,9 @@
 """
-## Generating Simulation Data for Wastewater EIHR
+## Generating Simulation Data for UCIWWEIHR ODE Compartmental Based Model
 
-To generate simulation data for wastewater EIHR, you can use the `generate_simulation_data_ww_eihr` function defined in the `UCIWWEIHR.jl` package. This function allows you to customize various parameters for the simulation.
+To generate simulation data using the UCIWWEIHR ODE compartmental based model, you can use the `generate_simulation_data_uciwweihr` function defined in the `UCIWWEIHR.jl` package. This function allows you to customize various parameters for the simulation.
 
 ### Function Signature
-
-```julia
 
 # Arguments
 - time_points::Int64: Number of time points wanted for simulation. Default value is 150.
@@ -24,8 +22,11 @@ To generate simulation data for wastewater EIHR, you can use the `generate_simul
 - sigma_Rt::Float64: Standard deviation for random walk of time-varying reproduction number. Default value is sqrt(0.02).
 - w_init::Float64: Initial value of the time-varying hospitalization rate. Default value is 0.35.
 - sigma_w::Float64: Standard deviation for random walk of time-varying hospitalization rate. Default value is sqrt(0.02).
+
+# Returns
+- df::DataFrame: A DataFrame containing the simulation data with columns `obstimes`, `log_ww_conc`, `hosp`, and `rt`.
 """
-function generate_simulation_data_ww_eihr(
+function generate_simulation_data_uciwweihr(
     time_points::Int64=150, seed::Int64=1,
     E_init::Int64=200, I_init::Int64=100, H_init::Int64=20,
     gamma::Float64=1/4, nu::Float64=1/7, epsilon::Float64=1/5,

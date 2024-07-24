@@ -18,15 +18,18 @@ using CSV
 using DataFrames
 using DifferentialEquations
 using Plots
+using StatsBase
 
-include("sum_values.jl")
-include("generate_simulation_data_ww_eihr.jl")
+include("generate_simulation_data_uciwweihr.jl")
+include("generate_simulation_data_agent.jl")
 include("bayes_eihr_model.jl")
-include("distribution_functions.jl")
 include("eihr_ode.jl")
+include("negativebinomial2.jl")
+include("generalizedtdist.jl")
+
 export eihr_ode
-export sum_values
-export generate_simulation_data_ww_eihr
+export generate_simulation_data_uciwweihr
+export generate_simulation_data_agent
 export bayes_eihr_model
 export NegativeBinomial2
 export GeneralizedTDist
