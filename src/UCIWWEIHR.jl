@@ -17,7 +17,8 @@ using Logging
 using CSV
 using DataFrames
 using DifferentialEquations
-using Plots
+using Tidier
+using TidierPlots
 using StatsBase
 
 include("generate_simulation_data_uciwweihr.jl")

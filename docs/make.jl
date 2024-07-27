@@ -12,10 +12,18 @@ makedocs(;
   format = Documenter.HTML(;
     prettyurls = get(ENV, "CI", "false") == "true",
     repolink = "https://cbernalz.github.io/UCIWWEIHR.jl",
+    size_threshold_warn = nothing,
+    size_threshold = nothing # Increase this value
   ),
   pages = [
     "HOME" => "index.md", 
-    "TUTORIAL" => "tutorial.md",
+    "TUTORIALS" => [
+      "TUTORIAL CONTENTS" => "tutorial_index.md",
+      "GETTING STARTED" => "tutorials/getting_started.md",
+      "UCIWWEIHR SIMULATION DATA" => "tutorials/uciwweihr_simulation_data.md",
+      "AGENT-BASED SIMULATION DATA" => "tutorials/agent_based_simulation_data.md",
+    ]
+    ,
     "NEWS" => "news.md",
     "PACKAGE DEVELOPMENT" => "package_development.md",
     "REFERENCE" => "reference.md", 

@@ -11,7 +11,7 @@ NOT FINISHED, STILL NEEDS WW AND RT
 - pop_size::Int64: Size of the population. Default value is 1000.
 - I_init::Int64: Initial number of infected individuals. Default value is 200.
 - H_init::Int64: Initial number of hospitalized individuals. Default value is 20.
-- beta::Float64: Transmission rate. Default value is 0.2.
+- beta::Float64: Transmission rate. Default value is 0.001.
 - gamma::Float64: Rate of exposed individuals becoming infectious. Default value is 1/4.
 - nu::Float64: Rate of infected individuals recovering or getting hospitalized. Default value is 1/7.
 - epsilon::Float64: Rate of hospitalized individuals recovering. Default value is 1/5.
@@ -23,7 +23,7 @@ NOT FINISHED, STILL NEEDS WW AND RT
 function generate_simulation_data_agent(
     seed::Int64=1, pop_size::Int64=1000, 
     I_init::Int64=200, H_init::Int64=20, 
-    beta::Float64=0.2, gamma::Float64=1/4, 
+    beta::Float64=0.001, gamma::Float64=1/4, 
     nu::Float64=1/7, epsilon::Float64=1/5, 
     w_init::Float64=0.35
 )
