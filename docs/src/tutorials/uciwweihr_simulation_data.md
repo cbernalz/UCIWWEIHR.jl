@@ -14,7 +14,7 @@ first(df, 5)
 
 ## 2. Visualizing UCIWWEIHR model results.
 
-Here we can make simple plots to visualize the data generated using the [TidierPlots](https://tidierorg.github.io/TidierPlots.jl/stable/) package.
+Here we can make simple plots to visualize the data generated using the [Plots](https://docs.juliaplots.org/stable/)  package.
 
 ### 2.1. Concentration of pathogen genome in wastewater(WW).
 ```@example tutorial

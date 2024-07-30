@@ -22,6 +22,7 @@ makedocs(;
       "GETTING STARTED" => "tutorials/getting_started.md",
       "UCIWWEIHR SIMULATION DATA" => "tutorials/uciwweihr_simulation_data.md",
       "AGENT-BASED SIMULATION DATA" => "tutorials/agent_based_simulation_data.md",
+      "UCIWWEIHR FITTING MODEL" => "tutorials/uciwweihr_model_fitting.md",
     ]
     ,
     "NEWS" => "news.md",

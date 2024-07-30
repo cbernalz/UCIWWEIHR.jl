@@ -15,7 +15,7 @@ first(df, 5)
 
 ## 2. Visualizing SEIHR compartments.
 
-We can also use the [TidierPlots](https://tidierorg.github.io/TidierPlots.jl/stable/) package to visualize the data generated.
+We can also use the [Plots](https://docs.juliaplots.org/stable/) package to visualize the data generated.
 
 ```@example tutorial
 plot(df.Time, df.S, label = "Suseptible", 
