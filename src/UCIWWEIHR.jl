@@ -19,6 +19,8 @@ using DataFrames
 using DifferentialEquations
 using StatsBase
 using Plots
+using Printf
+using Colors
 
 include("generate_simulation_data_uciwweihr.jl")
 include("generate_simulation_data_agent.jl")
@@ -42,5 +44,7 @@ export uciwweihr_gq_pp
 export uciwweihr_visualizer
 export ChainsCustomIndexs
 export save_plots_to_docs
+export startswith_any
+export calculate_quantiles
 
 end

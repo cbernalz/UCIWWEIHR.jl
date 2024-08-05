@@ -88,7 +88,8 @@ function generate_simulation_data_uciwweihr(
         obstimes = 1:time_points,
         log_ww_conc = data_wastewater,
         hosp = data_hosp,
-        rt = Rt_t_no_init
+        rt = Rt_t_no_init,
+        wt = w_no_init
     );
     return df
 

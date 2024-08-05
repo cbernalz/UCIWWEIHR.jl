@@ -43,5 +43,14 @@ plot(df.obstimes, df.rt,
     title="Plot of Rt Over Time")
 ```
 
+### 2.4. Hospitalization rate.
+```@example tutorial
+plot(df.obstimes, df.wt, 
+    label=nothing,
+    xlabel="Obstimes", 
+    ylabel="Rt", 
+    title="Plot of Hospitalization Rate Over Time")
+```
+
 
 ### [Tutorial Contents](@ref tutorial_home)

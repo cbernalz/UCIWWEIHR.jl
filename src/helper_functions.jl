@@ -123,3 +123,53 @@ function save_plots_to_docs(plot, filename; format = "png")
     println("Plot saved to $file_target_path")
 
 end
+
+
+"""
+    startswith_any(name, patterns)
+
+Checks if the name of time varying paramter starts with any of the patterns.
+
+Function created by Christian Bernal Zelaya. 
+"""
+function startswith_any(name, patterns)
+    for pattern in patterns
+        if startswith(name, pattern)
+            return true
+        end
+    end
+    return false
+end
+
+
+"""
+    calculate_quantiles(df, chain, var_prefix, quantiles)
+
+Calculate quantiles for a given chain and variable prefix.  Quantiles can be any user desired quantile.
+
+Function created by Christian Bernal Zelaya. 
+"""
+function calculate_quantiles(df, chain, var_prefix, quantiles)
+    df_chain = filter(row -> row.chain == chain, df)
+    column_names = names(df_chain)
+    var_names = filter(name -> startswith_any(name, [var_prefix]), column_names)
+    medians = [median(df_chain[:, var]) for var in var_names]  
+    lower_bounds = [quantile(df_chain[:, var], (1 .- quantiles) / 2) for var in var_names]
+    upper_bounds = [quantile(df_chain[:, var], 1 .- (1 .- quantiles) / 2) for var in var_names]
+    
+    
+    return medians, lower_bounds, upper_bounds
+end
+
+
+"""
+    generate_ribbon_colors(number_of_colors)
+
+Generates a vector with colors for ribbons in plots.
+
+Function created by Christian Bernal Zelaya. 
+"""
+function generate_colors(number_of_colors)
+    alpha_values = range(0.1, stop=0.7, length=number_of_colors)
+    return [RGBA(colorant"blue", alpha) for alpha in alpha_values]
+end

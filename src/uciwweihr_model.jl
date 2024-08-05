@@ -162,8 +162,9 @@ The defaults for this fuction will follow those of the default simulation in gen
 
         # Generated quantities
         H_comp = sol_array[3, :]
-        rt_vals = alpha_t / nu
-        w_t = w_t
+        rt_vals = alpha_t_no_init / nu
+        rt_init = alpha_init / nu
+        w_t = w_no_init
 
         return (
             E_init,
@@ -180,7 +181,9 @@ The defaults for this fuction will follow those of the default simulation in gen
             df = df,
             sigma_hosp = sigma_hosp,
             H = H_comp,
-            log_genes_mean = log_genes_mean
+            log_genes_mean = log_genes_mean,
+            rt_init = rt_init,
+            w_init = w_init
         )
 
 
