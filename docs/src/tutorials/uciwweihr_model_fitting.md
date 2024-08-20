@@ -6,15 +6,36 @@ Plots.reset_defaults()
 
 # [Generating Posterior Distribution Samples with UCIWWEIHR ODE compartmental based model.](@id uciwwiehr_model_fitting)
 
-This package has a way to sample from a posterior or prior that is defined in the future paper using the `uciwweihr_fit.jl` and `uciwweihr_model.jl`.  We can then generate desired quantities and forecast for a given time period with the posterior predictive distribution, using `uciwweihr_gq_pp.jl`.  We first generate data using the `generate_simulation_data_uciwweihr` function which is a non-mispecified version of the model.
+This package has a way to sample from a posterior or prior that is defined in the future paper using the `uciwweihr_fit.jl` and `uciwweihr_model.jl`.  We can then generate desired quantities and forecast for a given time period with the posterior predictive distribution, using `uciwweihr_gq_pp.jl`.  We first generate data using the `generate_simulation_data_uciwweihr` function which is a non-mispecified version of the model, we will also be using prespecified effective reporduction curves and prespecified hospitalization probability curves.
 
 
 ## 1. Data Generation.
 
 ``` @example tutorial
 using UCIWWEIHR
-# Running simulation function with defaults
-df = generate_simulation_data_uciwweihr()
+# Running simulation function with presets
+rt_custom = vcat(
+    range(1, stop=1.8, length=7*4),
+    fill(1.8, 7*2),
+    range(1.8, stop=1, length=7*8),
+    range(0.98, stop=0.8, length=7*2),
+    range(0.8, stop=1.1, length=7*6),
+    range(1.1, stop=0.97, length=7*3)
+)
+w_custom = vcat(
+    range(0.3, stop=0.38, length=7*5),
+    fill(0.38, 7*2),
+    range(0.38, stop=0.25, length=7*8),
+    range(0.25, stop=0.28, length=7*2),
+    range(0.28, stop=0.34, length=7*6),
+    range(0.34, stop=0.28, length=7*2)
+)
+params = create_uciwweihr_params(
+    time_points = length(rt_custom),
+    Rt = rt_custom, 
+    w = w_custom
+)
+df = generate_simulation_data_uciwweihr(params)
 first(df, 5)
 ```
 
