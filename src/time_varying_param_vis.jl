@@ -1,6 +1,6 @@
 """
     time_varying_param_vis(...)
-Default visualizer for results of the UCIWWEIHR model, includes posterior/priors of generated quantities and posterior predictive samples for forecasting.  Forecasting plots will have the observed data alongside.
+Used in the `uciwweihr_visualizer` to create visuals for time varying parameters.
 
 # Arguments
 - `gq_samples`: Generated quantities samples from the posterior/prior distribution, index 2 in uciwweihr_gq_pp output.
@@ -20,10 +20,9 @@ function time_varying_param_vis(;
     )
 
     # Plotting time varying parameters
-    var_prefixs = time_varying_params
     time_varying_plots = []
     column_names = names(gq_samples)
-    for var_prefix in var_prefixs
+    for var_prefix in time_varying_params
         time_varying_param = filter(name -> startswith_any(name, [var_prefix]), column_names)
         time_varying_subset_df = gq_samples[:, [time_varying_param..., "iteration", "chain"]]
         chains = unique(time_varying_subset_df.chain)
@@ -59,7 +58,7 @@ function time_varying_param_vis(;
 
     if !isempty(time_varying_plots)
         chains = unique(gq_samples.chain)
-        plt = plot(time_varying_plots..., layout = (length(var_prefixs), length(chains)), size = (1000, 1000))
+        plt = plot(time_varying_plots..., layout = (length(time_varying_params), length(chains)), size = (1000, 1000))
         display(plt)
         if save_plots
             save_plots_to_docs(plt, "mcmc_time_varying_parameter_plots")

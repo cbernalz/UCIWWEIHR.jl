@@ -110,7 +110,6 @@ end
 
 Saves plots to docs/plots directory.
 
-Function created by Christian Bernal Zelaya. 
 """
 function save_plots_to_docs(plot, filename; format = "png")
     doc_loc = "plots"
@@ -130,7 +129,6 @@ end
 
 Checks if the name of time varying paramter starts with any of the patterns.
 
-Function created by Christian Bernal Zelaya. 
 """
 function startswith_any(name, patterns)
     for pattern in patterns
@@ -147,7 +145,6 @@ end
 
 Calculate quantiles for a given chain and variable prefix.  Quantiles can be any user desired quantile.
 
-Function created by Christian Bernal Zelaya. 
 """
 function calculate_quantiles(df, chain, var_prefix, quantiles)
     df_chain = filter(row -> row.chain == chain, df)
@@ -167,9 +164,28 @@ end
 
 Generates a vector with colors for ribbons in plots.
 
-Function created by Christian Bernal Zelaya. 
 """
 function generate_colors(number_of_colors)
     alpha_values = range(0.1, stop=0.7, length=number_of_colors)
     return [RGBA(colorant"blue", alpha) for alpha in alpha_values]
+end
+
+
+"""
+    repeat_last_n_elements(x::Vector{T}, n::Int, w::Int) where T
+
+Modifies a given array so that the last n elements are repeated w times.
+    
+"""
+function repeat_last_n_elements(x::Vector{T}, n::Int, w::Int) where T
+    if n == 0
+        return x
+    else
+        n = min(n, length(x))
+        last_n_elements = x[end-n+1:end]
+        repeated_elements = [elem for elem in last_n_elements for _ in 1:w]
+        x_new = vcat(x, repeated_elements)
+    
+        return x_new
+    end
 end

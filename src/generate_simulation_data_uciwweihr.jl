@@ -1,6 +1,7 @@
 """
     uciwweihr_sim_params
-Struct for holding parameters used in the UCIWWEIHR ODE compartmental model simulation.
+
+Struct for holding parameters used in the UCIWWEIHR ODE compartmental model simulation.  Use `create_uciwweihr_params` to create an instance of this struct.
 
 # Fields
 - `time_points::Int64`: Number of time points for the simulation.
@@ -19,6 +20,8 @@ Struct for holding parameters used in the UCIWWEIHR ODE compartmental model simu
 - `sigma_Rt::Float64`: Standard deviation for random walk of time-varying reproduction number.
 - `w::Union{Float64, Vector{Float64}}`: Initial value or time series of the time-varying hospitalization rate.
 - `sigma_w::Float64`: Standard deviation for random walk of time-varying hospitalization rate.
+- `rt_init::Float64`: Initial value of the time-varying reproduction number, NOT USER SPECIFIED `create_uciwweihr_params` TAKES CARE OF THIS.
+- `w_init::Float64`: Initial value of the time-varying hospitalization rate, NOT USER SPECIFIED `create_uciwweihr_params` TAKES CARE OF THIS.
 """
 struct uciwweihr_sim_params
     time_points::Int64
@@ -37,10 +40,13 @@ struct uciwweihr_sim_params
     sigma_Rt::Float64
     w::Union{Float64, Vector{Float64}}
     sigma_w::Float64
+    rt_init::Float64
+    w_init::Float64
 end
 
 """
     create_uciwweihr_params(; kwargs...)
+
 Creates a `uciwweihr_sim_params` struct with the option to either use a predetermined `Rt` and `w` or generate them as random walks.
 
 # Arguments
@@ -60,16 +66,19 @@ function create_uciwweihr_params(; time_points::Int64=150, seed::Int64=1,
                                   sigma_w::Float64=sqrt(0.001))
 
     Random.seed!(seed)
+    rt_init = isa(Rt, Float64) ? Rt : Rt[1]
+    w_init = isa(w, Float64) ? w : w[1]
 
     Rt_t = isa(Rt, Float64) ? generate_random_walk(time_points, sigma_Rt, Rt) : Rt
-    w_t = isa(w, Float64) ? generate_random_walk(time_points, sigma_w, w) : w
+    w_t = isa(w, Float64) ? generate_logit_normal_random_walk(time_points, sigma_w, w) : w
 
     return uciwweihr_sim_params(time_points, seed, E_init, I_init, H_init, gamma, nu, epsilon,
-                                rho_gene, tau, df, sigma_hosp, Rt_t, sigma_Rt, w_t, sigma_w)
+                                rho_gene, tau, df, sigma_hosp, Rt_t, sigma_Rt, w_t, sigma_w, rt_init, w_init)
 end
 
 """
     generate_random_walk(time_points::Int64, sigma::Float64, init_val::Float64)
+
 Generates a random walk time series.
 
 # Arguments
@@ -86,6 +95,29 @@ function generate_random_walk(time_points::Int64, sigma::Float64, init_val::Floa
     for _ in 1:time_points
         log_val = rand(Normal(0, sigma)) + log_val
         push!(walk, exp(log_val))
+    end
+    return walk
+end
+
+"""
+    generate_logit_normal_random_walk(time_points::Int64, sigma::Float64, init_val::Float64)
+
+Generates a logit-normal random walk time series.
+
+# Arguments
+- `time_points::Int64`: Number of time points.
+- `sigma::Float64`: Standard deviation of the random walk in logit space.
+- `init_val::Float64`: Initial value of the random walk on the probability scale.
+
+# Returns
+- `walk::Vector{Float64}`: Generated random walk on the probability scale.
+"""
+function generate_logit_normal_random_walk(time_points::Int64, sigma::Float64, init_val::Float64)
+    walk = Float64[]
+    logit_val = logit(init_val)
+    for _ in 1:time_points
+        logit_val = rand(Normal(0, sigma)) + logit_val
+        push!(walk, logistic(logit_val))
     end
     return walk
 end

@@ -47,7 +47,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 - Samples from the posterior or prior distribution.
 """
 
-function uciwweihr_gq_pp(
+function uciwweihr_gq_pp(;
     samples,
     data_hosp,
     data_wastewater,

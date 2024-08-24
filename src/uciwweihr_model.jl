@@ -55,7 +55,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
     Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
     sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
-    w_init_sd::Float64=0.1, w_init_mean::Float64=log(0.35),
+    w_init_sd::Float64=0.04, w_init_mean::Float64=logit(0.35),
     sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5
     )
 
@@ -94,7 +94,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         w_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
         sigma_w_non_centered = w_params_non_centered[1]
         w_init_non_centered = w_params_non_centered[2]
-        log_w_steps_non_centered = w_params_non_centered[3:end]
+        logit_w_steps_non_centered = w_params_non_centered[3:end]
 
 
         # TRANSFORMATIONS--------------------
@@ -117,10 +117,12 @@ The defaults for this fuction will follow those of the default simulation in gen
         alpha_t_no_init = exp.(log(Rt_init) .+ cumsum(log_Rt_steps_non_centered) * sigma_Rt) * nu
         alpha_init = Rt_init * nu
         alpha_t = vcat(alpha_init, alpha_t_no_init)
-        # Non-constant Hosp Rate w
-        w_init = exp(w_init_non_centered * w_init_sd + w_init_mean)
+        # Non-constant Hosp Prob w
+        w_init_logit = w_init_non_centered * w_init_sd + w_init_mean
         sigma_w = exp(sigma_w_non_centered * sigma_w_sd + sigma_w_mean)
-        w_no_init = exp.(log(w_init) .+ cumsum(log_w_steps_non_centered) * sigma_w)
+        logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
+        w_init = logistic(w_init_logit)
+        w_no_init = logistic.(logit_w_no_init)
         w_t = vcat(w_init, w_no_init)
 
 

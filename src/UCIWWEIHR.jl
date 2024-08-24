@@ -30,15 +30,18 @@ include("generalizedtdist.jl")
 include("uciwweihr_model.jl")
 include("uciwweihr_fit.jl")
 include("uciwweihr_gq_pp.jl")
-include("uciwweihr_visualizer.jl")
 include("helper_functions.jl")
 include("mcmcdiags_vis.jl")
 include("time_varying_param_vis.jl")
+include("non_time_varying_param_vis.jl")
+include("predictive_param_vis.jl")
+include("uciwweihr_visualizer.jl")
 
 export eihr_ode
 export uciwweihr_sim_params
 export create_uciwweihr_params
 export generate_random_walk
+export generate_logit_normal_random_walk
 export generate_simulation_data_uciwweihr
 export generate_simulation_data_agent
 export NegativeBinomial2
@@ -50,8 +53,12 @@ export uciwweihr_visualizer
 export ChainsCustomIndexs
 export save_plots_to_docs
 export startswith_any
+export generate_colors
 export calculate_quantiles
+export repeat_last_n_elements
 export mcmcdiags_vis
 export time_varying_param_vis
+export non_time_varying_param_vis
+export predictive_param_vis
 
 end
