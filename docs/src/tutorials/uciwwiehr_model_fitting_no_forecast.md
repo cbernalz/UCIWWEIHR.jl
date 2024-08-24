@@ -60,11 +60,11 @@ samples = uciwweihr_fit(
     n_samples
 )
 model_output = uciwweihr_gq_pp(
-    samples,
-    data_hosp,
-    data_wastewater,
-    obstimes,
-    param_change_times
+    samples = samples,
+    data_hosp = data_hosp,
+    data_wastewater = data_wastewater,
+    obstimes = obstimes,
+    param_change_times = param_change_times,
 )
 
 first(model_output[1][:,1:5], 5)
