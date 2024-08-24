@@ -1,4 +1,4 @@
-```@setup tutorial
+```@setup tutorial_forecast
 using Plots, StatsPlots; gr()
 Plots.reset_defaults()
 
@@ -13,7 +13,7 @@ Here we extend the [previous tutorial](@ref uciwwiehr_model_fitting_no_forecast)
 
 Here we generate two datasets, one with 150 time points and one with 178 time points.  We will use the 150 time point dataset for fitting and the 178 time point dataset for forecast evaluation.
 
-``` @example tutorial
+``` @example tutorial_forecast
 using UCIWWEIHR
 # Running simulation function with presets
 params = create_uciwweihr_params(
@@ -26,6 +26,9 @@ params_ext = create_uciwweihr_params(
 )
 df_ext = generate_simulation_data_uciwweihr(params_ext)
 first(df, 5)
+```
+
+``` @example tutorial_forecast
 first(df_ext, 5)
 ```
 
@@ -33,7 +36,7 @@ first(df_ext, 5)
 
 Here we sample from the posterior distribution using the `uciwweihr_fit.jl` function.  First, we setup some presets, then have an array where index 1 contains the posterior/prior predictive samples, index 2 contains the posterior/prior generated quantities samples, and index 3 contains the original sampled parameters for the model.  The diference here is that we set `forecast = true` and `forecast_weeks = 4` to forecast 4 weeks into the future.
 
-``` @example tutorial
+``` @example tutorial_forecast
 data_hosp = df.hosp
 data_wastewater = df.log_ww_conc
 obstimes = df.obstimes
@@ -64,11 +67,11 @@ model_output = uciwweihr_gq_pp(
 first(model_output[1][:,1:5], 5)
 ```
 
-``` @example tutorial
+``` @example tutorial_forecast
 first(model_output[2][:,1:5], 5)
 ```
 
-``` @example tutorial
+``` @example tutorial_forecast
 first(model_output[3][:,1:5], 5)
 ```
 
@@ -76,7 +79,7 @@ first(model_output[3][:,1:5], 5)
 
 We can again look at model diagnostics, posterior distribution of time or non-time varying parameters, and the posterior predictive distribution extended for forecasting.
 
-```@example tutorial
+```@example tutorial_forecast
 uciwweihr_visualizer(
     pp_samples = model_output[1],
     gq_samples = model_output[2],
@@ -87,7 +90,7 @@ uciwweihr_visualizer(
     actual_non_time_varying_vals = params,
     forecast_weeks = forecast_weeks,
     bayes_dist_type = "Posterior",
-    save_plots = false
+    save_plots = true
 )
 ```
 
