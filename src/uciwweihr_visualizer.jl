@@ -21,6 +21,10 @@ Default visualizer for results of the UCIWWEIHR model, includes posterior/priors
 - `non_time_varying_plots::Bool=true`: A boolean to indicate if user wants to visualize non-time varying parameters.
 - `pred_param_plots::Bool=true`: A boolean to indicate if user wants to visualize posterior (or prior) predictive parameter results.
 - `save_plots::Bool=false`: A boolean to indicate if user wants to save the plots as pngs into a plots folder.
+- `plot_name_to_save_mcmcdiag`: A string to indicate the name of the plot to save for MCMC diagnostics. Default is "mcmc_diagnosis_plots".
+- `plot_name_to_save_time_varying`: A string to indicate the name of the plot to save for time varying parameters. Default is "mcmc_time_varying_parameter_plots".
+- `plot_name_to_save_non_time_varying`: A string to indicate the name of the plot to save for non-time varying parameters. Default is "mcmc_nontime_varying_parameter_plots".
+- `plot_name_to_save_pred_param`: A string to indicate the name of the plot to save for posterior (or prior) predictive parameter results. Default is "mcmc_pred_parameter_plots".
 """
 function uciwweihr_visualizer(;
     pp_samples = nothing,
@@ -46,7 +50,11 @@ function uciwweihr_visualizer(;
     time_varying_plots::Bool = true,
     non_time_varying_plots::Bool = true,
     pred_param_plots::Bool = true,
-    save_plots::Bool = false
+    save_plots::Bool = false,
+    plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots",
+    plot_name_to_save_time_varying = "mcmc_time_varying_parameter_plots",
+    plot_name_to_save_non_time_varying = "mcmc_nontime_varying_parameter_plots",
+    plot_name_to_save_pred_param = "mcmc_pred_parameter_plots"
     )
 
     # Posterior/Prior Samples
@@ -56,7 +64,8 @@ function uciwweihr_visualizer(;
             gq_samples = gq_samples, 
             desired_params = desired_params, 
             actual_non_time_varying_vals = actual_non_time_varying_vals,
-            save_plots = save_plots
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_mcmcdiag
         )
     else
         println("MCMC Diagnostics Plots are not requested.")
@@ -69,7 +78,8 @@ function uciwweihr_visualizer(;
             actual_w_t = actual_w_t,
             time_varying_params = time_varying_params,
             quantiles = quantiles,
-            save_plots = save_plots
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_time_varying
         )
     else
         println("MCMC time varying parameter results are not requested.")
@@ -81,7 +91,8 @@ function uciwweihr_visualizer(;
             desired_params = desired_params,
             bayes_dist_type = bayes_dist_type,
             actual_non_time_varying_vals = actual_non_time_varying_vals,
-            save_plots = save_plots
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_non_time_varying
         )
     else
         println("MCMC non-time varying parameter results are not requested.")
@@ -96,7 +107,8 @@ function uciwweihr_visualizer(;
             vars_to_pred = var_to_pred, 
             quantiles = quantiles,
             bayes_dist_type = bayes_dist_type,
-            save_plots = save_plots
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_pred_param
         )
     else
         println("MCMC posterior (or prior) predictive parameter results are not requested.")

@@ -9,13 +9,15 @@ Used in the `uciwweihr_visualizer` to create visuals for non-time varying parame
 - `bayes_dist_type`: A string to indicate if user is using Posterior or Prior distribution. Default is "Posterior".
 - `actual_non_time_varying_vals::uciwweihr_sim_params`: A uciwweihr_sim_params object of actual non-time varying parameter values if user has access to them. Default is nothing.
 - `save_plots::Bool=false`: A boolean to indicate if user wants to save the plots as pngs into a plots folder.
+- `plot_name_to_save`: A string to indicate the name of the plot to save. Default is "mcmc_nontime_varying_parameter_plots".
 """
 function non_time_varying_param_vis(;
     gq_samples=nothing,
     desired_params=nothing,
     bayes_dist_type="Posterior",
     actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
-    save_plots::Bool=false
+    save_plots::Bool=false,
+    plot_name_to_save = "mcmc_nontime_varying_parameter_plots"
     )
     # Plotting non time varying parameters
     non_time_varying_plots = []
@@ -61,7 +63,7 @@ function non_time_varying_param_vis(;
                             size = (1500, 1500))
         display(final_plot)
         if save_plots
-            save_plots_to_docs(final_plot, "mcmc_nontime_varying_parameter_plots")
+            save_plots_to_docs(final_plot, plot_name_to_save)
         end
     else
         println("NO NON-TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")

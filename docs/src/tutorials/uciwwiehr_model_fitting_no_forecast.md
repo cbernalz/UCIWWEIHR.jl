@@ -49,7 +49,7 @@ data_wastewater = df.log_ww_conc
 obstimes = df.obstimes
 param_change_times = 1:7:length(obstimes) # Change every week
 priors_only = false
-n_samples = 200
+n_samples = 50
 
 samples = uciwweihr_fit(
     data_hosp,

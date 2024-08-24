@@ -9,6 +9,7 @@ Used in the `uciwweihr_visualizer` to create visuals for time varying parameters
 - `time_varying_params`: A list of time varying parameters to visualize. Default is ["rt_vals", "w_t"].
 - `quantiles`: A list of quantiles to calculate for ploting uncertainty. Default is [0.5, 0.8, 0.95].
 - `save_plots::Bool=false`: A boolean to indicate if user wants to save the plots as pngs into a plots folder.
+- `plot_name_to_save`: A string to indicate the name of the plot to save. Default is "mcmc_time_varying_parameter_plots".
 """
 function time_varying_param_vis(;
     gq_samples=nothing,
@@ -16,7 +17,8 @@ function time_varying_param_vis(;
     actual_w_t=nothing,
     time_varying_params = ["rt_vals", "w_t"],
     quantiles = [0.5, 0.8, 0.95],
-    save_plots::Bool=false
+    save_plots::Bool=false,
+    plot_name_to_save = "mcmc_time_varying_parameter_plots"
     )
 
     # Plotting time varying parameters
@@ -61,7 +63,7 @@ function time_varying_param_vis(;
         plt = plot(time_varying_plots..., layout = (length(time_varying_params), length(chains)), size = (1000, 1000))
         display(plt)
         if save_plots
-            save_plots_to_docs(plt, "mcmc_time_varying_parameter_plots")
+            save_plots_to_docs(plt, plot_name_to_save)
         end
     else
         println("NO TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")

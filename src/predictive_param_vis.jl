@@ -11,6 +11,7 @@ Used in the `uciwweihr_visualizer` to create visuals for wastewater data and hos
 - `quantiles`: A list of quantiles to calculate for ploting uncertainty. Default is [0.5, 0.8, 0.95].
 - `bayes_dist_type`: A string to indicate if user is using Posterior or Prior distribution. Default is "Posterior".
 - `save_plots::Bool=false`: A boolean to indicate if user wants to save the plots as pngs into a plots folder.
+- `plot_name_to_save`: A string to indicate the name of the plot to save. Default is "mcmc_pred_parameter_plots".
 """
 function predictive_param_vis(;
     pp_samples = nothing,
@@ -20,7 +21,8 @@ function predictive_param_vis(;
     vars_to_pred = ["data_wastewater", "data_hosp"],
     quantiles = [0.5, 0.8, 0.95],
     bayes_dist_type = "Posterior",
-    save_plots::Bool = false
+    save_plots::Bool = false,
+    plot_name_to_save = "mcmc_pred_parameter_plots"
     )
     # Plotting wastewater and hosp predictive posterior / prior
     pred_plots = []
@@ -65,7 +67,7 @@ function predictive_param_vis(;
         plt = plot(pred_plots..., layout = (length(pred_plots), length(chains)), size = (1000, 1000))
         display(plt)
         if save_plots
-            save_plots_to_docs(plt, "mcmc_pred_parameter_plots")
+            save_plots_to_docs(plt, plot_name_to_save)
         end
     else
         println("NO TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")

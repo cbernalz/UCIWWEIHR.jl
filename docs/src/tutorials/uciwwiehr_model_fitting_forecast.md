@@ -42,7 +42,7 @@ data_wastewater = df.log_ww_conc
 obstimes = df.obstimes
 param_change_times = 1:7:length(obstimes) # Change every week
 priors_only = false
-n_samples = 200
+n_samples = 50
 forecast = true
 forecast_weeks = 4
 
@@ -90,24 +90,28 @@ uciwweihr_visualizer(
     actual_non_time_varying_vals = params,
     forecast_weeks = forecast_weeks,
     bayes_dist_type = "Posterior",
-    save_plots = true
+    save_plots = true,
+    plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots1",
+    plot_name_to_save_time_varying = "mcmc_time_varying_parameter_plots1",
+    plot_name_to_save_non_time_varying = "mcmc_nontime_varying_parameter_plots1",
+    plot_name_to_save_pred_param = "mcmc_pred_parameter_plots1"
 )
 ```
 
 ### 3.1. MCMC Diagnostic Plots.
 
-![Plot 1](plots/mcmc_diagnosis_plots.png)
+![Plot 1](plots/mcmc_diagnosis_plots1.png)
 
 ### 3.2. Time Varying Parameter Results Plot.
 
-![Plot 2](plots/mcmc_time_varying_parameter_plots.png)
+![Plot 2](plots/mcmc_time_varying_parameter_plots1.png)
 
 ### 3.3. Non-Time Varying Parameter Results Plot.
-![Plot 3](plots/mcmc_nontime_varying_parameter_plots.png)
+![Plot 3](plots/mcmc_nontime_varying_parameter_plots1.png)
 
 ### 3.4. Posterior Predictive Distribution Plot.
 
-![Plot 4](plots/mcmc_pred_parameter_plots.png)
+![Plot 4](plots/mcmc_pred_parameter_plots1.png)
 
 
 ### [Tutorial Contents](@ref tutorial_home)
