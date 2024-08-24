@@ -82,7 +82,7 @@ function mcmcdiags_vis(;
                             size = (1500, 1500))
         display(final_plot)
         if save_plots
-            save_plots_to_docs(plt, "mcmc_diagnosis_plots")
+            save_plots_to_docs(final_plot, "mcmc_diagnosis_plots")
         end
     else
         println("NO MCMC DIAGNOSIS PLOTS TO DISPLAY!!!")
