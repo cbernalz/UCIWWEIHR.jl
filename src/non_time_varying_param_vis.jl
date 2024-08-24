@@ -61,7 +61,7 @@ function non_time_varying_param_vis(;
                             size = (1500, 1500))
         display(final_plot)
         if save_plots
-            save_plots_to_docs(plt, "mcmc_nontime_varying_parameter_plots")
+            save_plots_to_docs(final_plot, "mcmc_nontime_varying_parameter_plots")
         end
     else
         println("NO NON-TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")
