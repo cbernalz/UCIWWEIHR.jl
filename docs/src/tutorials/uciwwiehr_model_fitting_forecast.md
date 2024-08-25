@@ -48,16 +48,16 @@ forecast_weeks = 4
 
 samples = uciwweihr_fit(
     data_hosp,
-    data_wastewater,
+    data_wastewater;
     obstimes,
     param_change_times,
     priors_only,
     n_samples
 )
 model_output = uciwweihr_gq_pp(
-    samples = samples,
-    data_hosp = data_hosp,
-    data_wastewater = data_wastewater,
+    samples,
+    data_hosp,
+    data_wastewater;
     obstimes = obstimes,
     param_change_times = param_change_times,
     forecast = forecast,
