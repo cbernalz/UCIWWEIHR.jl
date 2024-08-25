@@ -8,7 +8,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 # Arguments
 - `samples`: Samples from the posterior/prior distribution.
 - `data_hosp`: An array of hospital data.
-- `data_wastewater`: An array of pathogen genome concentration in localized wastewater data.
+- `data_wastewater`: An array of pathogen genome concentration in localized wastewater data.  If this is not avaliable, the model used will be one that only uses hospital data.
 - `obstimes`: An array of timepoints for observed hosp/wastewater.
 - `param_change_times`: An array of timepoints where the parameters change.
 - `seed::Int64=2024`: Seed for the random number generator.
@@ -47,10 +47,10 @@ The defaults for this fuction will follow those of the default simulation in gen
 - Samples from the posterior or prior distribution.
 """
 
-function uciwweihr_gq_pp(;
+function uciwweihr_gq_pp(
     samples,
     data_hosp,
-    data_wastewater,
+    data_wastewater;
     obstimes,
     param_change_times,
     seed::Int64=2024,
@@ -71,91 +71,190 @@ function uciwweihr_gq_pp(;
     forecast::Bool=false, forecast_weeks::Int64=4
     )
 
-obstimes = convert(Vector{Float64}, obstimes)
-param_change_times = convert(Vector{Float64}, param_change_times)
+    println("Using uciwweihr_model with wastewater!!!")
+    obstimes = convert(Vector{Float64}, obstimes)
+    param_change_times = convert(Vector{Float64}, param_change_times)
 
 
-if forecast
-    last_value = obstimes[end]
-    for i in 1:forecast_weeks
-        next_value = last_value + 7
-        push!(param_change_times, next_value)
-        push!(obstimes, next_value)
-        last_value = next_value
+    if forecast
+        last_value = obstimes[end]
+        for i in 1:forecast_weeks
+            next_value = last_value + 7
+            push!(param_change_times, next_value)
+            push!(obstimes, next_value)
+            last_value = next_value
+        end
+        missing_data_ww = repeat([missing], length(obstimes))
+        missing_data_hosp = repeat([missing], length(obstimes))
+        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_weeks))
+        data_wastewater = vcat(data_wastewater, repeat([data_wastewater[end]], forecast_weeks))
+    else
+        missing_data_ww = repeat([missing], length(data_wastewater))
+        missing_data_hosp = repeat([missing], length(data_hosp))
     end
-    missing_data_ww = repeat([missing], length(obstimes))
-    missing_data_hosp = repeat([missing], length(obstimes))
-    data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_weeks))
-    data_wastewater = vcat(data_wastewater, repeat([data_wastewater[end]], forecast_weeks))
-else
-    missing_data_ww = repeat([missing], length(data_wastewater))
-    missing_data_hosp = repeat([missing], length(data_hosp))
+
+    my_model = uciwweihr_model(
+        data_hosp, 
+        data_wastewater;
+        obstimes, 
+        param_change_times,
+        E_init_sd, E_init_mean,
+        I_init_sd, I_init_mean,
+        H_init_sd, H_init_mean,
+        gamma_sd, log_gamma_mean,
+        nu_sd, log_nu_mean,
+        epsilon_sd, log_epsilon_mean,
+        rho_gene_sd, log_rho_gene_mean,
+        tau_sd, log_tau_mean,
+        df_shape, df_scale,
+        sigma_hosp_sd, sigma_hosp_mean,
+        Rt_init_sd, Rt_init_mean,
+        sigma_Rt_sd, sigma_Rt_mean,
+        w_init_sd, w_init_mean,
+        sigma_w_sd, sigma_w_mean
+    )
+
+
+    #indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    #samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+
+    #Random.seed!(seed)
+    #gq_randn = Chains(generated_quantities(my_model, samples_randn))
+
+    my_model_forecast_missing = uciwweihr_model(
+        missing_data_hosp, 
+        missing_data_ww;
+        obstimes, 
+        param_change_times,
+        E_init_sd, E_init_mean,
+        I_init_sd, I_init_mean,
+        H_init_sd, H_init_mean,
+        gamma_sd, log_gamma_mean,
+        nu_sd, log_nu_mean,
+        epsilon_sd, log_epsilon_mean,
+        rho_gene_sd, log_rho_gene_mean,
+        tau_sd, log_tau_mean,
+        df_shape, df_scale,
+        sigma_hosp_sd, sigma_hosp_mean,
+        Rt_init_sd, Rt_init_mean,
+        sigma_Rt_sd, sigma_Rt_mean,
+        w_init_sd, w_init_mean,
+        sigma_w_sd, sigma_w_mean
+    )
+
+
+    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+
+
+    Random.seed!(seed)
+    predictive_randn = predict(my_model_forecast_missing, samples_randn)
+
+    Random.seed!(seed)
+    gq_randn = Chains(generated_quantities(my_model, samples_randn))
+
+    samples_df = DataFrame(samples)
+
+    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
+
+
+    return(results)
 end
 
-my_model = uciwweihr_model(
-    data_hosp, 
-    data_wastewater, 
-    obstimes, 
+function uciwweihr_gq_pp(
+    samples,
+    data_hosp;
+    obstimes,
     param_change_times,
-    E_init_sd, E_init_mean,
-    I_init_sd, I_init_mean,
-    H_init_sd, H_init_mean,
-    gamma_sd, log_gamma_mean,
-    nu_sd, log_nu_mean,
-    epsilon_sd, log_epsilon_mean,
-    rho_gene_sd, log_rho_gene_mean,
-    tau_sd, log_tau_mean,
-    df_shape, df_scale,
-    sigma_hosp_sd, sigma_hosp_mean,
-    Rt_init_sd, Rt_init_mean,
-    sigma_Rt_sd, sigma_Rt_mean,
-    w_init_sd, w_init_mean,
-    sigma_w_sd, sigma_w_mean
+    seed::Int64=2024,
+    E_init_sd::Float64=50.0, E_init_mean::Int64=200,
+    I_init_sd::Float64=20.0, I_init_mean::Int64=100,
+    H_init_sd::Float64=5.0, H_init_mean::Int64=20,
+    gamma_sd::Float64=0.02, log_gamma_mean::Float64=log(1/4),
+    nu_sd::Float64=0.02, log_nu_mean::Float64=log(1/7),
+    epsilon_sd::Float64=0.02, log_epsilon_mean::Float64=log(1/5),
+    sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
+    Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
+    sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
+    w_init_sd::Float64=0.1, w_init_mean::Float64=log(0.35),
+    sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5,
+    forecast::Bool=false, forecast_weeks::Int64=4
+    )
+    println("Using uciwweihr_model without wastewater!!!")
+    obstimes = convert(Vector{Float64}, obstimes)
+    param_change_times = convert(Vector{Float64}, param_change_times)
+
+
+    if forecast
+        last_value = obstimes[end]
+        for i in 1:forecast_weeks
+            next_value = last_value + 7
+            push!(param_change_times, next_value)
+            push!(obstimes, next_value)
+            last_value = next_value
+        end
+        missing_data_hosp = repeat([missing], length(obstimes))
+        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_weeks))
+    else
+        missing_data_hosp = repeat([missing], length(data_hosp))
+    end
+
+    my_model = uciwweihr_model(
+        data_hosp;
+        obstimes, 
+        param_change_times,
+        E_init_sd, E_init_mean,
+        I_init_sd, I_init_mean,
+        H_init_sd, H_init_mean,
+        gamma_sd, log_gamma_mean,
+        nu_sd, log_nu_mean,
+        epsilon_sd, log_epsilon_mean,
+        sigma_hosp_sd, sigma_hosp_mean,
+        Rt_init_sd, Rt_init_mean,
+        sigma_Rt_sd, sigma_Rt_mean,
+        w_init_sd, w_init_mean,
+        sigma_w_sd, sigma_w_mean
     )
 
 
-#indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
-#samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+    #indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    #samples_randn = ChainsCustomIndex(samples, indices_to_keep)
 
-#Random.seed!(seed)
-#gq_randn = Chains(generated_quantities(my_model, samples_randn))
+    #Random.seed!(seed)
+    #gq_randn = Chains(generated_quantities(my_model, samples_randn))
 
-my_model_forecast_missing = uciwweihr_model(
-    missing_data_hosp, 
-    missing_data_ww, 
-    obstimes, 
-    param_change_times,
-    E_init_sd, E_init_mean,
-    I_init_sd, I_init_mean,
-    H_init_sd, H_init_mean,
-    gamma_sd, log_gamma_mean,
-    nu_sd, log_nu_mean,
-    epsilon_sd, log_epsilon_mean,
-    rho_gene_sd, log_rho_gene_mean,
-    tau_sd, log_tau_mean,
-    df_shape, df_scale,
-    sigma_hosp_sd, sigma_hosp_mean,
-    Rt_init_sd, Rt_init_mean,
-    sigma_Rt_sd, sigma_Rt_mean,
-    w_init_sd, w_init_mean,
-    sigma_w_sd, sigma_w_mean
+    my_model_forecast_missing = uciwweihr_model(
+        missing_data_hosp;
+        obstimes, 
+        param_change_times,
+        E_init_sd, E_init_mean,
+        I_init_sd, I_init_mean,
+        H_init_sd, H_init_mean,
+        gamma_sd, log_gamma_mean,
+        nu_sd, log_nu_mean,
+        epsilon_sd, log_epsilon_mean,
+        sigma_hosp_sd, sigma_hosp_mean,
+        Rt_init_sd, Rt_init_mean,
+        sigma_Rt_sd, sigma_Rt_mean,
+        w_init_sd, w_init_mean,
+        sigma_w_sd, sigma_w_mean
     )
 
 
-indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
-samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
 
 
-Random.seed!(seed)
-predictive_randn = predict(my_model_forecast_missing, samples_randn)
+    Random.seed!(seed)
+    predictive_randn = predict(my_model_forecast_missing, samples_randn)
 
-Random.seed!(seed)
-gq_randn = Chains(generated_quantities(my_model, samples_randn))
+    Random.seed!(seed)
+    gq_randn = Chains(generated_quantities(my_model, samples_randn))
 
-samples_df = DataFrame(samples)
+    samples_df = DataFrame(samples)
 
-results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
+    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
 
 
-return(results)
+    return(results)
 end

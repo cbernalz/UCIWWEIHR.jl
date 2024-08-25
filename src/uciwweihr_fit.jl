@@ -7,7 +7,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 
 # Arguments
 - `data_hosp`: An array of hospital data.
-- `data_wastewater`: An array of pathogen genome concentration in localized wastewater data.
+- `data_wastewater`: An array of pathogen genome concentration in localized wastewater data.  If this is not avaliable, the model used will be one that only uses hospital data.
 - `obstimes`: An array of timepoints for observed hosp/wastewater.
 - `priors_only::Bool=false`: A boolean to indicate if only priors are to be sampled.
 - `n_samples::Int64=500`: Number of samples to be drawn.
@@ -48,7 +48,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 """
 function uciwweihr_fit(
     data_hosp,
-    data_wastewater,
+    data_wastewater;
     obstimes,
     param_change_times,
     priors_only::Bool=false,
@@ -68,41 +68,92 @@ function uciwweihr_fit(
     w_init_sd::Float64=0.1, w_init_mean::Float64=log(0.35),
     sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5
     )
+    println("Using uciwweihr_model with wastewater!!!")
+    obstimes = convert(Vector{Float64}, obstimes)
+    param_change_times = convert(Vector{Float64}, param_change_times)
 
 
-obstimes = convert(Vector{Float64}, obstimes)
-param_change_times = convert(Vector{Float64}, param_change_times)
-
-
-my_model = uciwweihr_model(
-    data_hosp, 
-    data_wastewater, 
-    obstimes, 
-    param_change_times,
-    E_init_sd, E_init_mean,
-    I_init_sd, I_init_mean,
-    H_init_sd, H_init_mean,
-    gamma_sd, log_gamma_mean,
-    nu_sd, log_nu_mean,
-    epsilon_sd, log_epsilon_mean,
-    rho_gene_sd, log_rho_gene_mean,
-    tau_sd, log_tau_mean,
-    df_shape, df_scale,
-    sigma_hosp_sd, sigma_hosp_mean,
-    Rt_init_sd, Rt_init_mean,
-    sigma_Rt_sd, sigma_Rt_mean,
-    w_init_sd, w_init_mean,
-    sigma_w_sd, sigma_w_mean
+    my_model = uciwweihr_model(
+        data_hosp, 
+        data_wastewater;
+        obstimes, 
+        param_change_times,
+        E_init_sd, E_init_mean,
+        I_init_sd, I_init_mean,
+        H_init_sd, H_init_mean,
+        gamma_sd, log_gamma_mean,
+        nu_sd, log_nu_mean,
+        epsilon_sd, log_epsilon_mean,
+        rho_gene_sd, log_rho_gene_mean,
+        tau_sd, log_tau_mean,
+        df_shape, df_scale,
+        sigma_hosp_sd, sigma_hosp_mean,
+        Rt_init_sd, Rt_init_mean,
+        sigma_Rt_sd, sigma_Rt_mean,
+        w_init_sd, w_init_mean,
+        sigma_w_sd, sigma_w_mean
     )
 
 
-# Sample Posterior
-if priors_only
-Random.seed!(seed)
-samples = sample(my_model, Prior(), MCMCThreads(), 400, n_chains)
-else
-Random.seed!(seed)
-samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains)
+    # Sample Posterior
+    if priors_only
+        Random.seed!(seed)
+        samples = sample(my_model, Prior(), MCMCThreads(), 400, n_chains)
+    else
+        Random.seed!(seed)
+        samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains)
+    end
+    return(samples)
 end
-return(samples)
+
+function uciwweihr_fit(
+    data_hosp;
+    obstimes,
+    param_change_times,
+    priors_only::Bool=false,
+    n_samples::Int64=500, n_chains::Int64=1, seed::Int64=2024,
+    E_init_sd::Float64=50.0, E_init_mean::Int64=200,
+    I_init_sd::Float64=20.0, I_init_mean::Int64=100,
+    H_init_sd::Float64=5.0, H_init_mean::Int64=20,
+    gamma_sd::Float64=0.02, log_gamma_mean::Float64=log(1/4),
+    nu_sd::Float64=0.02, log_nu_mean::Float64=log(1/7),
+    epsilon_sd::Float64=0.02, log_epsilon_mean::Float64=log(1/5),
+    sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
+    Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
+    sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
+    w_init_sd::Float64=0.1, w_init_mean::Float64=log(0.35),
+    sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5
+    )
+    println("Using uciwweihr_model without wastewater!!!")
+    obstimes = convert(Vector{Float64}, obstimes)
+    param_change_times = convert(Vector{Float64}, param_change_times)
+
+
+    my_model = uciwweihr_model(
+        data_hosp;
+        obstimes, 
+        param_change_times,
+        E_init_sd, E_init_mean,
+        I_init_sd, I_init_mean,
+        H_init_sd, H_init_mean,
+        gamma_sd, log_gamma_mean,
+        nu_sd, log_nu_mean,
+        epsilon_sd, log_epsilon_mean,
+        sigma_hosp_sd, sigma_hosp_mean,
+        Rt_init_sd, Rt_init_mean,
+        sigma_Rt_sd, sigma_Rt_mean,
+        w_init_sd, w_init_mean,
+        sigma_w_sd, sigma_w_mean
+    )
+
+
+    # Sample Posterior
+    if priors_only
+        Random.seed!(seed)
+        samples = sample(my_model, Prior(), MCMCThreads(), 400, n_chains)
+    else
+        Random.seed!(seed)
+        samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains)
+    end
+    return(samples)
 end
