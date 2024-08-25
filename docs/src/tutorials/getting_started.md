@@ -8,7 +8,7 @@ To install the UCIWWEIHR.jl package, open the Julia REPL and run the following c
 
 ``` julia
 using Pkg
-Pkg.add("UCIWWEIHR")
+Pkg.add("git@github.com:cbernalz/UCIWWEIHR.jl.git")
 ```
 
 

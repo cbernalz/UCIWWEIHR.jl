@@ -12,7 +12,7 @@ UCIWWEIHR.jl is a Julia package for forecasting and nowcasting COVID-19 hospital
 
 - Comprehensive library of Bayesian models
 - Simulation of infectious disease 
-- Parameter estimation and model calibration
+- Model calibration
 - Sensitivity analysis and uncertainty quantification?
 - Visualization of results and MCMC evaluations(live?)
 
@@ -22,5 +22,5 @@ To install UCIWWEIHR.jl, you can use the Julia package manager. Open the Julia R
 
 ```julia
 using Pkg
-Pkg.add("UCIWWEIHR")
+Pkg.add("git@github.com:cbernalz/UCIWWEIHR.jl.git")
 ```

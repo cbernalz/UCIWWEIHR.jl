@@ -26,8 +26,6 @@ makedocs(;
       "UCIWWEIHR FITTING MODEL W/ FORECASTING" => "tutorials/uciwwiehr_model_fitting_forecast.md",
     ]
     ,
-    "NEWS" => "news.md",
-    "PACKAGE DEVELOPMENT" => "package_development.md",
     "REFERENCE" => "reference.md", 
     "LICENSE" => "license.md",
     ],
