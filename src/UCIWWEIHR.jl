@@ -27,6 +27,7 @@ include("generate_simulation_data_agent.jl")
 include("eihr_ode.jl")
 include("negativebinomial2.jl")
 include("generalizedtdist.jl")
+include("uciwweihr_model_params.jl")
 include("uciwweihr_model.jl")
 include("uciwweihr_fit.jl")
 include("uciwweihr_gq_pp.jl")
@@ -39,13 +40,15 @@ include("uciwweihr_visualizer.jl")
 
 export eihr_ode
 export uciwweihr_sim_params
-export create_uciwweihr_params
+export create_uciwweihr_sim_params
 export generate_random_walk
 export generate_logit_normal_random_walk
 export generate_simulation_data_uciwweihr
 export generate_simulation_data_agent
 export NegativeBinomial2
 export GeneralizedTDist
+export uciwweihr_model_params
+export create_uciwweihr_model_params
 export uciwweihr_model
 export uciwweihr_fit
 export uciwweihr_gq_pp

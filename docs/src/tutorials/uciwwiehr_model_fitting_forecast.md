@@ -16,12 +16,12 @@ Here we generate two datasets, one with 150 time points and one with 178 time po
 ``` @example tutorial_forecast
 using UCIWWEIHR
 # Running simulation function with presets
-params = create_uciwweihr_params(
+params = create_uciwweihr_sim_params(
     time_points = 150
 )
 df = generate_simulation_data_uciwweihr(params)
 
-params_ext = create_uciwweihr_params(
+params_ext = create_uciwweihr_sim_params(
     time_points = 178
 )
 df_ext = generate_simulation_data_uciwweihr(params_ext)
@@ -34,7 +34,7 @@ first(df_ext, 5)
 
 ## 2. Sampling from the Posterior Distribution and Posterior Predictive Distribution.
 
-Here we sample from the posterior distribution using the `uciwweihr_fit.jl` function.  First, we setup some presets, then have an array where index 1 contains the posterior/prior predictive samples, index 2 contains the posterior/prior generated quantities samples, and index 3 contains the original sampled parameters for the model.  The diference here is that we set `forecast = true` and `forecast_weeks = 4` to forecast 4 weeks into the future.
+Here we sample from the posterior distribution using the `uciwweihr_fit.jl` function.  First, we setup some presets, where we need to use `create_uciwweihr_model_params()` to get default parameters for the model.  Then we have an array where index 1 contains the posterior/prior predictive samples, index 2 contains the posterior/prior generated quantities samples, and index 3 contains the original sampled parameters for the model.  The difference here is that we set `forecast = true` and `forecast_weeks = 4` to forecast 4 weeks into the future.
 
 ``` @example tutorial_forecast
 data_hosp = df.hosp
@@ -42,17 +42,19 @@ data_wastewater = df.log_ww_conc
 obstimes = df.obstimes
 param_change_times = 1:7:length(obstimes) # Change every week
 priors_only = false
-n_samples = 50
+n_samples = 200
 forecast = true
 forecast_weeks = 4
 
+model_params = create_uciwweihr_model_params()
 samples = uciwweihr_fit(
     data_hosp,
     data_wastewater;
     obstimes,
     param_change_times,
     priors_only,
-    n_samples
+    n_samples,
+    params = model_params
 )
 model_output = uciwweihr_gq_pp(
     samples,
@@ -60,6 +62,7 @@ model_output = uciwweihr_gq_pp(
     data_wastewater;
     obstimes = obstimes,
     param_change_times = param_change_times,
+    params = model_params,
     forecast = forecast,
     forecast_weeks = forecast_weeks
 )

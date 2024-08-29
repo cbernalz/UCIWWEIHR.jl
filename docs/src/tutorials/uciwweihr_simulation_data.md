@@ -8,7 +8,7 @@ This package provides a way to also simulate data using the UCIWWEIHR ODE compar
 using UCIWWEIHR
 using Plots
 # Running simulation function with defaults
-params = create_uciwweihr_params()
+params = create_uciwweihr_sim_params()
 df = generate_simulation_data_uciwweihr(params)
 first(df, 5)
 ```
@@ -76,7 +76,7 @@ w_custom = vcat(
     range(0.28, stop=0.34, length=7*6),
     range(0.34, stop=0.28, length=7*2)
 )
-params = create_uciwweihr_params(
+params = create_uciwweihr_sim_params(
     time_points = length(rt_custom),
     Rt = rt_custom, 
     w = w_custom
