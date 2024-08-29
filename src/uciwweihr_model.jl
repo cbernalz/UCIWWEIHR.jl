@@ -8,34 +8,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 - `data_wastewater`: An array of pathogen genome concentration in localized wastewater data.  If this is not avaliable, the model used will be one that only uses hospital data.
 - `obstimes`: An array of timepoints for observed hosp/wastewater.
 - `param_change_times`: An array of timepoints where the parameters change.
-- `E_init_sd::Float64=50.0`: Standard deviation for the initial number of exposed individuals.
-- `E_init_mean::Int64=200`: Mean for the initial number of exposed individuals.
-- `I_init_sd::Float64=20.0`: Standard deviation for the initial number of infected individuals.
-- `I_init_mean::Int64=100`: Mean for the initial number of infected individuals.
-- `H_init_sd::Float64=5.0`: Standard deviation for the initial number of hospitalized individuals.
-- `H_init_mean::Int64=20`: Mean for the initial number of hospitalized individuals.
-- `gamma_sd::Float64=0.02`: Standard deviation for the rate of incubation.
-- `log_gamma_mean::Float64=log(1/4)`: Mean for the rate of incubation on log scale.
-- `nu_sd::Float64=0.02`: Standard deviation for the rate of leaving the infected compartment.
-- `log_nu_mean::Float64=log(1/7)`: Mean for the rate of leaving the infected compartment on the log scale.
-- `epsilon_sd::Float64=0.02`: Standard deviation for the rate of hospitalization recovery.
-- `log_epsilon_mean::Float64=log(1/5)`: Mean for the rate of hospitalization recovery on the log scale.
-- `rho_gene_sd::Float64=0.02`: Standard deviation for the rho prior.
-- `log_rho_gene_mean::Float64=log(0.011)`: Mean for the row prior on log scale.
-- `tau_sd::Float64=0.02`: Standard deviation for the scale/variation of the log scale data.
-- `log_tau_mean::Float64=log(0.1)`: Mean for the scale/variation of the log scale data on log scale itself.
-- `df_shape::Float64=2.0`: Shape parameter for the gamma distribution.
-- `df_scale::Float64=10.0`: Scale parameter for the gamma distribution.
-- `sigma_hosp_sd::Float64=50.0`: Standard deviation for the negative binomial distribution for hospital data.
-- `sigma_hosp_mean::Float64=500.0`: Mean for the negative binomial distribution for hospital data.
-- `Rt_init_sd::Float64=0.3`: Standard deviation for the initial value of the time-varying reproduction number.
-- `Rt_init_mean::Float64=0.2`: Mean for the initial value of the time-varying reproduction number.
-- `sigma_Rt_sd::Float64=0.2`: Standard deviation for normal prior of log time-varying reproduction number standard deviation.
-- `sigma_Rt_mean::Float64=-3.0`: Mean for normal prior of log time-varying reproduction number standard deviation.
-- `w_init_sd::Float64=0.1`: Standard deviation for the initial value of the time-varying hospitalization rate.
-- `w_init_mean::Float64=log(0.35)`: Mean for the initial value of the time-varying hospitalization rate.
-- `sigma_w_sd::Float64=0.2`: Standard deviation for normal prior of log time-varying hospitalization rate standard deviation.
-- `sigma_w_mean::Float64=-3.5`: Mean for normal prior of time-varying hospitalization rate standard deviation.
+- `params::uciwweihr_model_params`: A struct containing parameters for the model.
 
 """
 @model function uciwweihr_model(
@@ -43,20 +16,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_wastewater;
     obstimes,
     param_change_times,
-    E_init_sd::Float64=50.0, E_init_mean::Int64=200,
-    I_init_sd::Float64=20.0, I_init_mean::Int64=100,
-    H_init_sd::Float64=5.0, H_init_mean::Int64=20,
-    gamma_sd::Float64=0.02, log_gamma_mean::Float64=log(1/4),
-    nu_sd::Float64=0.02, log_nu_mean::Float64=log(1/7),
-    epsilon_sd::Float64=0.02, log_epsilon_mean::Float64=log(1/5),
-    rho_gene_sd::Float64=0.02, log_rho_gene_mean::Float64=log(0.011),
-    tau_sd::Float64=0.02, log_tau_mean::Float64=log(0.1),
-    df_shape::Float64=2.0, df_scale::Float64=10.0,
-    sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
-    Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
-    sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
-    w_init_sd::Float64=0.04, w_init_mean::Float64=logit(0.35),
-    sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5
+    params::uciwweihr_model_params
     )
 
         # Prelims
@@ -81,7 +41,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         # Parameters for wastewater
         rho_gene_non_centered ~ Normal() # gene detection rate
         tau_non_centered ~ Normal() # standard deviation for log scale data
-        df ~ Gamma(df_shape, df_scale)
+        df ~ Gamma(params.df_shape, params.df_scale)
         # Parameters for hospital
         sigma_hosp_non_centered ~ Normal()
         # Non-constant Rt
@@ -98,27 +58,27 @@ The defaults for this fuction will follow those of the default simulation in gen
 
         # TRANSFORMATIONS--------------------
         # Compartments
-        E_init = E_init_non_centered * E_init_sd + E_init_mean
-        I_init = I_init_non_centered * I_init_sd + I_init_mean
-        H_init = H_init_non_centered * H_init_sd + H_init_mean
+        E_init = E_init_non_centered * params.E_init_sd + params.E_init_mean
+        I_init = I_init_non_centered * params.I_init_sd + params.I_init_mean
+        H_init = H_init_non_centered * params.H_init_sd + params.H_init_mean
         # Parameters for compartments
-        gamma = exp(gamma_non_centered * gamma_sd + log_gamma_mean)
-        nu = exp(nu_non_centered * nu_sd + log_nu_mean)
-        epsilon = exp(epsilon_non_centered * epsilon_sd + log_epsilon_mean)
+        gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
+        nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
+        epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
         # Parameters for wastewater
-        rho_gene = exp(rho_gene_non_centered * rho_gene_sd + log_rho_gene_mean)
-        tau = exp(tau_non_centered * tau_sd + log_tau_mean)
+        rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
+        tau = exp(tau_non_centered * params.tau_sd + params.log_tau_mean)
         # Parameters for hospital
-        sigma_hosp = clamp.(sigma_hosp_non_centered * sigma_hosp_sd + sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)
+        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)
         # Non-constant Rt
-        Rt_init = exp(Rt_init_non_centered * Rt_init_sd + Rt_init_mean)
-        sigma_Rt = exp(sigma_Rt_non_centered * sigma_Rt_sd + sigma_Rt_mean)
+        Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
+        sigma_Rt = exp(sigma_Rt_non_centered * params.sigma_Rt_sd + params.sigma_Rt_mean)
         alpha_t_no_init = exp.(log(Rt_init) .+ cumsum(log_Rt_steps_non_centered) * sigma_Rt) * nu
         alpha_init = Rt_init * nu
         alpha_t = vcat(alpha_init, alpha_t_no_init)
         # Non-constant Hosp Prob w
-        w_init_logit = w_init_non_centered * w_init_sd + w_init_mean
-        sigma_w = exp(sigma_w_non_centered * sigma_w_sd + sigma_w_mean)
+        w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
+        sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
         logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
         w_init = logistic(w_init_logit)
         w_no_init = logistic.(logit_w_no_init)
@@ -195,17 +155,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_hosp;
     obstimes,
     param_change_times,
-    E_init_sd::Float64=50.0, E_init_mean::Int64=200,
-    I_init_sd::Float64=20.0, I_init_mean::Int64=100,
-    H_init_sd::Float64=5.0, H_init_mean::Int64=20,
-    gamma_sd::Float64=0.02, log_gamma_mean::Float64=log(1/4),
-    nu_sd::Float64=0.02, log_nu_mean::Float64=log(1/7),
-    epsilon_sd::Float64=0.02, log_epsilon_mean::Float64=log(1/5),
-    sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
-    Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
-    sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
-    w_init_sd::Float64=0.04, w_init_mean::Float64=logit(0.35),
-    sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5
+    params::uciwweihr_model_params
     )
     
     
@@ -244,24 +194,24 @@ The defaults for this fuction will follow those of the default simulation in gen
     
         # TRANSFORMATIONS--------------------
         # Compartments
-        E_init = E_init_non_centered * E_init_sd + E_init_mean
-        I_init = I_init_non_centered * I_init_sd + I_init_mean
-        H_init = H_init_non_centered * H_init_sd + H_init_mean
+        E_init = E_init_non_centered * params.E_init_sd + params.E_init_mean
+        I_init = I_init_non_centered * params.I_init_sd + params.I_init_mean
+        H_init = H_init_non_centered * params.H_init_sd + params.H_init_mean
         # Parameters for compartments
-        gamma = exp(gamma_non_centered * gamma_sd + log_gamma_mean)
-        nu = exp(nu_non_centered * nu_sd + log_nu_mean)
-        epsilon = exp(epsilon_non_centered * epsilon_sd + log_epsilon_mean)
+        gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
+        nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
+        epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
         # Parameters for hospital
-        sigma_hosp = clamp.(sigma_hosp_non_centered * sigma_hosp_sd + sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)
+        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)
         # Non-constant Rt
-        Rt_init = exp(Rt_init_non_centered * Rt_init_sd + Rt_init_mean)
-        sigma_Rt = exp(sigma_Rt_non_centered * sigma_Rt_sd + sigma_Rt_mean)
+        Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
+        sigma_Rt = exp(sigma_Rt_non_centered * params.sigma_Rt_sd + params.sigma_Rt_mean)
         alpha_t_no_init = exp.(log(Rt_init) .+ cumsum(log_Rt_steps_non_centered) * sigma_Rt) * nu
         alpha_init = Rt_init * nu
         alpha_t = vcat(alpha_init, alpha_t_no_init)
         # Non-constant Hosp Prob w
-        w_init_logit = w_init_non_centered * w_init_sd + w_init_mean
-        sigma_w = exp(sigma_w_non_centered * sigma_w_sd + sigma_w_mean)
+        w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
+        sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
         logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
         w_init = logistic(w_init_logit)
         w_no_init = logistic.(logit_w_no_init)

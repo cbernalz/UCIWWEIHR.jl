@@ -1,7 +1,7 @@
 """
     uciwweihr_sim_params
 
-Struct for holding parameters used in the UCIWWEIHR ODE compartmental model simulation.  Use `create_uciwweihr_params` to create an instance of this struct.
+Struct for holding parameters used in the UCIWWEIHR ODE compartmental model simulation.  Use `create_uciwweihr_sim_params` to create an instance of this struct.
 
 # Fields
 - `time_points::Int64`: Number of time points for the simulation.
@@ -45,7 +45,7 @@ struct uciwweihr_sim_params
 end
 
 """
-    create_uciwweihr_params(; kwargs...)
+create_uciwweihr_sim_params(; kwargs...)
 
 Creates a `uciwweihr_sim_params` struct with the option to either use a predetermined `Rt` and `w` or generate them as random walks.
 
@@ -55,7 +55,7 @@ Creates a `uciwweihr_sim_params` struct with the option to either use a predeter
 # Returns
 - `params::uciwweihr_sim_params`: A struct with simulation parameters.
 """
-function create_uciwweihr_params(; time_points::Int64=150, seed::Int64=1,
+function create_uciwweihr_sim_params(; time_points::Int64=150, seed::Int64=1,
                                   E_init::Int64=200, I_init::Int64=100, H_init::Int64=20,
                                   gamma::Float64=1/4, nu::Float64=1/7, epsilon::Float64=1/5,
                                   rho_gene::Float64=0.011, tau::Float64=0.1, df::Float64=29.0,

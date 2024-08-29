@@ -30,7 +30,7 @@ w_custom = vcat(
     range(0.28, stop=0.34, length=7*6),
     range(0.34, stop=0.28, length=7*2)
 )
-params = create_uciwweihr_params(
+params = create_uciwweihr_sim_params(
     time_points = length(rt_custom),
     Rt = rt_custom, 
     w = w_custom
@@ -41,7 +41,7 @@ first(df, 5)
 
 ## 2. Sampling from the Posterior Distribution and Posterior Predictive Distribution.
 
-Here we sample from the posterior distribution using the `uciwweihr_fit.jl` function.  First, we setup some presets, then have an array where index 1 contains the posterior/prior predictive samples, index 2 contains the posterior/prior generated quantities samples, and index 3 contains the original sampled parameters for the model.
+Here we sample from the posterior distribution using the `uciwweihr_fit.jl` function.  First, we setup some presets, where we need to use `create_uciwweihr_model_params()` to get default parameters for the model.  Then we have an array where index 1 contains the posterior/prior predictive samples, index 2 contains the posterior/prior generated quantities samples, and index 3 contains the original sampled parameters for the model.
 
 ``` @example tutorial
 data_hosp = df.hosp
@@ -49,15 +49,17 @@ data_wastewater = df.log_ww_conc
 obstimes = df.obstimes
 param_change_times = 1:7:length(obstimes) # Change every week
 priors_only = false
-n_samples = 50
+n_samples = 200
 
+model_params = create_uciwweihr_model_params()
 samples = uciwweihr_fit(
     data_hosp,
     data_wastewater;
     obstimes,
     param_change_times,
     priors_only,
-    n_samples
+    n_samples,
+    params = model_params
 )
 model_output = uciwweihr_gq_pp(
     samples,
@@ -65,6 +67,7 @@ model_output = uciwweihr_gq_pp(
     data_wastewater;
     obstimes = obstimes,
     param_change_times = param_change_times,
+    params = model_params
 )
 
 first(model_output[1][:,1:5], 5)
