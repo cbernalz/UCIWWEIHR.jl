@@ -99,7 +99,6 @@ uciwweihr_visualizer(
     actual_rt_vals = df_ext.rt, 
     actual_w_t = df_ext.wt, 
     actual_non_time_varying_vals = params,
-    forecast_weeks = forecast_weeks,
     bayes_dist_type = "Posterior",
     save_plots = true,
     plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots1",
