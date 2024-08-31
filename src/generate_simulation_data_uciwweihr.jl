@@ -69,8 +69,8 @@ function create_uciwweihr_sim_params(; time_points::Int64=150, seed::Int64=1,
     rt_init = isa(Rt, Float64) ? Rt : Rt[1]
     w_init = isa(w, Float64) ? w : w[1]
 
-    Rt_t = isa(Rt, Float64) ? generate_random_walk(time_points, sigma_Rt, Rt) : Rt
-    w_t = isa(w, Float64) ? generate_logit_normal_random_walk(time_points, sigma_w, w) : w
+    Rt_t = isa(Rt, Float64) ? generate_random_walk(time_points, sigma_Rt, Rt, seed) : Rt
+    w_t = isa(w, Float64) ? generate_logit_normal_random_walk(time_points, sigma_w, w, seed) : w
 
     return uciwweihr_sim_params(time_points, seed, E_init, I_init, H_init, gamma, nu, epsilon,
                                 rho_gene, tau, df, sigma_hosp, Rt_t, sigma_Rt, w_t, sigma_w, rt_init, w_init)
@@ -89,7 +89,8 @@ Generates a random walk time series.
 # Returns
 - `walk::Vector{Float64}`: Generated random walk.
 """
-function generate_random_walk(time_points::Int64, sigma::Float64, init_val::Float64)
+function generate_random_walk(time_points::Int64, sigma::Float64, init_val::Float64, seed)
+    Random.seed!(seed)
     walk = Float64[]
     log_val = log(init_val)
     for _ in 1:time_points
@@ -112,7 +113,8 @@ Generates a logit-normal random walk time series.
 # Returns
 - `walk::Vector{Float64}`: Generated random walk on the probability scale.
 """
-function generate_logit_normal_random_walk(time_points::Int64, sigma::Float64, init_val::Float64)
+function generate_logit_normal_random_walk(time_points::Int64, sigma::Float64, init_val::Float64, seed)
+    Random.seed!(seed)
     walk = Float64[]
     logit_val = logit(init_val)
     for _ in 1:time_points
@@ -134,6 +136,7 @@ Generates simulation data for the UCIWWEIHR ODE compartmental model.
 - `df::DataFrame`: A DataFrame containing the simulation data with columns `obstimes`, `log_ww_conc`, `hosp`, `rt`, and `wt`.
 """
 function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
+    Random.seed!(params.seed)
     time_points = params.time_points
 
     alpha_t = params.Rt .* params.nu

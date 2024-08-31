@@ -80,14 +80,22 @@ first(model_output[3][:,1:5], 5)
 
 ## 3. MCMC Diagnostic Plots/Results Along with Posterior Predictive Distribution.
 
-We can again look at model diagnostics, posterior distribution of time or non-time varying parameters, and the posterior predictive distribution extended for forecasting.
+We can again look at model diagnostics, posterior distribution of time or non-time varying parameters, and the posterior predictive distribution extended for forecasting.  We can also add certain parameters to ensure priors will be plotted alongside their corresponding posteriors.
 
 ```@example tutorial_forecast
 uciwweihr_visualizer(
+    data_hosp, 
+    data_wastewater,
+    forecast_weeks,
+    obstimes,
+    param_change_times,
+    2024,
+    forecast,
+    model_params;
     pp_samples = model_output[1],
     gq_samples = model_output[2],
-    data_hosp = df_ext.hosp,
-    data_wastewater = df_ext.log_ww_conc, 
+    obs_data_hosp = df_ext.hosp,
+    obs_data_wastewater = df_ext.log_ww_conc, 
     actual_rt_vals = df_ext.rt, 
     actual_w_t = df_ext.wt, 
     actual_non_time_varying_vals = params,
