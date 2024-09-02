@@ -123,15 +123,16 @@ The defaults for this fuction will follow those of the default simulation in gen
         for t in obstimes_hosp
             if haskey(obstime_to_index, t)
                 index = convert(Int64, obstime_to_index[t])
-                push!(h_sol_vals, sol_hosp[index])
-                data_hosp[index] ~ NegativeBinomial2(sol_hosp[index], sigma_hosp)
+                sol_hosp_value = Float64(sol_hosp[index])
+                push!(h_sol_vals, sol_hosp_value)
+                data_hosp[index] ~ NegativeBinomial2(sol_hosp_value, sigma_hosp)
             end
         end
 
         for t in obstimes_wastewater
             if haskey(obstime_to_index, t)
                 index = convert(Int64, obstime_to_index[t])
-                log_genes_mean = log(I_comp_sol[index]) + log(rho_gene)
+                log_genes_mean = log(Float64(I_comp_sol[index])) + log(rho_gene)
                 push!(log_genes_mean_vals, log_genes_mean)
                 data_wastewater[index] ~ GeneralizedTDist(log_genes_mean, tau, df)
             end
