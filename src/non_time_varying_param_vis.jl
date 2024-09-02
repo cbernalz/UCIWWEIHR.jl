@@ -81,11 +81,12 @@ function non_time_varying_param_vis(
                                 legend = :topright)
                 if !isnothing(actual_non_time_varying_vals)
                     actual_param_value = round(getfield(actual_non_time_varying_vals, Symbol(curr_param)), digits=3)
-                    scatter!(plt, [actual_param_value], [0.002], 
-                            label = "Actual Value: $actual_param_value", 
-                            color = :red,
-                            markersize = 5,
-                            marker = :circle)
+                    vline!(plt, 
+                            [actual_param_value],
+                            label = "Actual Value: $actual_param_value",
+                            color = :red, 
+                            linewidth = 3,
+                            linestyle=:dash)
                 end
                 
                 push!(non_time_varying_plots, plt) 
@@ -183,11 +184,12 @@ function non_time_varying_param_vis(
                                 legend = :topright)
                 if !isnothing(actual_non_time_varying_vals)
                     actual_param_value = round(getfield(actual_non_time_varying_vals, Symbol(curr_param)), digits=3)
-                    scatter!(plt, [actual_param_value], [0.002], 
-                            label = "Actual Value: $actual_param_value", 
-                            color = :red,
-                            markersize = 5,
-                            marker = :circle)
+                    vline!(plt, 
+                            [actual_param_value],
+                            label = "Actual Value: $actual_param_value",
+                            color = :red, 
+                            linewidth = 3,
+                            linestyle=:dash)
                 end
                 
                 push!(non_time_varying_plots, plt) 
@@ -247,12 +249,12 @@ function non_time_varying_param_vis(;
                                 legend = :topright)
                 if !isnothing(actual_non_time_varying_vals)
                     actual_param_value = round(getfield(actual_non_time_varying_vals, Symbol(curr_param)), digits=3)
-                    scatter!(plt, Float64[actual_param_value], [0.002], 
-                            label = "Actual Value : $actual_param_value", 
-                            color = :red,
-                            markersize = 5,
-                            marker = :circle,
-                            legendfont = font(8))
+                    vline!(plt, 
+                            [actual_param_value],
+                            label = "Actual Value: $actual_param_value",
+                            color = :red, 
+                            linewidth = 3,
+                            linestyle=:dash)
                 end
                 push!(non_time_varying_plots, plt) 
             end
