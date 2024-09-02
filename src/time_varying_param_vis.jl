@@ -6,7 +6,8 @@ Used in the `uciwweihr_visualizer` to create visuals for time varying parameters
 - `build_params::uciwweihr_model_params`: A struct of model parameters used to build `gq_samples`, used only if user desired priors next to posteriors.
 - `data_hosp`: Hospitalization data, used only if user desired priors next to posteriors.
 - `data_wastewater`: Wastewater data, if model does not use this do not specify this, if user desires priors next to plot (do not specify if you do not want prior plots).
-- `obstimes`: An array of time points for the data, used only if user desired priors next to posteriors.
+- `obstimes_hosp`: An array of time points for hospital data, used only if user desired priors next to posteriors.
+- `obstimes_wastewater`: An array of time points for wastewater data, used only if user desired priors next to posteriors.
 - `param_change_times`: An array of time points where the parameters change, used only if user desired priors next to posteriors.
 - `seed`: An integer to set the seed for reproducibility, used only if user desired priors next to posteriors.
 - `forecast`: A boolean to indicate if user wants to forecast, used only if user desired priors next to posteriors.
@@ -23,7 +24,7 @@ Used in the `uciwweihr_visualizer` to create visuals for time varying parameters
 function time_varying_param_vis(
     build_params::uciwweihr_model_params,
     data_hosp, 
-    obstimes,
+    obstimes_hosp,
     param_change_times,
     seed,
     forecast,
@@ -38,8 +39,8 @@ function time_varying_param_vis(
     )
     println("Generating time varying parameter plots (with priors and w/out wastewater)...")
     samples = uciwweihr_fit(
-        data_hosp;
-        obstimes = obstimes,
+        data_hosp,
+        obstimes_hosp;
         param_change_times = param_change_times,
         priors_only = true,
         seed = seed,
@@ -47,8 +48,8 @@ function time_varying_param_vis(
         )
     prior_model_output = uciwweihr_gq_pp(
         samples,
-        data_hosp;
-        obstimes,
+        data_hosp,
+        obstimes_hosp;
         param_change_times,
         seed = seed,
         params = build_params,
@@ -157,7 +158,8 @@ function time_varying_param_vis(
     build_params::uciwweihr_model_params,
     data_hosp, 
     data_wastewater,
-    obstimes,
+    obstimes_hosp,
+    obstimes_wastewater,
     param_change_times,
     seed,
     forecast,
@@ -173,8 +175,9 @@ function time_varying_param_vis(
     println("Generating time varying parameter plots (with priors and with wastewater)...")
     samples = uciwweihr_fit(
         data_hosp,
-        data_wastewater;
-        obstimes = obstimes,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater;
         param_change_times = param_change_times,
         priors_only = true,
         seed = seed,
@@ -183,8 +186,9 @@ function time_varying_param_vis(
     prior_model_output = uciwweihr_gq_pp(
         samples,
         data_hosp,
-        data_wastewater;
-        obstimes,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater;
         param_change_times,
         seed = seed,
         params = build_params,

@@ -41,12 +41,13 @@ first(df, 5)
 
 ## 2. Sampling from the Posterior Distribution and Posterior Predictive Distribution.
 
-Here we sample from the posterior distribution using the `uciwweihr_fit.jl` function.  First, we setup some presets, where we need to use `create_uciwweihr_model_params()` to get default parameters for the model.  Then we have an array where index 1 contains the posterior/prior predictive samples, index 2 contains the posterior/prior generated quantities samples, and index 3 contains the original sampled parameters for the model.
+Here we sample from the posterior distribution using the `uciwweihr_fit.jl` function.  First, we setup some presets, where we need to use `create_uciwweihr_model_params()` to get default parameters for the model.  Then we have an array where index 1 contains the posterior/prior predictive samples, index 2 contains the posterior/prior generated quantities samples, and index 3 contains the original sampled parameters for the model.  Again, we can allow misalignment of hospital and wastewater data's observed times.  For this tutorial, we use the same observed points.
 
 ``` @example tutorial
 data_hosp = df.hosp
 data_wastewater = df.log_ww_conc
-obstimes = df.obstimes
+obstimes_hosp = df.obstimes
+obstimes_wastewater = df.obstimes
 param_change_times = 1:7:length(obstimes) # Change every week
 priors_only = false
 n_samples = 200
@@ -56,8 +57,9 @@ forecast_weeks = 0
 model_params = create_uciwweihr_model_params()
 samples = uciwweihr_fit(
     data_hosp,
-    data_wastewater;
-    obstimes,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater;
     param_change_times,
     priors_only,
     n_samples,
@@ -66,8 +68,9 @@ samples = uciwweihr_fit(
 model_output = uciwweihr_gq_pp(
     samples,
     data_hosp,
-    data_wastewater;
-    obstimes = obstimes,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater;
     param_change_times = param_change_times,
     params = model_params
 )
@@ -92,7 +95,8 @@ uciwweihr_visualizer(
     data_hosp, 
     data_wastewater,
     forecast_weeks,
-    obstimes,
+    obstimes_hosp,
+    obstimes_wastewater,
     param_change_times,
     2024,
     forecast,

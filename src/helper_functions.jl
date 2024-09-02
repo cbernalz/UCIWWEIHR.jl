@@ -55,6 +55,15 @@ function generate_names(vn_str::String, val::AbstractArray{<:AbstractArray})
     return results
 end
 
+function generate_names(vn_str::String, val::Vector{Any})
+    # Added by Christian Bernal Zelaya.
+    results = String[]
+    for idx in 1:length(val)
+        push!(results, "$(vn_str)[$idx]")
+    end
+    return results
+end
+
 flatten(val::Real) = [val;]
 function flatten(val::AbstractArray{<:Real})
     return mapreduce(vcat, CartesianIndices(val)) do i
@@ -66,6 +75,15 @@ function flatten(val::AbstractArray{<:AbstractArray})
         flatten(val[i])
     end
 end
+function flatten(val::Vector{Any})
+    # Added by Christian Bernal Zelaya.
+    results = []
+    for item in val
+        append!(results, flatten(item))
+    end
+    return results
+end
+
 
 function vectup2chainargs(ts::AbstractVector{<:NamedTuple})
     ks = keys(first(ts))

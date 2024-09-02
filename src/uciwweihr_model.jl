@@ -6,15 +6,17 @@ The defaults for this fuction will follow those of the default simulation in gen
 # Arguments
 - `data_hosp`: An array of hospital data.
 - `data_wastewater`: An array of pathogen genome concentration in localized wastewater data.  If this is not avaliable, the model used will be one that only uses hospital data.
-- `obstimes`: An array of timepoints for observed hosp/wastewater.
+- `obstimes_hosp`: An array of timepoints for observed hospital data.
+- `obstimes_wastewater`: An array of timepoints for observed wastewater data.
 - `param_change_times`: An array of timepoints where the parameters change.
 - `params::uciwweihr_model_params`: A struct containing parameters for the model.
 
 """
 @model function uciwweihr_model(
     data_hosp,
-    data_wastewater;
-    obstimes,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater;
     param_change_times,
     params::uciwweihr_model_params
     )
@@ -25,7 +27,8 @@ The defaults for this fuction will follow those of the default simulation in gen
 
 
         # Calculate number of observed datapoints timepoints
-        l_obs = length(obstimes)
+        l_obs_hosp = length(obstimes_hosp)
+        l_obs_ww = length(obstimes_wastewater)
         l_param_change_times = length(param_change_times)
 
 
@@ -86,7 +89,10 @@ The defaults for this fuction will follow those of the default simulation in gen
 
 
         # ODE SETUP--------------------------
-        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, obstimes[end]), ones(5))
+        max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
+        obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
+        obstimes = sort(obstimes)
+        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, max_obstime_end), ones(5))
         function param_affect_beta!(integrator)
             ind_t = searchsortedfirst(param_change_times, integrator.t) # Find the index of param_change_times that contains the current timestep
             integrator.p[1] = alpha_t_no_init[ind_t] # Replace alpha with a new value from alpha_t_no_init
@@ -106,22 +112,32 @@ The defaults for this fuction will follow those of the default simulation in gen
             return
         end
         sol_array = Array(sol)
-        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
+        I_comp_sol = clamp.(sol_array[2, 2:end], 1, 1e10)
+        sol_hosp = clamp.(sol_array[3, 2:end], 1, 1e10)
+        obstime_to_index = Dict(i => t for (i, t) in enumerate(obstimes))
 
+        # Likelihood -------------------------
+        h_sol_vals = Float64[]
+        log_genes_mean_vals = Float64[]
 
-        # W-W means--------------------------
-        # E - 1 // I - 2 // H - 3 // R - 4
-        log_genes_mean = log.(I_comp_sol) .+ log(rho_gene) # first entry is the initial conditions, we want 2:end
-        # Likelihood calculations------------
-        sol_hosp = clamp.(sol_array[3,2:end], 1, 1e10)
-        for i in 1:l_obs
-            data_wastewater[i] ~ GeneralizedTDist(log_genes_mean[i], tau, df)
-            data_hosp[i] ~ NegativeBinomial2(sol_hosp[i], sigma_hosp)
+        for t in obstimes_hosp
+            if haskey(obstime_to_index, t)
+                index = convert(Int64, obstime_to_index[t])
+                push!(h_sol_vals, sol_hosp[index])
+                data_hosp[index] ~ NegativeBinomial2(sol_hosp[index], sigma_hosp)
+            end
         end
 
+        for t in obstimes_wastewater
+            if haskey(obstime_to_index, t)
+                index = convert(Int64, obstime_to_index[t])
+                log_genes_mean = log(I_comp_sol[index]) + log(rho_gene)
+                push!(log_genes_mean_vals, log_genes_mean)
+                data_wastewater[index] ~ GeneralizedTDist(log_genes_mean, tau, df)
+            end
+        end
 
         # Generated quantities
-        H_comp = sol_array[3, :]
         rt_vals = alpha_t_no_init / nu
         rt_init = alpha_init / nu
         w_t = w_no_init
@@ -140,8 +156,8 @@ The defaults for this fuction will follow those of the default simulation in gen
             tau = tau,
             df = df,
             sigma_hosp = sigma_hosp,
-            H = H_comp,
-            log_genes_mean = log_genes_mean,
+            H = h_sol_vals,
+            log_genes_mean = log_genes_mean_vals,
             rt_init = rt_init,
             w_init = w_init
         )
@@ -152,8 +168,8 @@ The defaults for this fuction will follow those of the default simulation in gen
 
 
 @model function uciwweihr_model(
-    data_hosp;
-    obstimes,
+    data_hosp,
+    obstimes_hosp;
     param_change_times,
     params::uciwweihr_model_params
     )
@@ -165,7 +181,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     
     
         # Calculate number of observed datapoints timepoints
-        l_obs = length(obstimes)
+        l_obs = length(obstimes_hosp)
         l_param_change_times = length(param_change_times)
     
     
@@ -219,7 +235,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     
     
         # ODE SETUP--------------------------
-        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, obstimes[end]), ones(5))
+        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, obstimes_hosp[end]), ones(5))
         function param_affect_beta!(integrator)
             ind_t = searchsortedfirst(param_change_times, integrator.t) # Find the index of param_change_times that contains the current timestep
             integrator.p[1] = alpha_t_no_init[ind_t] # Replace alpha with a new value from alpha_t_no_init
@@ -231,8 +247,8 @@ The defaults for this fuction will follow those of the default simulation in gen
         extra_ode_precision = false
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); callback=param_callback, saveat=obstimes, save_start=true, 
-                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes[end]))
+        sol = solve(prob, Tsit5(); callback=param_callback, saveat=obstimes_hosp, save_start=true, 
+                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes_hosp[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
             Turing.@addlogprob! -Inf
@@ -250,7 +266,6 @@ The defaults for this fuction will follow those of the default simulation in gen
     
     
         # Generated quantities
-        H_comp = sol_array[3, :]
         rt_vals = alpha_t_no_init / nu
         rt_init = alpha_init / nu
         w_t = w_no_init

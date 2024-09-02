@@ -20,26 +20,28 @@ The defaults for this fuction will follow those of the default simulation in gen
 """
 function uciwweihr_fit(
     data_hosp,
-    data_wastewater;
-    obstimes,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater;
     param_change_times,
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1, seed::Int64=2024,
     params::uciwweihr_model_params
     )
     println("Using uciwweihr_model with wastewater!!!")
-    obstimes = convert(Vector{Float64}, obstimes)
+    obstimes_hosp = convert(Vector{Float64}, obstimes_hosp)
+    obstimes_wastewater = convert(Vector{Float64}, obstimes_wastewater)
     param_change_times = convert(Vector{Float64}, param_change_times)
 
 
     my_model = uciwweihr_model(
         data_hosp, 
-        data_wastewater;
-        obstimes, 
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater;
         param_change_times,
         params
     )
-
 
     # Sample Posterior
     if priors_only
@@ -53,21 +55,21 @@ function uciwweihr_fit(
 end
 
 function uciwweihr_fit(
-    data_hosp;
-    obstimes,
+    data_hosp,
+    obstimes_hosp;
     param_change_times,
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1, seed::Int64=2024,
     params::uciwweihr_model_params
     )
     println("Using uciwweihr_model without wastewater!!!")
-    obstimes = convert(Vector{Float64}, obstimes)
+    obstimes_hosp = convert(Vector{Float64}, obstimes_hosp)
     param_change_times = convert(Vector{Float64}, param_change_times)
 
 
     my_model = uciwweihr_model(
-        data_hosp;
-        obstimes, 
+        data_hosp,
+        obstimes_hosp; 
         param_change_times,
         params
     )
