@@ -4,6 +4,15 @@
 Used in the `uciwweihr_visualizer` to create visuals for non-time varying parameters.
 
 # Arguments
+- `build_params::uciwweihr_model_params`: A struct of model parameters used to build `gq_samples`, used only if user desired priors next to posteriors.
+- `data_hosp`: Hospitalization data, used only if user desired priors next to posteriors.
+- `data_wastewater`: Wastewater data, if model does not use this do not specify this, if user desires priors next to plot (do not specify if you do not want prior plots).
+- `obstimes_hosp`: An array of time points for hospital data, used only if user desired priors next to posteriors.
+- `obstimes_wastewater`: An array of time points for wastewater data, used only if user desired priors next to posteriors.
+- `param_change_times`: An array of time points where the parameters change, used only if user desired priors next to posteriors.
+- `seed`: An integer to set the seed for reproducibility, used only if user desired priors next to posteriors.
+- `forecast`: A boolean to indicate if user wants to forecast, used only if user desired priors next to posteriors.
+- `forecast_weeks`: An integer to indicate the number of weeks to forecast, used only if user desired priors next to posteriors.
 - `gq_samples`: Generated quantities samples from the posterior/prior distribution, index 2 in uciwweihr_gq_pp output.
 - `desired_params`: A list of lists of parameters to visualize. Each list will be visualized in a separate plot. Default is any parameter not in this list : ["alpha_t", "w_t", "rt_vals", "log_genes_mean", "H"]
 - `bayes_dist_type`: A string to indicate if user is using Posterior or Prior distribution. Default is "Posterior".
@@ -14,7 +23,7 @@ Used in the `uciwweihr_visualizer` to create visuals for non-time varying parame
 function non_time_varying_param_vis(
     build_params::uciwweihr_model_params,
     data_hosp, 
-    obstimes,
+    obstimes_hosp,
     param_change_times,
     seed,
     forecast,
@@ -28,8 +37,8 @@ function non_time_varying_param_vis(
     )
     println("Generating non-time varying parameter plots (with priors and w/out wastewater)...")
     samples = uciwweihr_fit(
-        data_hosp;
-        obstimes = obstimes,
+        data_hosp,
+        obstimes_hosp;
         param_change_times = param_change_times,
         priors_only = true,
         seed = seed,
@@ -37,8 +46,8 @@ function non_time_varying_param_vis(
         )
     prior_model_output = uciwweihr_gq_pp(
         samples,
-        data_hosp;
-        obstimes,
+        data_hosp,
+        obstimes_hosp;
         param_change_times,
         seed = seed,
         params = build_params,
@@ -96,7 +105,7 @@ function non_time_varying_param_vis(
                             size = (1500, 1500))
         display(final_plot)
         if save_plots
-            savefig(final_plot, plot_name_to_save)
+            save_plots_to_docs(final_plot, plot_name_to_save)
         end
     else
         println("NO NON-TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")
@@ -111,7 +120,8 @@ function non_time_varying_param_vis(
     build_params::uciwweihr_model_params,
     data_hosp, 
     data_wastewater,
-    obstimes,
+    obstimes_hosp,
+    obstimes_wastewater,
     param_change_times,
     seed,
     forecast,
@@ -126,8 +136,9 @@ function non_time_varying_param_vis(
     println("Generating non-time varying parameter plots (with priors and with wastewater)...")
     samples = uciwweihr_fit(
         data_hosp,
-        data_wastewater;
-        obstimes = obstimes,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater;
         param_change_times = param_change_times,
         priors_only = true,
         seed = seed,
@@ -136,8 +147,9 @@ function non_time_varying_param_vis(
     prior_model_output = uciwweihr_gq_pp(
         samples,
         data_hosp,
-        data_wastewater;
-        obstimes,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater;
         param_change_times,
         seed = seed,
         params = build_params,
@@ -195,7 +207,7 @@ function non_time_varying_param_vis(
                             size = (1500, 1500))
         display(final_plot)
         if save_plots
-            savefig(final_plot, plot_name_to_save)
+            save_plots_to_docs(final_plot, plot_name_to_save)
         end
     else
         println("NO NON-TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")
