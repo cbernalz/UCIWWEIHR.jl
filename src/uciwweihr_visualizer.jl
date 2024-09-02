@@ -33,6 +33,121 @@ Default visualizer for results of the UCIWWEIHR model, includes posterior/priors
 - `plot_name_to_save_non_time_varying`: A string to indicate the name of the plot to save for non-time varying parameters. Default is "mcmc_nontime_varying_parameter_plots".
 - `plot_name_to_save_pred_param`: A string to indicate the name of the plot to save for posterior (or prior) predictive parameter results. Default is "mcmc_pred_parameter_plots".
 """
+
+function uciwweihr_visualizer(
+    data_hosp, 
+    forecast_weeks,
+    obstimes,
+    param_change_times,
+    seed,
+    forecast,
+    build_params::uciwweihr_model_params;
+    pp_samples = nothing,
+    gq_samples = nothing,
+    obs_data_hosp = nothing,
+    obs_data_wastewater = nothing,
+    actual_rt_vals = nothing,
+    actual_w_t = nothing,
+    actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
+    desired_params = [
+        ["E_init", "I_init", "H_init"],
+        ["gamma", "nu", "epsilon"],
+        ["rt_init", "w_init"],
+        ["rho_gene", "tau", "df"],
+        ["sigma_hosp"]
+    ],
+    time_varying_params = ["rt_vals", "w_t"],
+    var_to_pred = ["data_wastewater", "data_hosp"],
+    quantiles = [0.5, 0.8, 0.95],
+    bayes_dist_type = nothing,
+    mcmcdaigs::Bool = true,
+    time_varying_plots::Bool = true,
+    non_time_varying_plots::Bool = true,
+    pred_param_plots::Bool = true,
+    save_plots::Bool = false,
+    plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots",
+    plot_name_to_save_time_varying = "mcmc_time_varying_parameter_plots",
+    plot_name_to_save_non_time_varying = "mcmc_nontime_varying_parameter_plots",
+    plot_name_to_save_pred_param = "mcmc_pred_parameter_plots"
+    )
+    # Visualizer without wastewater data
+    # Posterior/Prior Samples
+    ## MCMC evaluation
+    if mcmcdaigs
+        mcmcdiags_vis(
+            gq_samples = gq_samples, 
+            desired_params = desired_params, 
+            actual_non_time_varying_vals = actual_non_time_varying_vals,
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_mcmcdiag
+        )
+    else
+        println("MCMC Diagnostics Plots are not requested.")
+    end
+
+    if time_varying_plots
+        time_varying_param_vis(
+            build_params,
+            data_hosp, 
+            obstimes,
+            param_change_times,
+            seed,
+            forecast,
+            forecast_weeks;
+            gq_samples = gq_samples,
+            actual_rt_vals = actual_rt_vals,
+            actual_w_t = actual_w_t,
+            time_varying_params = time_varying_params,
+            quantiles = quantiles,
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_time_varying
+        )
+    else
+        println("MCMC time varying parameter results are not requested.")
+    end
+
+    if non_time_varying_plots
+        non_time_varying_param_vis(
+            build_params,
+            data_hosp, 
+            obstimes,
+            param_change_times,
+            seed,
+            forecast,
+            forecast_weeks;
+            gq_samples = gq_samples,
+            desired_params = desired_params,
+            bayes_dist_type = bayes_dist_type,
+            actual_non_time_varying_vals = actual_non_time_varying_vals,
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_non_time_varying
+        )
+    else
+        println("MCMC non-time varying parameter results are not requested.")
+    end
+    if pred_param_plots
+        predictive_param_vis(
+            pp_samples = pp_samples,
+            data_wastewater = obs_data_wastewater,
+            data_hosp = obs_data_hosp,
+            forecast_weeks = forecast_weeks,
+            vars_to_pred = var_to_pred, 
+            quantiles = quantiles,
+            bayes_dist_type = bayes_dist_type,
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_pred_param
+        )
+    else
+        println("MCMC posterior (or prior) predictive parameter results are not requested.")
+    end
+
+
+
+end
+
+
+
+
 function uciwweihr_visualizer(
     data_hosp, 
     data_wastewater,
@@ -109,6 +224,14 @@ function uciwweihr_visualizer(
 
     if non_time_varying_plots
         non_time_varying_param_vis(
+            build_params,
+            data_hosp, 
+            data_wastewater,
+            obstimes,
+            param_change_times,
+            seed,
+            forecast,
+            forecast_weeks;
             gq_samples = gq_samples,
             desired_params = desired_params,
             bayes_dist_type = bayes_dist_type,
@@ -138,6 +261,7 @@ function uciwweihr_visualizer(
 
 
 end
+
 
 
 
