@@ -105,7 +105,7 @@ function non_time_varying_param_vis(
                             size = (1500, 1500))
         display(final_plot)
         if save_plots
-            savefig(final_plot, plot_name_to_save)
+            save_plots_to_docs(final_plot, plot_name_to_save)
         end
     else
         println("NO NON-TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")
@@ -207,7 +207,7 @@ function non_time_varying_param_vis(
                             size = (1500, 1500))
         display(final_plot)
         if save_plots
-            savefig(final_plot, plot_name_to_save)
+            save_plots_to_docs(final_plot, plot_name_to_save)
         end
     else
         println("NO NON-TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")
