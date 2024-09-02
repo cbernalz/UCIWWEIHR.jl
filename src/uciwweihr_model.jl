@@ -104,39 +104,35 @@ The defaults for this fuction will follow those of the default simulation in gen
         extra_ode_precision = false
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); callback=param_callback, saveat=obstimes, save_start=true, 
+        sol = solve(prob, Tsit5(); callback=param_callback, saveat=0.0:max_obstime_end, save_start=true, 
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
             Turing.@addlogprob! -Inf
             return
         end
+        obstimes_hosp_indices = Int.(obstimes_hosp)
+        obstimes_wastewater_indices = Int.(obstimes_wastewater)
         sol_array = Array(sol)
-        I_comp_sol = clamp.(sol_array[2, 2:end], 1, 1e10)
-        sol_hosp = clamp.(sol_array[3, 2:end], 1, 1e10)
-        obstime_to_index = Dict(i => t for (i, t) in enumerate(obstimes))
+        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
+        full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene) 
+        H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
+        H_means = H_comp_sol[obstimes_hosp_indices]
+        log_W_means = full_log_genes_mean[obstimes_wastewater_indices]
 
-        # Likelihood -------------------------
-        h_sol_vals = Float64[]
-        log_genes_mean_vals = Float64[]
 
-        for t in obstimes_hosp
-            if haskey(obstime_to_index, t)
-                index = convert(Int64, obstime_to_index[t])
-                sol_hosp_value = Float64(sol_hosp[index])
-                push!(h_sol_vals, sol_hosp_value)
-                data_hosp[index] ~ NegativeBinomial2(sol_hosp_value, sigma_hosp)
-            end
+        # W-W means--------------------------
+        # E - 1 // I - 2 // H - 3 // R - 4
+        # Likelihood calculations------------
+        for i in 1:l_obs_ww
+            data_wastewater[i] ~ GeneralizedTDist(log_W_means[i], tau, df)
+        end
+        for i in 1:l_obs_hosp
+            data_hosp[i] ~ NegativeBinomial2(H_means[i], sigma_hosp)
         end
 
-        for t in obstimes_wastewater
-            if haskey(obstime_to_index, t)
-                index = convert(Int64, obstime_to_index[t])
-                log_genes_mean = log(Float64(I_comp_sol[index])) + log(rho_gene)
-                push!(log_genes_mean_vals, log_genes_mean)
-                data_wastewater[index] ~ GeneralizedTDist(log_genes_mean, tau, df)
-            end
-        end
+
+        
 
         # Generated quantities
         rt_vals = alpha_t_no_init / nu
@@ -157,8 +153,8 @@ The defaults for this fuction will follow those of the default simulation in gen
             tau = tau,
             df = df,
             sigma_hosp = sigma_hosp,
-            H = h_sol_vals,
-            log_genes_mean = log_genes_mean_vals,
+            H = H_means,
+            log_genes_mean = log_W_means,
             rt_init = rt_init,
             w_init = w_init
         )
