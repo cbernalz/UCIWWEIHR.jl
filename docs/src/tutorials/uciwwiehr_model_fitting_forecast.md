@@ -115,18 +115,18 @@ uciwweihr_visualizer(
 
 ### 3.1. MCMC Diagnostic Plots.
 
-![Plot 1](../plots/mcmc_diagnosis_plots1.png)
+![Plot 1](plots/mcmc_diagnosis_plots1.png)
 
 ### 3.2. Time Varying Parameter Results Plot.
 
-![Plot 2](../plots/mcmc_time_varying_parameter_plots1.png)
+![Plot 2](plots/mcmc_time_varying_parameter_plots1.png)
 
 ### 3.3. Non-Time Varying Parameter Results Plot.
-![Plot 3](../plots/mcmc_nontime_varying_parameter_plots1.png)
+![Plot 3](plots/mcmc_nontime_varying_parameter_plots1.png)
 
 ### 3.4. Posterior Predictive Distribution Plot.
 
-![Plot 4](../plots/mcmc_pred_parameter_plots1.png)
+![Plot 4](plots/mcmc_pred_parameter_plots1.png)
 
 
 ### [Tutorial Contents](@ref tutorial_home)
