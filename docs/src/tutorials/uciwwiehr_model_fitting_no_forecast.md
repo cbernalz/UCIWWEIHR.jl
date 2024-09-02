@@ -50,7 +50,7 @@ obstimes_hosp = df.obstimes
 obstimes_wastewater = df.obstimes
 param_change_times = 1:7:length(obstimes) # Change every week
 priors_only = false
-n_samples = 200
+n_samples = 50
 forecast = false
 forecast_weeks = 0
 
