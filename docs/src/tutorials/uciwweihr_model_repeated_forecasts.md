@@ -65,7 +65,6 @@ forecast_points = [
 model_params = create_uciwweihr_model_params()
 
 rep_results = repeated_forecast(
-    samples,
     data_hosp,
     data_wastewater,
     obstimes_hosp,
