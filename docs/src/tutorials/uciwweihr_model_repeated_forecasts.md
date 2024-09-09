@@ -15,6 +15,7 @@ Here we show how we can construct repeated forecasts using the UCIWWEIHR model. 
 Here we simulate a dataset, one with 175 time points.  
 
 ``` @example tutorial_forecast
+using UCIWWEIHR
 # Running simulation function with presets
 rt_custom = vcat(
     range(1, stop=1.8, length=7*4),
