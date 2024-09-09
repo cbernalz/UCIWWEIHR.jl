@@ -207,3 +207,33 @@ function repeat_last_n_elements(x::Vector{T}, n::Int, w::Int) where T
         return x_new
     end
 end
+
+"""
+    is_time_varying_above_n(name, n)
+
+Checks if the time varying parameter is above a given time point.
+"""
+function is_time_varying_above_n(name::Symbol, n::Int)
+    name_str = string(name) 
+    #println("Checking parameter: ", name_str)
+
+    if occursin(r"\[\d+\]", name_str)
+        #println("Pattern matched") 
+        m = match(r"\d+", name_str)
+        number = parse(Int, m.match)  
+        
+        if number !== nothing
+            #println("Extracted time point string: ", number)  
+            return number > n
+        else
+            #println("No match found")  
+        end
+    else
+        #println("Not a time-varying parameter")  
+    end
+    
+    return false
+end
+
+
+

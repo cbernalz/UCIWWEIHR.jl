@@ -37,6 +37,7 @@ include("time_varying_param_vis.jl")
 include("non_time_varying_param_vis.jl")
 include("predictive_param_vis.jl")
 include("uciwweihr_visualizer.jl")
+include("repeated_forecast.jl")
 
 export eihr_ode
 export uciwweihr_sim_params
@@ -63,5 +64,7 @@ export mcmcdiags_vis
 export time_varying_param_vis
 export non_time_varying_param_vis
 export predictive_param_vis
+export repeated_forecast
+export is_time_varying_above_n
 
 end
