@@ -4,7 +4,6 @@ This is the function to make repreated forecast for a given forecast time span, 
 Plots can be made for these forecasts.  The output is an array of `uciwweihr_gq_pp` results for each `forecast_points`.
 
 # Arguments
-- `samples`: The MCMC samples from the model fit.
 - `data_hosp`: The hospitalization data.
 - `data_wastewater`: The wastewater data.
 - `obstimes_hosp`: The time points for the hospitalization data.
@@ -19,7 +18,6 @@ Plots can be made for these forecasts.  The output is an array of `uciwweihr_gq_
 - An array of `uciwweihr_gq_pp` resuts and timeseries used for building for each `forecast_points`.
 """
 function repeated_forecast(
-    samples,
     data_hosp,
     data_wastewater,
     obstimes_hosp,
