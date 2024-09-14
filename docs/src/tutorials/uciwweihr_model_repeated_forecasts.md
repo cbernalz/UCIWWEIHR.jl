@@ -39,6 +39,7 @@ params = create_uciwweihr_sim_params(
     w = w_custom
 )
 df = generate_simulation_data_uciwweihr(params)
+first(df, 5)
 ```
 
 ## 2. Constructing Repeat Forecasts.
@@ -74,6 +75,8 @@ rep_results = repeated_forecast(
     n_forecast_weeks = 2,
     forecast_points = forecast_points
 )
+
+first(rep_results, 2)
 ```
 
 ## 3. Visualizing Results Of Repeated Forecasts.
@@ -105,7 +108,7 @@ for res_index in 1:length(forecast_points)
         non_time_varying_plots = false,
         pred_param_plots = true,
         save_plots = true,
-        plot_name_to_save_pred_param = "mcmc_pred_parameter_plots_rep_res"*string(res_index)*".png"
+        plot_name_to_save_pred_param = "mcmc_pred_parameter_plots_rep_res"*string(res_index)
     )
 end
 ```
