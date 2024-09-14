@@ -85,7 +85,6 @@ function uciwweihr_gq_pp(
     indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
     samples_randn = ChainsCustomIndex(samples, indices_to_keep)
 
-
     Random.seed!(seed)
     predictive_randn = predict(my_model_forecast_missing, samples_randn)
 

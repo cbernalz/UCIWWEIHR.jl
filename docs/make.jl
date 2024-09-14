@@ -24,6 +24,7 @@ makedocs(;
       "AGENT-BASED SIMULATION DATA" => "tutorials/agent_based_simulation_data.md",
       "UCIWWEIHR FITTING MODEL W/OUT FORECASTING" => "tutorials/uciwwiehr_model_fitting_no_forecast.md",
       "UCIWWEIHR FITTING MODEL W/ FORECASTING" => "tutorials/uciwwiehr_model_fitting_forecast.md",
+      "UCIWWEIHR REPEATED FORECASTING" => "tutorials/uciwweihr_model_repeated_forecasts.md",
     ]
     ,
     "REFERENCE" => "reference.md", 

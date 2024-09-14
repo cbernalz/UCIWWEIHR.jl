@@ -44,7 +44,7 @@ obstimes_wastewater = df.obstimes
 max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
 param_change_times = 1:7:max_obstime # Change every week
 priors_only = false
-n_samples = 50
+n_samples = 200
 forecast = true
 forecast_weeks = 4
 
