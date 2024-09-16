@@ -278,7 +278,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             epsilon = epsilon,
             rt_vals = rt_vals,
             sigma_hosp = sigma_hosp,
-            H = H_comp,
+            H = sol_hosp,
             rt_init = rt_init,
             w_init = w_init
         )
