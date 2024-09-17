@@ -83,8 +83,8 @@ The defaults for this fuction will follow those of the default simulation in gen
         w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
         sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
         logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
-        w_init = logit(w_init_logit)
-        w_no_init = logit.(logit_w_no_init)
+        w_init = logistic(w_init_logit)
+        w_no_init = logistic.(logit_w_no_init)
         w_t = vcat(w_init, w_no_init)
 
 
@@ -226,8 +226,8 @@ The defaults for this fuction will follow those of the default simulation in gen
         w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
         sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
         logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
-        w_init = logit(w_init_logit)
-        w_no_init = logit.(logit_w_no_init)
+        w_init = logistic(w_init_logit)
+        w_no_init = logistic.(logit_w_no_init)
         w_t = vcat(w_init, w_no_init)
     
     
