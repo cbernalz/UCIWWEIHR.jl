@@ -22,5 +22,5 @@ To install UCIWWEIHR.jl, you can use the Julia package manager. Open the Julia R
 
 ```julia
 using Pkg
-Pkg.add("git@github.com:cbernalz/UCIWWEIHR.jl.git")
+Pkg.add("https://github.com/cbernalz/UCIWWEIHR.jl.git")
 ```
