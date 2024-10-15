@@ -252,7 +252,6 @@ The defaults for this fuction will follow those of the default simulation in gen
             return
         end
         sol_array = Array(sol)
-        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
     
     
         # Likelihood calculations------------
@@ -278,7 +277,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             epsilon = epsilon,
             rt_vals = rt_vals,
             sigma_hosp = sigma_hosp,
-            H = H_comp,
+            H = sol_hosp,
             rt_init = rt_init,
             w_init = w_init
         )
