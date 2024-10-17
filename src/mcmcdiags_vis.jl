@@ -57,7 +57,7 @@ function mcmcdiags_vis(;
                     )            
                     push!(cat_plots, plt) 
 
-                    if !isnothing(actual_non_time_varying_vals)
+                    if !isnothing(actual_non_time_varying_vals.time_points)
                         actual_param_value = round(getfield(actual_non_time_varying_vals, Symbol(param)), digits=3)
                         scatter!(plt, [1], Float64[actual_param_value],
                                 label = "Actual Value : $actual_param_value", 

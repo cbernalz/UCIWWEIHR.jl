@@ -24,25 +24,26 @@ Struct for holding parameters used in the UCIWWEIHR ODE compartmental model simu
 - `w_init::Float64`: Initial value of the time-varying hospitalization rate, NOT USER SPECIFIED `create_uciwweihr_params` TAKES CARE OF THIS.
 """
 struct uciwweihr_sim_params
-    time_points::Int64
-    seed::Int64
-    E_init::Int64
-    I_init::Int64
-    H_init::Int64
-    gamma::Float64
-    nu::Float64
-    epsilon::Float64
-    rho_gene::Float64
-    tau::Float64
-    df::Float64
-    sigma_hosp::Float64
-    Rt::Union{Float64, Vector{Float64}}
-    sigma_Rt::Float64
-    w::Union{Float64, Vector{Float64}}
-    sigma_w::Float64
-    rt_init::Float64
-    w_init::Float64
+    time_points::Union{Int64, Nothing}
+    seed::Union{Int64, Nothing}
+    E_init::Union{Int64, Nothing}
+    I_init::Union{Int64, Nothing}
+    H_init::Union{Int64, Nothing}
+    gamma::Union{Float64, Nothing}
+    nu::Union{Float64, Nothing}
+    epsilon::Union{Float64, Nothing}
+    rho_gene::Union{Float64, Nothing}
+    tau::Union{Float64, Nothing}
+    df::Union{Float64, Nothing}
+    sigma_hosp::Union{Float64, Nothing}
+    Rt::Union{Float64, Vector{Float64}, Nothing}
+    sigma_Rt::Union{Float64, Nothing}
+    w::Union{Float64, Vector{Float64}, Nothing}
+    sigma_w::Union{Float64, Nothing}
+    rt_init::Union{Float64, Nothing}
+    w_init::Union{Float64, Nothing}
 end
+
 
 """
 create_uciwweihr_sim_params(; kwargs...)

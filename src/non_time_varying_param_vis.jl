@@ -15,7 +15,6 @@ Used in the `uciwweihr_visualizer` to create visuals for non-time varying parame
 - `forecast_weeks`: An integer to indicate the number of weeks to forecast, used only if user desired priors next to posteriors.
 - `gq_samples`: Generated quantities samples from the posterior/prior distribution, index 2 in uciwweihr_gq_pp output.
 - `desired_params`: A list of lists of parameters to visualize. Each list will be visualized in a separate plot. Default is any parameter not in this list : ["alpha_t", "w_t", "rt_vals", "log_genes_mean", "H"]
-- `bayes_dist_type`: A string to indicate if user is using Posterior or Prior distribution. Default is "Posterior".
 - `actual_non_time_varying_vals::uciwweihr_sim_params`: A uciwweihr_sim_params object of actual non-time varying parameter values if user has access to them. Default is nothing.
 - `save_plots::Bool=false`: A boolean to indicate if user wants to save the plots as pngs into a plots folder.
 - `plot_name_to_save`: A string to indicate the name of the plot to save. Default is "mcmc_nontime_varying_parameter_plots".
@@ -30,7 +29,6 @@ function non_time_varying_param_vis(
     forecast_weeks;
     gq_samples=nothing,
     desired_params=nothing,
-    bayes_dist_type="Posterior",
     actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_nontime_varying_parameter_plots"
@@ -71,7 +69,7 @@ function non_time_varying_param_vis(
                            alpha = 0.1)
                 histogram!(plt, curr_param_chain_df[:, curr_param], 
                                 label = "Chain $chain (Posterior)", 
-                                title = "$bayes_dist_type $curr_param",
+                                title = "$curr_param",
                                 bins = 50,
                                 normalize = :probability,
                                 xlabel = "Value for $curr_param",
@@ -79,7 +77,7 @@ function non_time_varying_param_vis(
                                 alpha = 0.7,
                                 color = :blue,
                                 legend = :topright)
-                if !isnothing(actual_non_time_varying_vals)
+                if !isnothing(actual_non_time_varying_vals.time_points)
                     actual_param_value = round(getfield(actual_non_time_varying_vals, Symbol(curr_param)), digits=3)
                     vline!(plt, 
                             [actual_param_value],
@@ -129,7 +127,6 @@ function non_time_varying_param_vis(
     forecast_weeks;
     gq_samples=nothing,
     desired_params=nothing,
-    bayes_dist_type="Posterior",
     actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_nontime_varying_parameter_plots"
@@ -174,7 +171,7 @@ function non_time_varying_param_vis(
                            alpha = 0.1)
                 histogram!(plt, curr_param_chain_df[:, curr_param], 
                                 label = "Chain $chain (Posterior)", 
-                                title = "$bayes_dist_type $curr_param",
+                                title = "$curr_param",
                                 bins = 50,
                                 normalize = :probability,
                                 xlabel = "Value for $curr_param",
@@ -182,7 +179,7 @@ function non_time_varying_param_vis(
                                 alpha = 0.7,
                                 color = :blue,
                                 legend = :topright)
-                if !isnothing(actual_non_time_varying_vals)
+                if !isnothing(actual_non_time_varying_vals.time_points)
                     actual_param_value = round(getfield(actual_non_time_varying_vals, Symbol(curr_param)), digits=3)
                     vline!(plt, 
                             [actual_param_value],
@@ -223,7 +220,6 @@ end
 function non_time_varying_param_vis(;
     gq_samples=nothing,
     desired_params=nothing,
-    bayes_dist_type="Posterior",
     actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_nontime_varying_parameter_plots"
@@ -237,7 +233,7 @@ function non_time_varying_param_vis(;
                 curr_param_chain_df = filter(row -> row.chain == chain, gq_samples)
                 plt = histogram(curr_param_chain_df[:, curr_param], 
                                 label = "Chain $chain", 
-                                title = "$bayes_dist_type $curr_param",
+                                title = "$curr_param",
                                 bins = 50,
                                 normalize = :probability,
                                 xlabel = "Probability",
@@ -247,7 +243,7 @@ function non_time_varying_param_vis(;
                                 titlefont = font(10), 
                                 legendfont = font(8),
                                 legend = :topright)
-                if !isnothing(actual_non_time_varying_vals)
+                if !isnothing(actual_non_time_varying_vals.time_points)
                     actual_param_value = round(getfield(actual_non_time_varying_vals, Symbol(curr_param)), digits=3)
                     vline!(plt, 
                             [actual_param_value],

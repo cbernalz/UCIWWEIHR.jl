@@ -48,11 +48,12 @@ function uciwweihr_visualizer(
     obs_data_wastewater = nothing,
     actual_rt_vals = nothing,
     actual_w_t = nothing,
-    actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
+    actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
         ["E_init", "I_init", "H_init"],
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
+        ["sigma_w", "sigma_Rt"],
         ["rho_gene", "tau", "df"],
         ["sigma_hosp"]
     ],
@@ -117,7 +118,6 @@ function uciwweihr_visualizer(
             forecast_weeks;
             gq_samples = gq_samples,
             desired_params = desired_params,
-            bayes_dist_type = bayes_dist_type,
             actual_non_time_varying_vals = actual_non_time_varying_vals,
             save_plots = save_plots,
             plot_name_to_save = plot_name_to_save_non_time_varying
@@ -164,11 +164,12 @@ function uciwweihr_visualizer(
     obs_data_wastewater = nothing,
     actual_rt_vals = nothing,
     actual_w_t = nothing,
-    actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
+    actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
         ["E_init", "I_init", "H_init"],
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
+        ["sigma_w", "sigma_Rt"],
         ["rho_gene", "tau", "df"],
         ["sigma_hosp"]
     ],
@@ -237,7 +238,6 @@ function uciwweihr_visualizer(
             forecast_weeks;
             gq_samples = gq_samples,
             desired_params = desired_params,
-            bayes_dist_type = bayes_dist_type,
             actual_non_time_varying_vals = actual_non_time_varying_vals,
             save_plots = save_plots,
             plot_name_to_save = plot_name_to_save_non_time_varying
@@ -276,11 +276,12 @@ function uciwweihr_visualizer(
     obs_data_wastewater = nothing,
     actual_rt_vals = nothing,
     actual_w_t = nothing,
-    actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
+    actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
         ["E_init", "I_init", "H_init"],
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
+        ["sigma_w", "sigma_Rt"],
         ["rho_gene", "tau", "df"],
         ["sigma_hosp"]
     ],
@@ -331,7 +332,6 @@ function uciwweihr_visualizer(
         non_time_varying_param_vis(
             gq_samples = gq_samples,
             desired_params = desired_params,
-            bayes_dist_type = bayes_dist_type,
             actual_non_time_varying_vals = actual_non_time_varying_vals,
             save_plots = save_plots,
             plot_name_to_save = plot_name_to_save_non_time_varying
