@@ -174,7 +174,10 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
         log_ww_conc = data_wastewater,
         hosp = data_hosp,
         rt = params.Rt,
-        wt = params.w
+        wt = params.w,
+        E_ode_comp_sol = clamp.(sol_array[1, 2:end], 1, 1e10),
+        I_ode_comp_sol = I_comp_sol,
+        H_ode_comp_sol = H_comp_sol
     )
 
     return df
