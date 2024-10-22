@@ -23,7 +23,7 @@ params = create_uciwweihr_sim_params(
     w = w_custom
 )
 df = generate_simulation_data_uciwweihr(params)
-first(df, 5)</code></pre><div><div style = "float: left;"><span>5×5 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">obstimes</th><th style = "text-align: left;">log_ww_conc</th><th style = "text-align: left;">hosp</th><th style = "text-align: left;">rt</th><th style = "text-align: left;">wt</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Float64" style = "text-align: left;">Float64</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: right;">1</td><td style = "text-align: right;">0.271684</td><td style = "text-align: right;">16</td><td style = "text-align: right;">1.0</td><td style = "text-align: right;">0.3</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: right;">2</td><td style = "text-align: right;">0.517405</td><td style = "text-align: right;">27</td><td style = "text-align: right;">1.02963</td><td style = "text-align: right;">0.302353</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: right;">3</td><td style = "text-align: right;">0.498941</td><td style = "text-align: right;">24</td><td style = "text-align: right;">1.05926</td><td style = "text-align: right;">0.304706</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: right;">4</td><td style = "text-align: right;">0.764782</td><td style = "text-align: right;">23</td><td style = "text-align: right;">1.08889</td><td style = "text-align: right;">0.307059</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">5</td><td style = "text-align: right;">5</td><td style = "text-align: right;">0.814226</td><td style = "text-align: right;">32</td><td style = "text-align: right;">1.11852</td><td style = "text-align: right;">0.309412</td></tr></tbody></table></div><h2 id="2.-Constructing-Repeat-Forecasts."><a class="docs-heading-anchor" href="#2.-Constructing-Repeat-Forecasts.">2. Constructing Repeat Forecasts.</a><a id="2.-Constructing-Repeat-Forecasts.-1"></a><a class="docs-heading-anchor-permalink" href="#2.-Constructing-Repeat-Forecasts." title="Permalink"></a></h2><p>We use the <code>repeated_forecast</code> function to generate forecasts for a given number of weeks, for a given number of time points.  Along with this we need to specify presets.  Output of this function is an array with the first index controlling which result we are looking at.  The next contains a <code>uciwweihr_gq_pp</code> output.</p><pre><code class="language-julia hljs">data_hosp = df.hosp
+first(df, 5)</code></pre><div><div style = "float: left;"><span>5×5 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">obstimes</th><th style = "text-align: left;">log_ww_conc</th><th style = "text-align: left;">hosp</th><th style = "text-align: left;">rt</th><th style = "text-align: left;">wt</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Float64" style = "text-align: left;">Float64</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: right;">1</td><td style = "text-align: right;">0.347026</td><td style = "text-align: right;">18</td><td style = "text-align: right;">1.0</td><td style = "text-align: right;">0.3</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: right;">2</td><td style = "text-align: right;">0.550405</td><td style = "text-align: right;">26</td><td style = "text-align: right;">1.02963</td><td style = "text-align: right;">0.302353</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: right;">3</td><td style = "text-align: right;">0.503247</td><td style = "text-align: right;">29</td><td style = "text-align: right;">1.05926</td><td style = "text-align: right;">0.304706</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: right;">4</td><td style = "text-align: right;">0.885447</td><td style = "text-align: right;">36</td><td style = "text-align: right;">1.08889</td><td style = "text-align: right;">0.307059</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">5</td><td style = "text-align: right;">5</td><td style = "text-align: right;">0.794372</td><td style = "text-align: right;">28</td><td style = "text-align: right;">1.11852</td><td style = "text-align: right;">0.309412</td></tr></tbody></table></div><h2 id="2.-Constructing-Repeat-Forecasts."><a class="docs-heading-anchor" href="#2.-Constructing-Repeat-Forecasts.">2. Constructing Repeat Forecasts.</a><a id="2.-Constructing-Repeat-Forecasts.-1"></a><a class="docs-heading-anchor-permalink" href="#2.-Constructing-Repeat-Forecasts." title="Permalink"></a></h2><p>We use the <code>repeated_forecast</code> function to generate forecasts for a given number of weeks, for a given number of time points.  Along with this we need to specify presets.  Output of this function is an array with the first index controlling which result we are looking at.  The next contains a <code>uciwweihr_gq_pp</code> output.</p><pre><code class="language-julia hljs">data_hosp = df.hosp
 data_wastewater = df.log_ww_conc
 obstimes_hosp = df.obstimes
 obstimes_wastewater = df.obstimes
@@ -53,7 +53,7 @@ rep_results = repeated_forecast(
 )
 
 first(rep_results, 2)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{Any}:
- Vector[AbstractVector[[16, 27, 24, 23, 32, 23, 36, 26, 48, 39  …  1141, 1085, 1151, 1173, 1121, 1137, 1111, 1085, 1098, 1070], [0.2716835956059569, 0.5174052288422613, 0.49894101469467933, 0.7647815324347761, 0.8142258870064067, 0.7077613914126195, 0.8128588736898072, 0.8367322730889285, 0.8560749310751792, 0.6766463204741437  …  3.9741877510982913, 4.106931068224391, 3.924448571274242, 4.06927225080228, 4.036560912641182, 4.136947952411274, 3.94586332379365, 4.058564761711565, 4.0017797643566135, 4.202732736555433], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  125, 126, 127, 128, 129, 130, 131, 132, 133, 134], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  125, 126, 127, 128, 129, 130, 131, 132, 133, 134], 1:1:20], DataFrames.DataFrame[<span class="sgr1">200×278 DataFrame
+ Vector[AbstractVector[[18, 26, 29, 36, 28, 24, 22, 43, 48, 43  …  1098, 1194, 1212, 1106, 1134, 1102, 1085, 1078, 997, 1176], [0.3470256452290231, 0.5504052568775065, 0.5032465035820112, 0.8854468018101448, 0.7943722906258144, 0.7326062459711118, 0.9031816859718784, 0.6651544997374057, 0.6621119546322024, 0.7523547654550962  …  3.879952457492709, 4.21776048218676, 4.06605557786951, 3.97446956404358, 4.006369948865927, 3.7837478692219753, 3.8675931784165853, 3.973924170096727, 3.942822816581617, 4.1383166461738545], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  125, 126, 127, 128, 129, 130, 131, 132, 133, 134], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  125, 126, 127, 128, 129, 130, 131, 132, 133, 134], 1:1:20], DataFrames.DataFrame[<span class="sgr1">200×278 DataFrame
  Row │ iteration  chain  Rt_params_non_centered[23]  Rt_params_non_centered[24 ⋯
      │<span class="sgr90"> Int64      Int64  Float64                     Float64                   ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
@@ -74,47 +74,47 @@ first(rep_results, 2)</code></pre><pre class="documenter-example-output"><code c
  199 │       199      1                   -0.041831                     1.3231
  200 │       200      1                   -0.041831                     1.3231
 </span><span class="sgr36">                                                275 columns and 185 rows omitted, 200×352 DataFrame
- Row │ iteration  chain  E_init   I_init    H_init    alpha_t[1]  alpha_t[2]   ⋯
-     │</span><span class="sgr90"> Int64      Int64  Float64  Float64   Float64   Float64     Float64      ⋯
+ Row │ iteration  chain  E_init   I_init    H_init   alpha_t[1]  alpha_t[2]  a ⋯
+     │</span><span class="sgr90"> Int64      Int64  Float64  Float64   Float64  Float64     Float64     F ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │         1      1  198.198  100.884   15.4308     0.112985    0.113609   ⋯
-   2 │         2      1  185.535   96.1797  14.7671     0.121153    0.125493
-   3 │         3      1  174.903  104.27    14.8886     0.129673    0.136627
-   4 │         4      1  198.485  105.919   14.8098     0.118854    0.138218
-   5 │         5      1  175.878  110.836   15.9382     0.103275    0.127201   ⋯
-   6 │         6      1  202.349  114.424   15.9023     0.112224    0.174604
-   7 │         7      1  183.334  110.45    15.4085     0.113232    0.169828
-   8 │         8      1  222.856   91.3463  15.9191     0.125702    0.159786
-  ⋮  │     ⋮        ⋮       ⋮        ⋮         ⋮          ⋮           ⋮        ⋱
- 194 │       194      1  257.116   87.4943   9.86869    0.166077    0.131731   ⋯
- 195 │       195      1  257.145   87.4793   9.86573    0.166079    0.131715
- 196 │       196      1  257.135   87.4648   9.86589    0.166016    0.131639
- 197 │       197      1  257.135   87.4648   9.86589    0.166016    0.131639
- 198 │       198      1  256.939   87.6067   9.96119    0.167618    0.134579   ⋯
- 199 │       199      1  246.499   86.4112  10.1079     0.16994     0.132896
- 200 │       200      1  237.754   81.5766  13.3831     0.202127    0.161385
+   1 │         1      1  176.484   92.7584  23.9302   0.257095    0.142249     ⋯
+   2 │         2      1  172.077   87.9503  23.5601   0.266785    0.136065
+   3 │         3      1  165.124   87.8473  23.1295   0.282457    0.143923
+   4 │         4      1  173.121   86.0772  22.4101   0.292577    0.133194
+   5 │         5      1  160.432   89.3926  20.7632   0.315099    0.128382     ⋯
+   6 │         6      1  176.695  100.121   22.3392   0.31376     0.136014
+   7 │         7      1  170.72    93.8778  20.3684   0.335102    0.161949
+   8 │         8      1  159.328   93.8581  19.5219   0.335958    0.175534
+  ⋮  │     ⋮        ⋮       ⋮        ⋮         ⋮         ⋮           ⋮         ⋱
+ 194 │       194      1  195.595  114.438   18.3664   0.0798289   0.120904     ⋯
+ 195 │       195      1  198.452  112.514   18.9542   0.0810582   0.128762
+ 196 │       196      1  204.723  114.484   18.4231   0.0831119   0.119631
+ 197 │       197      1  203.335  113.434   17.8474   0.0740414   0.116059
+ 198 │       198      1  211.788  116.951   18.0052   0.0883914   0.145198     ⋯
+ 199 │       199      1  212.737  117.034   17.6459   0.087666    0.144338
+ 200 │       200      1  208.215  110.209   17.4911   0.0763789   0.116958
 </span><span class="sgr36">                                                345 columns and 185 rows omitted, 200×65 DataFrame
  Row │ iteration  chain  E_init_non_centered  I_init_non_centered  H_init_non_ ⋯
      │</span><span class="sgr90"> Int64      Int64  Float64              Float64              Float64     ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │       101      1           -0.036049             0.0442148            - ⋯
-   2 │       102      1           -0.289293            -0.191017             -
-   3 │       103      1           -0.501942             0.213515             -
-   4 │       104      1           -0.0302918            0.295949             -
-   5 │       105      1           -0.48244              0.541785             - ⋯
-   6 │       106      1            0.046977             0.721178             -
-   7 │       107      1           -0.333324             0.52252              -
-   8 │       108      1            0.457113            -0.432687             -
+   1 │       101      1           -0.470315           -0.362079              0 ⋯
+   2 │       102      1           -0.558455           -0.602483              0
+   3 │       103      1           -0.69752            -0.607633              0
+   4 │       104      1           -0.537584           -0.696141              0
+   5 │       105      1           -0.791366           -0.530371              0 ⋯
+   6 │       106      1           -0.466109            0.00603394            0
+   7 │       107      1           -0.585599           -0.306112              0
+   8 │       108      1           -0.813447           -0.307096             -0
   ⋮  │     ⋮        ⋮             ⋮                    ⋮                    ⋮  ⋱
- 194 │       294      1            1.14231             -0.625283             - ⋯
- 195 │       295      1            1.14291             -0.626037             -
- 196 │       296      1            1.14269             -0.626758             -
- 197 │       297      1            1.14269             -0.626758             -
- 198 │       298      1            1.13878             -0.619663             - ⋯
- 199 │       299      1            0.929978            -0.679439             -
- 200 │       300      1            0.755071            -0.921171             -
+ 194 │       294      1           -0.0881073           0.721898             -0 ⋯
+ 195 │       295      1           -0.0309611           0.62572              -0
+ 196 │       296      1            0.0944565           0.724191             -0
+ 197 │       297      1            0.0666928           0.671709             -0
+ 198 │       298      1            0.235751            0.847547             -0 ⋯
+ 199 │       299      1            0.254735            0.851676             -0
+ 200 │       300      1            0.164304            0.510425             -0
 </span><span class="sgr36">                                                 61 columns and 185 rows omitted]]
- Vector[AbstractVector[[16, 27, 24, 23, 32, 23, 36, 26, 48, 39  …  1085, 1098, 1070, 1078, 1178, 953, 930, 1055, 1030, 980], [0.2716835956059569, 0.5174052288422613, 0.49894101469467933, 0.7647815324347761, 0.8142258870064067, 0.7077613914126195, 0.8128588736898072, 0.8367322730889285, 0.8560749310751792, 0.6766463204741437  …  4.058564761711565, 4.0017797643566135, 4.202732736555433, 3.9880441481014692, 4.0483358506660645, 4.039234892485207, 4.007779414594093, 3.9386981113856323, 3.9705884999161127, 3.7858012802598733], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  132, 133, 134, 135, 136, 137, 138, 139, 140, 141], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  132, 133, 134, 135, 136, 137, 138, 139, 140, 141], 1:1:21], DataFrames.DataFrame[200×292 DataFrame
+ Vector[AbstractVector[[18, 26, 29, 36, 28, 24, 22, 43, 48, 43  …  1078, 997, 1176, 1085, 1098, 1104, 1130, 1119, 1077, 999], [0.3470256452290231, 0.5504052568775065, 0.5032465035820112, 0.8854468018101448, 0.7943722906258144, 0.7326062459711118, 0.9031816859718784, 0.6651544997374057, 0.6621119546322024, 0.7523547654550962  …  3.973924170096727, 3.942822816581617, 4.1383166461738545, 3.901606445055345, 3.9531924835965233, 3.981038107330166, 4.135060546324441, 4.074674542892423, 3.9256992569673375, 4.16988625143474], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  132, 133, 134, 135, 136, 137, 138, 139, 140, 141], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  132, 133, 134, 135, 136, 137, 138, 139, 140, 141], 1:1:21], DataFrames.DataFrame[200×292 DataFrame
  Row │ iteration  chain  Rt_params_non_centered[24]  Rt_params_non_centered[25 ⋯
      │</span><span class="sgr90"> Int64      Int64  Float64                     Float64                   ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
@@ -138,42 +138,42 @@ first(rep_results, 2)</code></pre><pre class="documenter-example-output"><code c
  Row │ iteration  chain  E_init   I_init    H_init   alpha_t[1]  alpha_t[2]  a ⋯
      │</span><span class="sgr90"> Int64      Int64  Float64  Float64   Float64  Float64     Float64     F ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │         1      1  185.466   93.4179  13.4696    0.288082    0.265974    ⋯
-   2 │         2      1  160.551   93.952   17.2148    0.283735    0.289586
-   3 │         3      1  137.107   98.3958  18.053     0.278471    0.333659
-   4 │         4      1  128.918  103.15    18.6518    0.254044    0.302873
-   5 │         5      1  144.884  104.883   18.4893    0.231445    0.255191    ⋯
-   6 │         6      1  157.982  101.486   17.4236    0.21621     0.257733
-   7 │         7      1  155.212   99.3892  17.7361    0.227866    0.263952
-   8 │         8      1  158.584   95.7432  17.5043    0.243849    0.31437
+   1 │         1      1  204.048   96.1275  18.7159    0.165151   0.133758     ⋯
+   2 │         2      1  194.242   97.4375  19.0279    0.159941   0.125737
+   3 │         3      1  196.439   99.952   19.5036    0.168205   0.124545
+   4 │         4      1  205.625  101.273   19.9008    0.169767   0.111309
+   5 │         5      1  224.551  104.444   17.1725    0.148054   0.0771633    ⋯
+   6 │         6      1  230.044  103.693   18.2312    0.142174   0.0762896
+   7 │         7      1  215.704  102.787   17.3779    0.145282   0.076451
+   8 │         8      1  258.631   96.2278  17.8812    0.160592   0.0589822
   ⋮  │     ⋮        ⋮       ⋮        ⋮         ⋮         ⋮           ⋮         ⋱
- 194 │       194      1  223.474   82.9762  17.9835    0.259084    0.127035    ⋯
- 195 │       195      1  222.342   82.0706  17.8516    0.266064    0.12571
- 196 │       196      1  222.16    82.2132  17.9225    0.266327    0.124988
- 197 │       197      1  222.434   82.5502  17.9248    0.267778    0.125736
- 198 │       198      1  222.779   81.5989  17.827     0.264731    0.124751    ⋯
- 199 │       199      1  223.659   81.9988  17.6033    0.267315    0.128908
- 200 │       200      1  247.08    77.5757  17.7427    0.250586    0.106419
+ 194 │       194      1  223.556  111.112   15.6728    0.127365   0.0717124    ⋯
+ 195 │       195      1  219.318  110.078   14.5344    0.131707   0.0766264
+ 196 │       196      1  210.761  102.906   14.3799    0.138354   0.0770936
+ 197 │       197      1  206.651  106.405   14.3228    0.135516   0.0738773
+ 198 │       198      1  212.659  109.317   15.5252    0.154666   0.0820118    ⋯
+ 199 │       199      1  211.119  112.53    15.4136    0.141933   0.0736239
+ 200 │       200      1  203.871  115.587   15.3952    0.136583   0.0590842
 </span><span class="sgr36">                                                362 columns and 185 rows omitted, 200×67 DataFrame
  Row │ iteration  chain  E_init_non_centered  I_init_non_centered  H_init_non_ ⋯
      │</span><span class="sgr90"> Int64      Int64  Float64              Float64              Float64     ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │       101      1           -0.290674            -0.329107             - ⋯
-   2 │       102      1           -0.788971            -0.302402             -
-   3 │       103      1           -1.25786             -0.0802085            -
-   4 │       104      1           -1.42165              0.15751              -
-   5 │       105      1           -1.10231              0.24413              - ⋯
-   6 │       106      1           -0.84035              0.0743238            -
-   7 │       107      1           -0.89576             -0.0305412            -
-   8 │       108      1           -0.828324            -0.212838             -
+   1 │       101      1            0.0809603          -0.193626             -0 ⋯
+   2 │       102      1           -0.115153           -0.128125             -0
+   3 │       103      1           -0.0712259          -0.00239925           -0
+   4 │       104      1            0.112503            0.0636446            -0
+   5 │       105      1            0.491011            0.222203             -0 ⋯
+   6 │       106      1            0.600875            0.184639             -0
+   7 │       107      1            0.314071            0.139345             -0
+   8 │       108      1            1.17262            -0.188611             -0
   ⋮  │     ⋮        ⋮             ⋮                    ⋮                    ⋮  ⋱
- 194 │       294      1            0.469486            -0.851191             - ⋯
- 195 │       295      1            0.446846            -0.896471             -
- 196 │       296      1            0.443193            -0.889338             -
- 197 │       297      1            0.448686            -0.872492             -
- 198 │       298      1            0.455574            -0.920054             - ⋯
- 199 │       299      1            0.473188            -0.900061             -
- 200 │       300      1            0.941592            -1.12122              -
+ 194 │       294      1            0.471125            0.555582             -0 ⋯
+ 195 │       295      1            0.386357            0.503895             -1
+ 196 │       296      1            0.215225            0.145313             -1
+ 197 │       297      1            0.133025            0.320269             -1
+ 198 │       298      1            0.253181            0.465867             -0 ⋯
+ 199 │       299      1            0.222379            0.626495             -0
+ 200 │       300      1            0.0774105           0.779346             -0
 </span><span class="sgr36">                                                 63 columns and 185 rows omitted]]</span></span></code></pre><h2 id="3.-Visualizing-Results-Of-Repeated-Forecasts."><a class="docs-heading-anchor" href="#3.-Visualizing-Results-Of-Repeated-Forecasts.">3. Visualizing Results Of Repeated Forecasts.</a><a id="3.-Visualizing-Results-Of-Repeated-Forecasts.-1"></a><a class="docs-heading-anchor-permalink" href="#3.-Visualizing-Results-Of-Repeated-Forecasts." title="Permalink"></a></h2><p>We can take a look at these forecasts using the <code>uciwweihr_visualizer</code> function.  We can also add certain parameters to ensure we only see the plots we want.</p><pre><code class="language-julia hljs">for res_index in 1:length(forecast_points)
     uciwweihr_visualizer(
         data_hosp,
@@ -215,4 +215,4 @@ Plot saved to plots/mcmc_pred_parameter_plots_rep_res3.png
 MCMC Diagnostics Plots are not requested.
 MCMC time varying parameter results are not requested.
 MCMC non-time varying parameter results are not requested.
-Plot saved to plots/mcmc_pred_parameter_plots_rep_res4.png</code></pre><h3 id="3.1.-Forecast-Point-1."><a class="docs-heading-anchor" href="#3.1.-Forecast-Point-1.">3.1. Forecast Point 1.</a><a id="3.1.-Forecast-Point-1.-1"></a><a class="docs-heading-anchor-permalink" href="#3.1.-Forecast-Point-1." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res1.png" alt="Plot 1"/></p><h3 id="3.2.-Forecast-Point-2."><a class="docs-heading-anchor" href="#3.2.-Forecast-Point-2.">3.2. Forecast Point 2.</a><a id="3.2.-Forecast-Point-2.-1"></a><a class="docs-heading-anchor-permalink" href="#3.2.-Forecast-Point-2." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res2.png" alt="Plot 2"/></p><h3 id="3.3.-Forecast-Point-3."><a class="docs-heading-anchor" href="#3.3.-Forecast-Point-3.">3.3. Forecast Point 3.</a><a id="3.3.-Forecast-Point-3.-1"></a><a class="docs-heading-anchor-permalink" href="#3.3.-Forecast-Point-3." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res3.png" alt="Plot 3"/></p><h3 id="3.4.-Forecast-Point-4."><a class="docs-heading-anchor" href="#3.4.-Forecast-Point-4.">3.4. Forecast Point 4.</a><a id="3.4.-Forecast-Point-4.-1"></a><a class="docs-heading-anchor-permalink" href="#3.4.-Forecast-Point-4." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res4.png" alt="Plot 4"/></p><h3 id="[Tutorial-Contents](@ref-tutorial_home)"><a class="docs-heading-anchor" href="#[Tutorial-Contents](@ref-tutorial_home)"><a href="../../tutorial_index/#tutorial_home">Tutorial Contents</a></a><a id="[Tutorial-Contents](@ref-tutorial_home)-1"></a><a class="docs-heading-anchor-permalink" href="#[Tutorial-Contents](@ref-tutorial_home)" title="Permalink"></a></h3></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uciwwiehr_model_fitting_forecast/">« UCIWWEIHR FITTING MODEL W/ FORECASTING</a><a class="docs-footer-nextpage" href="../../reference/">REFERENCE »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.7.0 on <span class="colophon-date" title="Tuesday 22 October 2024 21:35">Tuesday 22 October 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+Plot saved to plots/mcmc_pred_parameter_plots_rep_res4.png</code></pre><h3 id="3.1.-Forecast-Point-1."><a class="docs-heading-anchor" href="#3.1.-Forecast-Point-1.">3.1. Forecast Point 1.</a><a id="3.1.-Forecast-Point-1.-1"></a><a class="docs-heading-anchor-permalink" href="#3.1.-Forecast-Point-1." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res1.png" alt="Plot 1"/></p><h3 id="3.2.-Forecast-Point-2."><a class="docs-heading-anchor" href="#3.2.-Forecast-Point-2.">3.2. Forecast Point 2.</a><a id="3.2.-Forecast-Point-2.-1"></a><a class="docs-heading-anchor-permalink" href="#3.2.-Forecast-Point-2." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res2.png" alt="Plot 2"/></p><h3 id="3.3.-Forecast-Point-3."><a class="docs-heading-anchor" href="#3.3.-Forecast-Point-3.">3.3. Forecast Point 3.</a><a id="3.3.-Forecast-Point-3.-1"></a><a class="docs-heading-anchor-permalink" href="#3.3.-Forecast-Point-3." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res3.png" alt="Plot 3"/></p><h3 id="3.4.-Forecast-Point-4."><a class="docs-heading-anchor" href="#3.4.-Forecast-Point-4.">3.4. Forecast Point 4.</a><a id="3.4.-Forecast-Point-4.-1"></a><a class="docs-heading-anchor-permalink" href="#3.4.-Forecast-Point-4." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res4.png" alt="Plot 4"/></p><h3 id="[Tutorial-Contents](@ref-tutorial_home)"><a class="docs-heading-anchor" href="#[Tutorial-Contents](@ref-tutorial_home)"><a href="../../tutorial_index/#tutorial_home">Tutorial Contents</a></a><a id="[Tutorial-Contents](@ref-tutorial_home)-1"></a><a class="docs-heading-anchor-permalink" href="#[Tutorial-Contents](@ref-tutorial_home)" title="Permalink"></a></h3></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uciwwiehr_model_fitting_forecast/">« UCIWWEIHR FITTING MODEL W/ FORECASTING</a><a class="docs-footer-nextpage" href="../../reference/">REFERENCE »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.7.0 on <span class="colophon-date" title="Tuesday 22 October 2024 22:26">Tuesday 22 October 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
