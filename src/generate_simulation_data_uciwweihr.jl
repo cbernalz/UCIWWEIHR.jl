@@ -33,8 +33,7 @@ struct uciwweihr_sim_params
     nu::Union{Float64, Nothing}
     epsilon::Union{Float64, Nothing}
     rho_gene::Union{Float64, Nothing}
-    tau::Union{Float64, Nothing}
-    df::Union{Float64, Nothing}
+    sigma_wastewater::Union{Float64, Nothing}
     sigma_hosp::Union{Float64, Nothing}
     Rt::Union{Float64, Vector{Float64}, Nothing}
     sigma_Rt::Union{Float64, Nothing}
@@ -59,7 +58,7 @@ Creates a `uciwweihr_sim_params` struct with the option to either use a predeter
 function create_uciwweihr_sim_params(; time_points::Int64=150, seed::Int64=1,
                                   E_init::Int64=200, I_init::Int64=100, H_init::Int64=20,
                                   gamma::Float64=1/4, nu::Float64=1/7, epsilon::Float64=1/5,
-                                  rho_gene::Float64=0.011, tau::Float64=0.1, df::Float64=29.0,
+                                  rho_gene::Float64=0.011, sigma_wastewater::Float64=0.1,
                                   sigma_hosp::Float64=800.0,
                                   Rt::Union{Float64, Vector{Float64}}=1.0,
                                   sigma_Rt::Float64=sqrt(0.001),
@@ -74,7 +73,7 @@ function create_uciwweihr_sim_params(; time_points::Int64=150, seed::Int64=1,
     w_t = isa(w, Float64) ? generate_logit_normal_random_walk(time_points, sigma_w, w, seed) : w
 
     return uciwweihr_sim_params(time_points, seed, E_init, I_init, H_init, gamma, nu, epsilon,
-                                rho_gene, tau, df, sigma_hosp, Rt_t, sigma_Rt, w_t, sigma_w, rt_init, w_init)
+                                rho_gene, sigma_wastewater, sigma_hosp, Rt_t, sigma_Rt, w_t, sigma_w, rt_init, w_init)
 end
 
 """
@@ -167,7 +166,7 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
 
     # Log Gene Setup
     log_genes_mean = log.(I_comp_sol) .+ log(params.rho_gene)
-    data_wastewater = [rand(GeneralizedTDist(log_genes_mean[t], params.tau, params.df)) for t in 1:time_points]
+    data_wastewater = [rand(Normal(log_genes_mean[t], params.sigma_wastewater)) for t in 1:time_points]
     data_hosp = [rand(NegativeBinomial2(H_comp_sol[t], params.sigma_hosp)) for t in 1:time_points]
 
     df = DataFrame(
