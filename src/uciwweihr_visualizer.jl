@@ -54,8 +54,7 @@ function uciwweihr_visualizer(
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
         ["sigma_w", "sigma_Rt"],
-        ["rho_gene", "tau", "df"],
-        ["sigma_hosp"]
+        ["rho_gene"]
     ],
     time_varying_params = ["rt_vals", "w_t"],
     var_to_pred = ["data_wastewater", "data_hosp"],
@@ -170,8 +169,7 @@ function uciwweihr_visualizer(
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
         ["sigma_w", "sigma_Rt"],
-        ["rho_gene", "tau", "df"],
-        ["sigma_hosp"]
+        ["rho_gene"]
     ],
     time_varying_params = ["rt_vals", "w_t"],
     var_to_pred = ["data_wastewater", "data_hosp"],
@@ -282,8 +280,7 @@ function uciwweihr_visualizer(
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
         ["sigma_w", "sigma_Rt"],
-        ["rho_gene", "tau", "df"],
-        ["sigma_hosp"]
+        ["rho_gene"]
     ],
     time_varying_params = ["rt_vals", "w_t"],
     var_to_pred = ["data_wastewater", "data_hosp"],

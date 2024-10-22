@@ -43,10 +43,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         epsilon_non_centered ~ Normal()
         # Parameters for wastewater
         rho_gene_non_centered ~ Normal() # gene detection rate
-        tau_non_centered ~ Normal() # standard deviation for log scale data
-        df ~ Gamma(params.df_shape, params.df_scale)
         # Parameters for hospital
-        sigma_hosp_non_centered ~ Normal()
         # Non-constant Rt
         Rt_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
         sigma_Rt_non_centered = Rt_params_non_centered[1]
@@ -70,9 +67,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
         # Parameters for wastewater
         rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
-        tau = exp(tau_non_centered * params.tau_sd + params.log_tau_mean)
         # Parameters for hospital
-        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
         sigma_Rt = exp(sigma_Rt_non_centered * params.sigma_Rt_sd + params.sigma_Rt_mean)
@@ -125,10 +120,10 @@ The defaults for this fuction will follow those of the default simulation in gen
         # E - 1 // I - 2 // H - 3 // R - 4
         # Likelihood calculations------------
         for i in 1:l_obs_ww
-            data_wastewater[i] ~ GeneralizedTDist(log_W_means[i], tau, df)
+            data_wastewater[i] ~ Normal(log_W_means[i], params.sigma_wastewater)
         end
         for i in 1:l_obs_hosp
-            data_hosp[i] ~ NegativeBinomial2(H_means[i], sigma_hosp)
+            data_hosp[i] ~ NegativeBinomial2(H_means[i], params.sigma_hosp)
         end
 
 
@@ -152,9 +147,6 @@ The defaults for this fuction will follow those of the default simulation in gen
             rt_vals = rt_vals,
             sigma_Rt = sigma_Rt,
             rho_gene = rho_gene,
-            tau = tau,
-            df = df,
-            sigma_hosp = sigma_hosp,
             H = H_means,
             log_genes_mean = log_W_means,
             rt_init = rt_init,
@@ -194,7 +186,6 @@ The defaults for this fuction will follow those of the default simulation in gen
         nu_non_centered ~ Normal()
         epsilon_non_centered ~ Normal()
         # Parameters for hospital
-        sigma_hosp_non_centered ~ Normal()
         # Non-constant Rt
         Rt_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
         sigma_Rt_non_centered = Rt_params_non_centered[1]
@@ -217,7 +208,6 @@ The defaults for this fuction will follow those of the default simulation in gen
         nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
         epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
         # Parameters for hospital
-        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
         sigma_Rt = exp(sigma_Rt_non_centered * params.sigma_Rt_sd + params.sigma_Rt_mean)
@@ -259,7 +249,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         # Likelihood calculations------------
         sol_hosp = clamp.(sol_array[3,2:end], 1, 1e10)
         for i in 1:l_obs
-            data_hosp[i] ~ NegativeBinomial2(sol_hosp[i], sigma_hosp)
+            data_hosp[i] ~ NegativeBinomial2(sol_hosp[i], params.sigma_hosp)
         end
     
     
@@ -280,7 +270,6 @@ The defaults for this fuction will follow those of the default simulation in gen
             epsilon = epsilon,
             rt_vals = rt_vals,
             sigma_Rt = sigma_Rt,
-            sigma_hosp = sigma_hosp,
             H = sol_hosp,
             rt_init = rt_init,
             w_init = w_init
