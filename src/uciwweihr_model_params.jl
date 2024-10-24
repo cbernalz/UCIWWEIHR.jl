@@ -44,8 +44,14 @@ struct uciwweihr_model_params
     log_epsilon_mean::Float64
     rho_gene_sd::Float64
     log_rho_gene_mean::Float64
-    sigma_wastewater::Float64
-    sigma_hosp::Float64
+    #sigma_wastewater::Float64
+    #sigma_hosp::Float64
+
+    tau_sd::Float64
+    log_tau_mean::Float64
+    sigma_hosp_sd::Float64
+    sigma_hosp_mean::Float64
+
     Rt_init_sd::Float64
     Rt_init_mean::Float64
     sigma_Rt_sd::Float64
@@ -75,8 +81,12 @@ function create_uciwweihr_model_params(;
     nu_sd::Float64=0.02, log_nu_mean::Float64=log(1/7),
     epsilon_sd::Float64=0.02, log_epsilon_mean::Float64=log(1/5),
     rho_gene_sd::Float64=0.02, log_rho_gene_mean::Float64=log(0.011),
-    sigma_wastewater::Float64=0.1,
-    sigma_hosp::Float64=500.0,
+    #sigma_wastewater::Float64=0.1,
+    #sigma_hosp::Float64=500.0,
+    
+    tau_sd::Float64=0.02, log_tau_mean::Float64=log(0.1),
+    sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
+
     Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
     sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
     w_init_sd::Float64=0.04, w_init_mean::Float64=logit(0.35),
@@ -92,7 +102,11 @@ function create_uciwweihr_model_params(;
         nu_sd, log_nu_mean,
         epsilon_sd, log_epsilon_mean,
         rho_gene_sd, log_rho_gene_mean,
-        sigma_wastewater, sigma_hosp,
+        #sigma_wastewater, sigma_hosp,
+
+        tau_sd, log_tau_mean,
+        sigma_hosp_sd, sigma_hosp_mean,
+
         Rt_init_sd, Rt_init_mean,
         sigma_Rt_sd, sigma_Rt_mean,
         w_init_sd, w_init_mean,

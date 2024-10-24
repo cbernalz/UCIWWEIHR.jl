@@ -54,6 +54,7 @@ function uciwweihr_visualizer(
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
         ["sigma_w", "sigma_Rt"],
+        ["tau", "sigma_hosp"], # For identifyability issue checking
         ["rho_gene"]
     ],
     time_varying_params = ["rt_vals", "w_t"],
@@ -169,6 +170,7 @@ function uciwweihr_visualizer(
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
         ["sigma_w", "sigma_Rt"],
+        ["tau", "sigma_hosp"], # For identifyability issue checking
         ["rho_gene"]
     ],
     time_varying_params = ["rt_vals", "w_t"],
