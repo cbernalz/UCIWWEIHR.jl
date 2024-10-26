@@ -4,7 +4,7 @@ Default visualizer for results of the UCIWWEIHR model, includes posterior/priors
 
 # Arguments
 - `gq_samples`: Generated quantities samples from the posterior/prior distribution, index 2 in uciwweihr_gq_pp output.
-- `desired_params`: A list of lists of parameters to visualize. Each list will be visualized in a separate plot. Default is [["E_init", "I_init", "H_init"], ["gamma", "nu", "epsilon"], ["rho_gene", "tau", "df"], ["sigma_hosp"]].
+- `desired_params`: A list of lists of parameters to visualize. Each list will be visualized in a separate plot. Default is [["E_init", "I_init", "H_init"], ["gamma", "nu", "epsilon"], ["rho_gene", "tau"], ["sigma_hosp"]].
 - `actual_non_time_varying_vals::uciwweihr_sim_params`: A uciwweihr_sim_params object of actual non-time varying parameter values if user has access to them. Default is nothing.
 - `save_plots::Bool=false`: A boolean to indicate if user wants to save the plots as pngs into a plots folder.
 - `plot_name_to_save`: A string to indicate the name of the plot to save. Default is "mcmc_diagnosis_plots".
@@ -15,7 +15,7 @@ function mcmcdiags_vis(;
         ["E_init", "I_init", "H_init"],
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
-        ["rho_gene", "tau", "df"],
+        ["rho_gene", "tau"],
         ["sigma_hosp"]
     ],
     actual_non_time_varying_vals::uciwweihr_sim_params = nothing,

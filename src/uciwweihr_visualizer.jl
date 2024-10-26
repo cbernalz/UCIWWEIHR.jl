@@ -17,6 +17,9 @@ Default visualizer for results of the UCIWWEIHR model, includes posterior/priors
 - `obs_data_wastewater`: An array of wastewater data, data used for model fitting or extened timeseries for evaluation of forecast.
 - `actual_rt_vals`: An array of actual Rt values if user has access to them assumed to be on a daily scale.  This typically will come from some simulation.  Default is nothing.
 - `actual_w_t`: An array of actual w_t values if user has access to them assumed to be on a daily scale.  This typically will come from some simulation.  Default is nothing.
+- `actual_E_ode_sol`: An array of actual E ODE values if user has access to them assumed to be on a daily scale.  This typically will come from some simulation.  Default is nothing.
+- `actual_I_ode_sol`: An array of actual I ODE values if user has access to them assumed to be on a daily scale.  This typically will come from some simulation.  Default is nothing.
+- `actual_H_ode_sol`: An array of actual H ODE values if user has access to them assumed to be on a daily scale.  This typically will come from some simulation.  Default is nothing.
 - `actual_non_time_varying_vals::uciwweihr_sim_params`: A uciwweihr_sim_params object of actual non-time varying parameter values if user has access to them. Default is nothing.
 - `desired_params`: A list of lists of parameters to visualize. Each list will be visualized in a separate plot. Default is [["E_init", "I_init", "H_init"], ["gamma", "nu", "epsilon"], ["rho_gene", "tau", "df"], ["sigma_hosp"]].
 - `time_varying_params`: A list of time varying parameters to visualize. Default is ["rt_vals", "w_t"].
@@ -26,11 +29,13 @@ Default visualizer for results of the UCIWWEIHR model, includes posterior/priors
 - `mcmcdaigs::Bool=true`: A boolean to indicate if user wants to visualize mcmc diagnosis plots and Effective Sample Size(ESS).
 - `time_varying_plots::Bool=true`: A boolean to indicate if user wants to visualize time varying parameters.    
 - `non_time_varying_plots::Bool=true`: A boolean to indicate if user wants to visualize non-time varying parameters.
+- `ode_sol_plots::Bool=true`: A boolean to indicate if user wants to visualize ODE solutions.
 - `pred_param_plots::Bool=true`: A boolean to indicate if user wants to visualize posterior (or prior) predictive parameter results.
 - `save_plots::Bool=false`: A boolean to indicate if user wants to save the plots as pngs into a plots folder.
 - `plot_name_to_save_mcmcdiag`: A string to indicate the name of the plot to save for MCMC diagnostics. Default is "mcmc_diagnosis_plots".
 - `plot_name_to_save_time_varying`: A string to indicate the name of the plot to save for time varying parameters. Default is "mcmc_time_varying_parameter_plots".
 - `plot_name_to_save_non_time_varying`: A string to indicate the name of the plot to save for non-time varying parameters. Default is "mcmc_nontime_varying_parameter_plots".
+- `plot_name_to_save_ode_sol`: A string to indicate the name of the plot to save for ODE solutions. Default is "mcmc_ode_solution_plots".
 - `plot_name_to_save_pred_param`: A string to indicate the name of the plot to save for posterior (or prior) predictive parameter results. Default is "mcmc_pred_parameter_plots".
 """
 
@@ -48,6 +53,9 @@ function uciwweihr_visualizer(
     obs_data_wastewater = nothing,
     actual_rt_vals = nothing,
     actual_w_t = nothing,
+    actual_E_ode_sol = nothing,
+    actual_I_ode_sol = nothing,
+    actual_H_ode_sol = nothing,
     actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
         ["E_init", "I_init", "H_init"],
@@ -64,11 +72,13 @@ function uciwweihr_visualizer(
     mcmcdaigs::Bool = true,
     time_varying_plots::Bool = true,
     non_time_varying_plots::Bool = true,
+    ode_sol_plots::Bool = true,
     pred_param_plots::Bool = true,
     save_plots::Bool = false,
     plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots",
     plot_name_to_save_time_varying = "mcmc_time_varying_parameter_plots",
     plot_name_to_save_non_time_varying = "mcmc_nontime_varying_parameter_plots",
+    plot_name_to_save_ode_sol = "mcmc_ode_solution_plots",
     plot_name_to_save_pred_param = "mcmc_pred_parameter_plots"
     )
     # Visualizer without wastewater data
@@ -125,6 +135,21 @@ function uciwweihr_visualizer(
     else
         println("MCMC non-time varying parameter results are not requested.")
     end
+
+    if ode_sol_plots
+        ode_solution_vis(
+            gq_samples = gq_samples,
+            actual_E_ode_sol = actual_E_ode_sol,
+            actual_I_ode_sol = actual_I_ode_sol,
+            actual_H_ode_sol = actual_H_ode_sol,
+            quantiles = quantiles,
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_ode_sol
+        )
+    else
+        println("ODE Solution Plots are not requested.")
+    end
+
     if pred_param_plots
         predictive_param_vis(
             pp_samples = pp_samples,
@@ -164,6 +189,9 @@ function uciwweihr_visualizer(
     obs_data_wastewater = nothing,
     actual_rt_vals = nothing,
     actual_w_t = nothing,
+    actual_E_ode_sol = nothing,
+    actual_I_ode_sol = nothing,
+    actual_H_ode_sol = nothing,
     actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
         ["E_init", "I_init", "H_init"],
@@ -180,11 +208,13 @@ function uciwweihr_visualizer(
     mcmcdaigs::Bool = true,
     time_varying_plots::Bool = true,
     non_time_varying_plots::Bool = true,
+    ode_sol_plots::Bool = true,
     pred_param_plots::Bool = true,
     save_plots::Bool = false,
     plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots",
     plot_name_to_save_time_varying = "mcmc_time_varying_parameter_plots",
     plot_name_to_save_non_time_varying = "mcmc_nontime_varying_parameter_plots",
+    plot_name_to_save_ode_sol = "mcmc_ode_solution_plots",
     plot_name_to_save_pred_param = "mcmc_pred_parameter_plots"
     )
 
@@ -245,6 +275,21 @@ function uciwweihr_visualizer(
     else
         println("MCMC non-time varying parameter results are not requested.")
     end
+
+    if ode_sol_plots
+        ode_solution_vis(
+            gq_samples = gq_samples,
+            actual_E_ode_sol = actual_E_ode_sol,
+            actual_I_ode_sol = actual_I_ode_sol,
+            actual_H_ode_sol = actual_H_ode_sol,
+            quantiles = quantiles,
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_ode_sol
+        )
+    else
+        println("ODE Solution Plots are not requested.")
+    end
+
     if pred_param_plots
         predictive_param_vis(
             pp_samples = pp_samples,
@@ -276,6 +321,9 @@ function uciwweihr_visualizer(
     obs_data_wastewater = nothing,
     actual_rt_vals = nothing,
     actual_w_t = nothing,
+    actual_E_ode_sol = nothing,
+    actual_I_ode_sol = nothing,
+    actual_H_ode_sol = nothing,
     actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
         ["E_init", "I_init", "H_init"],
@@ -291,11 +339,13 @@ function uciwweihr_visualizer(
     mcmcdaigs::Bool = true,
     time_varying_plots::Bool = true,
     non_time_varying_plots::Bool = true,
+    ode_sol_plots::Bool = true,
     pred_param_plots::Bool = true,
     save_plots::Bool = false,
     plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots",
     plot_name_to_save_time_varying = "mcmc_time_varying_parameter_plots",
     plot_name_to_save_non_time_varying = "mcmc_nontime_varying_parameter_plots",
+    plot_name_to_save_ode_sol = "mcmc_ode_solution_plots",
     plot_name_to_save_pred_param = "mcmc_pred_parameter_plots"
     )
 
@@ -337,6 +387,20 @@ function uciwweihr_visualizer(
         )
     else
         println("MCMC non-time varying parameter results are not requested.")
+    end
+
+    if ode_sol_plots
+        ode_solution_vis(
+            gq_samples = gq_samples,
+            actual_E_ode_sol = actual_E_ode_sol,
+            actual_I_ode_sol = actual_I_ode_sol,
+            actual_H_ode_sol = actual_H_ode_sol,
+            quantiles = quantiles,
+            save_plots = save_plots,
+            plot_name_to_save = plot_name_to_save_ode_sol
+        )
+    else
+        println("ODE Solution Plots are not requested.")
     end
 
     if pred_param_plots

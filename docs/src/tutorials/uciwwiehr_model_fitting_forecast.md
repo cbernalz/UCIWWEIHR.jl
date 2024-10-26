@@ -103,12 +103,16 @@ uciwweihr_visualizer(
     obs_data_wastewater = df_ext.log_ww_conc, 
     actual_rt_vals = df_ext.rt, 
     actual_w_t = df_ext.wt, 
+    actual_E_ode_sol = df.E_ode_comp_sol,
+    actual_I_ode_sol = df.I_ode_comp_sol,
+    actual_H_ode_sol = df.H_ode_comp_sol,
     actual_non_time_varying_vals = params,
     bayes_dist_type = "Posterior",
     save_plots = true,
     plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots1",
     plot_name_to_save_time_varying = "mcmc_time_varying_parameter_plots1",
     plot_name_to_save_non_time_varying = "mcmc_nontime_varying_parameter_plots1",
+    plot_name_to_save_ode_sol = "mcmc_ode_solution_plots1",
     plot_name_to_save_pred_param = "mcmc_pred_parameter_plots1"
 )
 ```
@@ -124,7 +128,10 @@ uciwweihr_visualizer(
 ### 3.3. Non-Time Varying Parameter Results Plot.
 ![Plot 3](plots/mcmc_nontime_varying_parameter_plots1.png)
 
-### 3.4. Posterior Predictive Distribution Plot.
+### 3.4. ODE Solution Plot.
+![Plot 4](plots/mcmc_ode_solution_plots1.png)
+
+### 3.5. Posterior Predictive Distribution Plot.
 
 ![Plot 4](plots/mcmc_pred_parameter_plots1.png)
 

@@ -235,5 +235,37 @@ function is_time_varying_above_n(name::Symbol, n::Int)
     return false
 end
 
+"""
+    subset_desired_ode_from_gq(gq, desired_var::Regex)
+
+Subsets the generated quantities dataframe from the `uciwweihr_gq_pp` output to only include the desired variable.
+desired_var should be put in the following form : `r"I(\\[|\\])"` for example.
+"""
+function subset_desired_ode_from_gq(gq, desired_var::Regex)
+    gq_col_names = names(gq)
+    target_gq_col_names = [x for x in gq_col_names if occursin(desired_var, x)]
+    target_gq_df = gq[:, [target_gq_col_names...]]
+    #if length(names(target_gq_df)) == 0 || (desired_var != r"\b$H\b\[|\]" && desired_var != r"\b$I\b\[|\]" && desired_var != r"\b$E\b\[|\]")
+    #    println("No columns found with $desired_var in the name")
+    #    return DataFrame()
+    #end
+
+    return target_gq_df
+end
 
 
+"""
+    calculate_quantiles_without_chain(df, var_prefix, quantiles)
+
+Calculates quantiles for a given variable prefix without considering the chain.
+"""
+function calculate_quantiles_without_chain(df, var_prefix, quantiles)
+    column_names = names(df)
+    var_names = filter(name -> startswith_any(name, [var_prefix]), column_names)
+    medians = [median(df[:, var]) for var in var_names]  
+    lower_bounds = [quantile(df[:, var], (1 .- quantiles) / 2) for var in var_names]
+    upper_bounds = [quantile(df[:, var], 1 .- (1 .- quantiles) / 2) for var in var_names]
+    
+    
+    return medians, lower_bounds, upper_bounds
+end

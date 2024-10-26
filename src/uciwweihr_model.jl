@@ -122,6 +122,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         obstimes_wastewater_indices = Int.(obstimes_wastewater)
         sol_array = Array(sol)
         I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
+        E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
         full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene) 
         H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
         H_means = H_comp_sol[obstimes_hosp_indices]
@@ -165,7 +166,10 @@ The defaults for this fuction will follow those of the default simulation in gen
             tau = tau, # for showing identifyability issue
             sigma_hosp = sigma_hosp, # for showing identifyability issue
             
-            H = H_means,
+            H = H_comp_sol,
+            I = I_comp_sol,
+            E = E_comp_sol,
+            H_means = H_means,
             log_genes_mean = log_W_means,
             rt_init = rt_init,
             w_init = w_init
@@ -260,7 +264,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         extra_ode_precision = false
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); callback=param_callback, saveat=obstimes_hosp, save_start=true, 
+        sol = solve(prob, Tsit5(); callback=param_callback, saveat=0.0:obstimes_hosp[end], save_start=true, 
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes_hosp[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
@@ -268,13 +272,17 @@ The defaults for this fuction will follow those of the default simulation in gen
             return
         end
         sol_array = Array(sol)
+        H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
+        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
+        E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
+        obstimes_hosp_indices = Int.(obstimes_hosp)
+        H_means = H_comp_sol[obstimes_hosp_indices]
     
     
         # Likelihood calculations------------
-        sol_hosp = clamp.(sol_array[3,2:end], 1, 1e10)
         for i in 1:l_obs
             #data_hosp[i] ~ NegativeBinomial2(sol_hosp[i], params.sigma_hosp)
-            data_hosp[i] ~ NegativeBinomial2(sol_hosp[i], sigma_hosp)
+            data_hosp[i] ~ NegativeBinomial2(H_means[i], sigma_hosp)
         end
     
     
@@ -298,7 +306,10 @@ The defaults for this fuction will follow those of the default simulation in gen
 
             sigma_hosp = sigma_hosp, # for showing identifyability issue
 
-            H = sol_hosp,
+            H = H_comp_sol,
+            I = I_comp_sol,
+            E = E_comp_sol,
+            H_means = H_means,
             rt_init = rt_init,
             w_init = w_init
         )

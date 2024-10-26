@@ -36,6 +36,7 @@ include("mcmcdiags_vis.jl")
 include("time_varying_param_vis.jl")
 include("non_time_varying_param_vis.jl")
 include("predictive_param_vis.jl")
+include("ode_solution_vis.jl")
 include("uciwweihr_visualizer.jl")
 include("repeated_forecast.jl")
 
@@ -63,8 +64,11 @@ export repeat_last_n_elements
 export mcmcdiags_vis
 export time_varying_param_vis
 export non_time_varying_param_vis
+export ode_solution_vis
 export predictive_param_vis
 export repeated_forecast
 export is_time_varying_above_n
+export subset_desired_ode_from_gq
+export calculate_quantiles_without_chain
 
 end
