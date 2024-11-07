@@ -163,7 +163,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             sigma_Rt = sigma_Rt,
             rho_gene = rho_gene,
 
-            tau = tau, # for showing identifyability issue
+            sigma_ww = sigma_ww, # for showing identifyability issue
             sigma_hosp = sigma_hosp, # for showing identifyability issue
             
             H = H_comp_sol,
