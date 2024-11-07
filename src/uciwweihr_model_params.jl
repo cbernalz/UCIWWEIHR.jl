@@ -18,7 +18,7 @@ Struct for holding parameters used in the UCIWWEIHR ODE compartmental model.  Us
 - `log_epsilon_mean::Float64=log(1/5)`: Mean for the rate of hospitalization recovery on the log scale.
 - `rho_gene_sd::Float64=0.02`: Standard deviation for the rho prior.
 - `log_rho_gene_mean::Float64=log(0.011)`: Mean for the row prior on log scale.
-- `sigma_wastewater::Float64=log(0.1)`: Standard deviation for the negative binomial distribution for wastewater data.  Not infered.
+- `sigma_ww::Float64=log(0.1)`: Standard deviation for the normal distribution for wastewater data.  Not infered.
 - `sigma_hosp::Float64=500.0`: Standard deviation for the negative binomial distribution for hospital data.  Not infered.
 - `Rt_init_sd::Float64=0.3`: Standard deviation for the initial value of the time-varying reproduction number.
 - `Rt_init_mean::Float64=0.2`: Mean for the initial value of the time-varying reproduction number.
@@ -44,11 +44,11 @@ struct uciwweihr_model_params
     log_epsilon_mean::Float64
     rho_gene_sd::Float64
     log_rho_gene_mean::Float64
-    #sigma_wastewater::Float64
+    #sigma_ww::Float64
     #sigma_hosp::Float64
 
-    tau_sd::Float64
-    log_tau_mean::Float64
+    sigma_ww_sd::Float64
+    log_sigma_ww_mean::Float64
     sigma_hosp_sd::Float64
     sigma_hosp_mean::Float64
 
@@ -84,7 +84,7 @@ function create_uciwweihr_model_params(;
     #sigma_wastewater::Float64=0.1,
     #sigma_hosp::Float64=500.0,
     
-    tau_sd::Float64=0.02, log_tau_mean::Float64=log(0.1),
+    sigma_ww_sd::Float64=0.02, log_sigma_ww_mean::Float64=log(0.1),
     sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
 
     Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
@@ -104,7 +104,7 @@ function create_uciwweihr_model_params(;
         rho_gene_sd, log_rho_gene_mean,
         #sigma_wastewater, sigma_hosp,
 
-        tau_sd, log_tau_mean,
+        sigma_ww_sd, log_sigma_ww_mean,
         sigma_hosp_sd, sigma_hosp_mean,
 
         Rt_init_sd, Rt_init_mean,

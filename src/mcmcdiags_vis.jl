@@ -15,7 +15,7 @@ function mcmcdiags_vis(;
         ["E_init", "I_init", "H_init"],
         ["gamma", "nu", "epsilon"],
         ["rt_init", "w_init"],
-        ["rho_gene", "tau"],
+        ["rho_gene", "sigma_ww"],
         ["sigma_hosp"]
     ],
     actual_non_time_varying_vals::uciwweihr_sim_params = nothing,

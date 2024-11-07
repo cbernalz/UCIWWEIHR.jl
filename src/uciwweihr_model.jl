@@ -44,7 +44,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         # Parameters for wastewater
         rho_gene_non_centered ~ Normal() # gene detection rate
 
-        tau_non_centered ~ Normal() # for showing identifyability issue
+        sigma_ww_non_centered ~ Normal() # for showing identifyability issue
 
         # Parameters for hospital
 
@@ -74,7 +74,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         # Parameters for wastewater
         rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
 
-        tau = exp(tau_non_centered * params.tau_sd + params.log_tau_mean) # for showing identifyability issue
+        sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean) # for showing identifyability issue
 
         # Parameters for hospital
 
@@ -134,7 +134,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         # Likelihood calculations------------
         for i in 1:l_obs_ww
             #data_wastewater[i] ~ Normal(log_W_means[i], params.sigma_wastewater)
-            data_wastewater[i] ~ Normal(log_W_means[i], tau)
+            data_wastewater[i] ~ Normal(log_W_means[i], sigma_ww)
         end
         for i in 1:l_obs_hosp
             #data_hosp[i] ~ NegativeBinomial2(H_means[i], params.sigma_hosp)
