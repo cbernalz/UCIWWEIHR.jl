@@ -64,9 +64,9 @@ The defaults for this fuction will follow those of the default simulation in gen
 
         # TRANSFORMATIONS--------------------
         # Compartments
-        E_init = E_init_non_centered * params.E_init_sd + params.E_init_mean
-        I_init = I_init_non_centered * params.I_init_sd + params.I_init_mean
-        H_init = H_init_non_centered * params.H_init_sd + params.H_init_mean
+        E_init = exp(E_init_non_centered * params.E_init_sd + params.log_E_init_mean)
+        I_init = exp(I_init_non_centered * params.I_init_sd + params.log_I_init_mean)
+        H_init = exp(H_init_non_centered * params.H_init_sd + params.log_H_init_mean)
         # Parameters for compartments
         gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
         nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
@@ -225,9 +225,9 @@ The defaults for this fuction will follow those of the default simulation in gen
     
         # TRANSFORMATIONS--------------------
         # Compartments
-        E_init = E_init_non_centered * params.E_init_sd + params.E_init_mean
-        I_init = I_init_non_centered * params.I_init_sd + params.I_init_mean
-        H_init = H_init_non_centered * params.H_init_sd + params.H_init_mean
+        E_init = exp(E_init_non_centered * params.E_init_sd + params.log_E_init_mean)
+        I_init = exp(I_init_non_centered * params.I_init_sd + params.log_I_init_mean)
+        H_init = exp(H_init_non_centered * params.H_init_sd + params.log_H_init_mean)
         # Parameters for compartments
         gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
         nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)

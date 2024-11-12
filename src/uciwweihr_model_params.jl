@@ -5,11 +5,11 @@ Struct for holding parameters used in the UCIWWEIHR ODE compartmental model.  Us
 
 # Fields
 - `E_init_sd::Float64=50.0`: Standard deviation for the initial number of exposed individuals.
-- `E_init_mean::Int64=200`: Mean for the initial number of exposed individuals.
+- `log_E_init_mean::Int64=200`: Mean for the initial number of exposed individuals, on log scale.
 - `I_init_sd::Float64=20.0`: Standard deviation for the initial number of infected individuals.
-- `I_init_mean::Int64=100`: Mean for the initial number of infected individuals.
+- `log_I_init_mean::Int64=100`: Mean for the initial number of infected individuals, on log scale.
 - `H_init_sd::Float64=5.0`: Standard deviation for the initial number of hospitalized individuals.
-- `H_init_mean::Int64=20`: Mean for the initial number of hospitalized individuals.
+- `log_H_init_mean::Int64=20`: Mean for the initial number of hospitalized individuals, on log scale.
 - `gamma_sd::Float64=0.02`: Standard deviation for the rate of incubation.
 - `log_gamma_mean::Float64=log(1/4)`: Mean for the rate of incubation on log scale.
 - `nu_sd::Float64=0.02`: Standard deviation for the rate of leaving the infected compartment.
@@ -31,11 +31,11 @@ Struct for holding parameters used in the UCIWWEIHR ODE compartmental model.  Us
 """
 struct uciwweihr_model_params
     E_init_sd::Float64
-    E_init_mean::Int64
+    log_E_init_mean::Float64
     I_init_sd::Float64
-    I_init_mean::Int64
+    log_I_init_mean::Float64
     H_init_sd::Float64
-    H_init_mean::Int64
+    log_H_init_mean::Float64
     gamma_sd::Float64
     log_gamma_mean::Float64
     nu_sd::Float64
@@ -74,9 +74,9 @@ Creates a `uciwweihr_sim_params` struct with the option to either use a predeter
 - `params::uciwweihr_sim_params`: A struct with simulation parameters.
 """
 function create_uciwweihr_model_params(; 
-    E_init_sd::Float64=50.0, E_init_mean::Int64=200,
-    I_init_sd::Float64=20.0, I_init_mean::Int64=100,
-    H_init_sd::Float64=5.0, H_init_mean::Int64=20,
+    E_init_sd::Float64=50.0, log_E_init_mean::Float64=log(200),
+    I_init_sd::Float64=20.0, log_I_init_mean::Float64=log(100),
+    H_init_sd::Float64=5.0, log_H_init_mean::Float64=log(20),
     gamma_sd::Float64=0.02, log_gamma_mean::Float64=log(1/4),
     nu_sd::Float64=0.02, log_nu_mean::Float64=log(1/7),
     epsilon_sd::Float64=0.02, log_epsilon_mean::Float64=log(1/5),
@@ -95,9 +95,9 @@ function create_uciwweihr_model_params(;
 
     
     return uciwweihr_model_params(
-        E_init_sd, E_init_mean,
-        I_init_sd, I_init_mean,
-        H_init_sd, H_init_mean,
+        E_init_sd, log_E_init_mean,
+        I_init_sd, log_I_init_mean,
+        H_init_sd, log_H_init_mean,
         gamma_sd, log_gamma_mean,
         nu_sd, log_nu_mean,
         epsilon_sd, log_epsilon_mean,
