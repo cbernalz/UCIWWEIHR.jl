@@ -44,11 +44,19 @@ The defaults for this fuction will follow those of the default simulation in gen
         # Parameters for wastewater
         rho_gene_non_centered ~ Normal() # gene detection rate
 
-        sigma_ww_non_centered ~ Normal() # for showing identifyability issue
+        if isnothing(params.sigma_ww_sd)
+            sigma_ww = params.sigma_ww
+        else
+            sigma_ww_non_centered ~ Normal()
+        end
 
         # Parameters for hospital
 
-        sigma_hosp_non_centered ~ Normal() # for showing identifyability issue
+        if isnothing(params.sigma_hosp_sd)
+            sigma_hosp = params.sigma_hosp
+        else
+            sigma_hosp_non_centered ~ Normal()
+        end
 
         # Non-constant Rt
         Rt_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
@@ -74,11 +82,15 @@ The defaults for this fuction will follow those of the default simulation in gen
         # Parameters for wastewater
         rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
 
-        sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean) # for showing identifyability issue
+        if !isnothing(params.sigma_ww_sd)
+            sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean)
+        end
 
         # Parameters for hospital
 
-        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma) # for showing identifyability issue
+        if !isnothing(params.sigma_hosp_sd)
+            sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
+        end
 
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
@@ -163,8 +175,8 @@ The defaults for this fuction will follow those of the default simulation in gen
             sigma_Rt = sigma_Rt,
             rho_gene = rho_gene,
 
-            sigma_ww = sigma_ww, # for showing identifyability issue
-            sigma_hosp = sigma_hosp, # for showing identifyability issue
+            sigma_ww = sigma_ww,
+            sigma_hosp = sigma_hosp,
             
             H = H_comp_sol,
             I = I_comp_sol,
@@ -209,7 +221,11 @@ The defaults for this fuction will follow those of the default simulation in gen
         epsilon_non_centered ~ Normal()
         # Parameters for hospital
 
-        sigma_hosp_non_centered ~ Normal() # for showing identifyability issue
+        if isnothing(params.sigma_hosp_sd)
+            sigma_hosp = params.sigma_hosp
+        else
+            sigma_hosp_non_centered ~ Normal()
+        end
 
         # Non-constant Rt
         Rt_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
@@ -234,7 +250,9 @@ The defaults for this fuction will follow those of the default simulation in gen
         epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
         # Parameters for hospital
 
-        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma) # for showing identifyability issue
+        if !isnothing(params.sigma_hosp_sd)
+            sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
+        end
 
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
@@ -304,7 +322,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             rt_vals = rt_vals,
             sigma_Rt = sigma_Rt,
 
-            sigma_hosp = sigma_hosp, # for showing identifyability issue
+            sigma_hosp = sigma_hosp, 
 
             H = H_comp_sol,
             I = I_comp_sol,
