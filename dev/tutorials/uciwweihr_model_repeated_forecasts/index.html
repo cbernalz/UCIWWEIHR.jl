@@ -53,127 +53,127 @@ rep_results = repeated_forecast(
 )
 
 first(rep_results, 2)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{Any}:
- Vector[AbstractVector[[18, 26, 29, 36, 28, 24, 22, 43, 48, 43  …  1098, 1194, 1212, 1106, 1134, 1102, 1085, 1078, 997, 1176], [0.3470256452290231, 0.5504052568775065, 0.5032465035820112, 0.8854468018101448, 0.7943722906258144, 0.7326062459711118, 0.9031816859718784, 0.6651544997374057, 0.6621119546322024, 0.7523547654550962  …  3.879952457492709, 4.21776048218676, 4.06605557786951, 3.97446956404358, 4.006369948865927, 3.7837478692219753, 3.8675931784165853, 3.973924170096727, 3.942822816581617, 4.1383166461738545], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  125, 126, 127, 128, 129, 130, 131, 132, 133, 134], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  125, 126, 127, 128, 129, 130, 131, 132, 133, 134], 1:1:20], DataFrames.DataFrame[<span class="sgr1">193×278 DataFrame
- Row │ iteration  chain  Rt_params_non_centered[23]  Rt_params_non_centered[24 ⋯
-     │<span class="sgr90"> Int64      Int64  Float64                     Float64                   ⋯
+ Vector[AbstractVector[[18, 26, 29, 36, 28, 24, 22, 43, 48, 43  …  1098, 1194, 1212, 1106, 1134, 1102, 1085, 1078, 997, 1176], [0.3470256452290231, 0.5504052568775065, 0.5032465035820112, 0.8854468018101448, 0.7943722906258144, 0.7326062459711118, 0.9031816859718784, 0.6651544997374057, 0.6621119546322024, 0.7523547654550962  …  3.879952457492709, 4.21776048218676, 4.06605557786951, 3.97446956404358, 4.006369948865927, 3.7837478692219753, 3.8675931784165853, 3.973924170096727, 3.942822816581617, 4.1383166461738545], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  125, 126, 127, 128, 129, 130, 131, 132, 133, 134], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  125, 126, 127, 128, 129, 130, 131, 132, 133, 134], 1:1:20], DataFrames.DataFrame[<span class="sgr1">187×274 DataFrame
+ Row │ iteration  chain  data_wastewater[1]  data_wastewater[2]  data_wastewat ⋯
+     │<span class="sgr90"> Int64      Int64  Float64             Float64             Float64       ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │         1      1                   -0.041831                     1.3231 ⋯
-   2 │         2      1                   -0.041831                     1.3231
-   3 │         3      1                   -0.041831                     1.3231
-   4 │         4      1                   -0.041831                     1.3231
-   5 │         5      1                   -0.041831                     1.3231 ⋯
-   6 │         6      1                   -0.041831                     1.3231
-   7 │         7      1                   -0.041831                     1.3231
-   8 │         8      1                   -0.041831                     1.3231
-  ⋮  │     ⋮        ⋮                ⋮                           ⋮             ⋱
- 187 │       187      1                   -0.041831                     1.3231 ⋯
- 188 │       188      1                   -0.041831                     1.3231
- 189 │       189      1                   -0.041831                     1.3231
- 190 │       190      1                   -0.041831                     1.3231
- 191 │       191      1                   -0.041831                     1.3231 ⋯
- 192 │       192      1                   -0.041831                     1.3231
- 193 │       193      1                   -0.041831                     1.3231
-</span><span class="sgr36">                                                275 columns and 178 rows omitted, 193×798 DataFrame
- Row │ iteration  chain  E_init      I_init          H_init           alpha_t[ ⋯
-     │</span><span class="sgr90"> Int64      Int64  Float64     Float64         Float64          Float64  ⋯
+   1 │         1      1            18.7547             18.5064             18. ⋯
+   2 │         2      1            18.537              18.6514             18.
+   3 │         3      1            12.7056             12.7843             12.
+   4 │         4      1            11.0241             11.3808             10.
+   5 │         5      1             5.77652             5.6189              5. ⋯
+   6 │         6      1             5.58065             5.49609             5.
+   7 │         7      1             5.48132             5.38742             5.
+   8 │         8      1             5.54024             5.37222             5.
+  ⋮  │     ⋮        ⋮            ⋮                   ⋮                   ⋮     ⋱
+ 181 │       181      1             5.52037             5.80256             5. ⋯
+ 182 │       182      1             5.33552             5.57997             5.
+ 183 │       183      1             5.40459             5.48753             5.
+ 184 │       184      1             5.37943             5.34323             5.
+ 185 │       185      1             5.40597             5.44568             5. ⋯
+ 186 │       186      1             5.30755             5.40873             5.
+ 187 │       187      1             5.59796             5.25456             5.
+</span><span class="sgr36">                                                270 columns and 172 rows omitted, 187×792 DataFrame
+ Row │ iteration  chain  E_init          I_init         H_init          alpha_ ⋯
+     │</span><span class="sgr90"> Int64      Int64  Float64         Float64        Float64         Float6 ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │         1      1  4.50452e15     1.17471e-13      0.0018318      0.1045 ⋯
-   2 │         2      1  4.50452e15     1.17471e-13      0.0018318      0.1045
-   3 │         3      1  1.99102e18     3.28592e-16      0.00105517     0.1082
-   4 │         4      1  8.82301e16     1.2589e-15       0.00129708     0.1135
-   5 │         5      1  6.38081e12     5.80673e-14      0.000100081    0.1020 ⋯
-   6 │         6      1  6.38081e12     5.80673e-14      0.000100081    0.1020
-   7 │         7      1  6.38081e12     5.80673e-14      0.000100081    0.1020
-   8 │         8      1  3.36925e44     1.01103          0.00431274     0.1310
-  ⋮  │     ⋮        ⋮        ⋮             ⋮                ⋮             ⋮    ⋱
- 187 │       187      1  8.05429e26     5.93332e5       20.7534         0.1459 ⋯
- 188 │       188      1  5.34956e25     1.12577e6     1046.17           0.1540
- 189 │       189      1  2.68751e21     0.00700184       8.61624        0.1398
- 190 │       190      1  1.8029e34      0.000277465      0.0975179      0.3164
- 191 │       191      1  7.35747e33     3.72161e-5       0.168807       0.2318 ⋯
- 192 │       192      1  3.88483e31     5.43277e-10     42.4324         0.2537
- 193 │       193      1  2.42311e26     5.31865e-7       0.366408       0.3453
-</span><span class="sgr36">                                                793 columns and 178 rows omitted, 200×65 DataFrame
+   1 │         1      1     5.96869e40     2.70045e-8   32304.1           0.15 ⋯
+   2 │         2      1     5.96869e40     2.70045e-8   32304.1           0.15
+   3 │         3      1     1.08334e35     8.81606e-5    6446.14          0.17
+   4 │         4      1     2.27477e35     0.716709     32989.2           0.19
+   5 │         5      1     8.51319e36     4.25191          1.18288e5     0.18 ⋯
+   6 │         6      1     4.01619e19     4.75454e-6    2147.28          0.15
+   7 │         7      1     8.52675e36     0.000662014  60971.0           0.16
+   8 │         8      1     2.97377e40     8.93505e-5       1.38255e5     0.15
+  ⋮  │     ⋮        ⋮          ⋮               ⋮              ⋮             ⋮  ⋱
+ 181 │       181      1     2.83868e-18    1.96464e12      84.2593        0.14 ⋯
+ 182 │       182      1     3.13229e-21    4.26657e12      60.4267        0.12
+ 183 │       183      1     5.74179e-20    2.45506e15     283.77          0.12
+ 184 │       184      1     3.43415e-17    4.22346e15      35.9294        0.12
+ 185 │       185      1     8.49577e10     1.17205e19      97.1908        0.13 ⋯
+ 186 │       186      1  9677.64           2.38625e22       0.00279521    0.13
+ 187 │       187      1     3.01358e16     1.30678e13       1.07333       0.32
+</span><span class="sgr36">                                                787 columns and 172 rows omitted, 200×65 DataFrame
  Row │ iteration  chain  E_init_non_centered  I_init_non_centered  H_init_non_ ⋯
      │</span><span class="sgr90"> Int64      Int64  Float64              Float64              Float64     ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │       101      1             0.614911            -1.71889           -1. ⋯
-   2 │       102      1             0.614911            -1.71889           -1.
-   3 │       103      1             0.736737            -2.01284           -1.
-   4 │       104      1             0.674408            -1.94569           -1.
-   5 │       105      1             0.48372             -1.75412           -2. ⋯
-   6 │       106      1             0.48372             -1.75412           -2.
-   7 │       107      1             0.48372             -1.75412           -2.
-   8 │       108      1             1.9446              -0.22971           -1.
+   1 │         1      1            1.77183             -1.10162                ⋯
+   2 │         2      1            1.77183             -1.10162
+   3 │         3      1            1.50744             -0.697076
+   4 │         4      1            1.52228             -0.246913
+   5 │         5      1            1.59473             -0.15789                ⋯
+   6 │         6      1            0.796823            -0.843079
+   7 │         7      1            1.59476             -0.59627
+   8 │         8      1            1.7579              -0.696406
   ⋮  │     ⋮        ⋮             ⋮                    ⋮                    ⋮  ⋱
- 194 │       294      1             1.1331               0.434417           0. ⋯
- 195 │       295      1             1.07887              0.46644            0.
- 196 │       296      1             0.880892            -0.478338          -0.
- 197 │       297      1             1.47158             -0.639749          -1.
- 198 │       298      1             1.45365             -0.740197          -0. ⋯
- 199 │       299      1             1.34878             -1.29693            0.
- 200 │       300      1             1.10908             -0.952602          -0.
+ 194 │       194      1           -0.91403              1.18506                ⋯
+ 195 │       195      1           -1.05022              1.22383
+ 196 │       196      1           -0.992045             1.54159
+ 197 │       197      1           -0.86417              1.56871
+ 198 │       198      1            0.397342             1.96513                ⋯
+ 199 │       199      1            0.0775851            2.34607              -
+ 200 │       200      1            0.652923             1.2798               -
 </span><span class="sgr36">                                                 61 columns and 185 rows omitted]]
- Vector[AbstractVector[[18, 26, 29, 36, 28, 24, 22, 43, 48, 43  …  1078, 997, 1176, 1085, 1098, 1104, 1130, 1119, 1077, 999], [0.3470256452290231, 0.5504052568775065, 0.5032465035820112, 0.8854468018101448, 0.7943722906258144, 0.7326062459711118, 0.9031816859718784, 0.6651544997374057, 0.6621119546322024, 0.7523547654550962  …  3.973924170096727, 3.942822816581617, 4.1383166461738545, 3.901606445055345, 3.9531924835965233, 3.981038107330166, 4.135060546324441, 4.074674542892423, 3.9256992569673375, 4.16988625143474], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  132, 133, 134, 135, 136, 137, 138, 139, 140, 141], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  132, 133, 134, 135, 136, 137, 138, 139, 140, 141], 1:1:21], DataFrames.DataFrame[197×292 DataFrame
- Row │ iteration  chain  Rt_params_non_centered[24]  Rt_params_non_centered[25 ⋯
-     │</span><span class="sgr90"> Int64      Int64  Float64                     Float64                   ⋯
+ Vector[AbstractVector[[18, 26, 29, 36, 28, 24, 22, 43, 48, 43  …  1078, 997, 1176, 1085, 1098, 1104, 1130, 1119, 1077, 999], [0.3470256452290231, 0.5504052568775065, 0.5032465035820112, 0.8854468018101448, 0.7943722906258144, 0.7326062459711118, 0.9031816859718784, 0.6651544997374057, 0.6621119546322024, 0.7523547654550962  …  3.973924170096727, 3.942822816581617, 4.1383166461738545, 3.901606445055345, 3.9531924835965233, 3.981038107330166, 4.135060546324441, 4.074674542892423, 3.9256992569673375, 4.16988625143474], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  132, 133, 134, 135, 136, 137, 138, 139, 140, 141], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  132, 133, 134, 135, 136, 137, 138, 139, 140, 141], 1:1:21], DataFrames.DataFrame[198×288 DataFrame
+ Row │ iteration  chain  data_wastewater[1]  data_wastewater[2]  data_wastewat ⋯
+     │</span><span class="sgr90"> Int64      Int64  Float64             Float64             Float64       ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │         1      1                     1.32313                   -0.74005 ⋯
-   2 │         2      1                     1.32313                   -0.74005
-   3 │         3      1                     1.32313                   -0.74005
-   4 │         4      1                     1.32313                   -0.74005
-   5 │         5      1                     1.32313                   -0.74005 ⋯
-   6 │         6      1                     1.32313                   -0.74005
-   7 │         7      1                     1.32313                   -0.74005
-   8 │         8      1                     1.32313                   -0.74005
-  ⋮  │     ⋮        ⋮                ⋮                           ⋮             ⋱
- 191 │       191      1                     1.32313                   -0.74005 ⋯
- 192 │       192      1                     1.32313                   -0.74005
- 193 │       193      1                     1.32313                   -0.74005
- 194 │       194      1                     1.32313                   -0.74005
- 195 │       195      1                     1.32313                   -0.74005 ⋯
- 196 │       196      1                     1.32313                   -0.74005
- 197 │       197      1                     1.32313                   -0.74005
-</span><span class="sgr36">                                                289 columns and 182 rows omitted, 197×836 DataFrame
- Row │ iteration  chain  E_init       I_init           H_init         alpha_t[ ⋯
-     │</span><span class="sgr90"> Int64      Int64  Float64      Float64          Float64        Float64  ⋯
+   1 │         1      1            11.4164             11.5939             11. ⋯
+   2 │         2      1            11.3836             11.7231             11.
+   3 │         3      1            11.3596             11.4482             11.
+   4 │         4      1             9.41121             9.55359             9.
+   5 │         5      1             2.52335             2.54274             2. ⋯
+   6 │         6      1             2.56021             2.56415             2.
+   7 │         7      1             3.07991             3.12233             3.
+   8 │         8      1             3.24812             3.20234             3.
+  ⋮  │     ⋮        ⋮            ⋮                   ⋮                   ⋮     ⋱
+ 192 │       192      1             5.45921             5.4174              5. ⋯
+ 193 │       193      1             5.49045             5.35685             5.
+ 194 │       194      1             5.49818             5.44307             5.
+ 195 │       195      1             5.41988             5.34117             5.
+ 196 │       196      1             5.60165             5.52708             5. ⋯
+ 197 │       197      1             5.60866             5.42566             5.
+ 198 │       198      1             5.25028             5.43807             5.
+</span><span class="sgr36">                                                284 columns and 183 rows omitted, 198×830 DataFrame
+ Row │ iteration  chain  E_init       I_init      H_init        alpha_t[1]  al ⋯
+     │</span><span class="sgr90"> Int64      Int64  Float64      Float64     Float64       Float64     Fl ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │         1      1  3.13872e35   25287.6             28.9809      0.21504 ⋯
-   2 │         2      1  6.4162e28        4.96914e-5     305.681       0.19331
-   3 │         3      1  1.93863e28       0.000357878     52.4116      0.18621
-   4 │         4      1  2.89677e32       6.79006e-5     502.109       0.18645
-   5 │         5      1  1.56017e23       8.35337e-7      12.0852      0.18641 ⋯
-   6 │         6      1  1.20133e20       1.55045e-14  40534.0         0.18403
-   7 │         7      1  3.88436e24       9.17063e-14  13517.2         0.18807
-   8 │         8      1  2.39884e38       3.18494e15    1424.58        0.15677
-  ⋮  │     ⋮        ⋮         ⋮              ⋮               ⋮            ⋮    ⋱
- 191 │       191      1  6.11135e17       5.26651e-10      2.29547     0.17058 ⋯
- 192 │       192      1  8.76132e40       3.19175e-5       0.268839    0.17717
- 193 │       193      1  1.74625e45       1.47978e-6       0.0130516   0.14464
- 194 │       194      1  1.08663e28       1.62854e-11      0.0775133   0.16402
- 195 │       195      1  4.47971e34       1.80565e-10      0.0280158   0.15661 ⋯
- 196 │       196      1  1.97859e39       0.0226638        2.01965     0.23368
- 197 │       197      1  5.30774e-33      2.52261e13     109.192       0.11906
-</span><span class="sgr36">                                                831 columns and 182 rows omitted, 200×67 DataFrame
+   1 │         1      1  1.57348e20   4.47134e5      0.0530636    0.194159     ⋯
+   2 │         2      1  1.57348e20   4.47134e5      0.0530636    0.194159
+   3 │         3      1  1.57348e20   4.47134e5      0.0530636    0.194159
+   4 │         4      1  7.01044e24   2.17792e6      0.0254742    0.170248
+   5 │         5      1  1.28527e15   0.00199992     0.0320848    0.162447     ⋯
+   6 │         6      1  1.28527e15   0.00199992     0.0320848    0.162447
+   7 │         7      1  2.2737e15    0.0493993      0.0143634    0.163623
+   8 │         8      1  2.2737e15    0.0493993      0.0143634    0.163623
+  ⋮  │     ⋮        ⋮         ⋮           ⋮            ⋮            ⋮          ⋱
+ 192 │       192      1  3.41784      3.47436e12    30.5272       0.232402     ⋯
+ 193 │       193      1  4.49213e-24  6.0286e22      6.57442      0.13486
+ 194 │       194      1  3.96117e-22  3.75053e17    11.0096       0.178811
+ 195 │       195      1  2.44202e-11  1.8263e20      2.82052      0.16291
+ 196 │       196      1  1.61499e-7   5.91224e17     8.65339      0.197786     ⋯
+ 197 │       197      1  5.05526e-33  7.40905e12   168.804        0.161212
+ 198 │       198      1  3.99473e-30  6.06841e12    75.0675       0.147105
+</span><span class="sgr36">                                                824 columns and 183 rows omitted, 200×67 DataFrame
  Row │ iteration  chain  E_init_non_centered  I_init_non_centered  H_init_non_ ⋯
      │</span><span class="sgr90"> Int64      Int64  Float64              Float64              Float64     ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
-   1 │       101      1             1.52872              0.276645            0 ⋯
-   2 │       102      1             2.13135             -0.315273            0
-   3 │       103      1             1.22066             -0.725742            0
-   4 │       104      1             1.19672             -0.627024            0
-   5 │       105      1             1.38896             -0.710132            0 ⋯
-   6 │       106      1             0.962119            -0.93003            -0
-   7 │       107      1             0.818736            -1.82014             1
-   8 │       108      1             1.02641             -1.73127             1
+   1 │         1      1            0.824133              0.420272            - ⋯
+   2 │         2      1            0.824133              0.420272            -
+   3 │         3      1            0.824133              0.420272            -
+   4 │         4      1            1.03822               0.499435            -
+   5 │         5      1            0.589829             -0.540991            - ⋯
+   6 │         6      1            0.589829             -0.540991            -
+   7 │         7      1            0.601237             -0.380649            -
+   8 │         8      1            0.601237             -0.380649            -
   ⋮  │     ⋮        ⋮             ⋮                    ⋮                    ⋮  ⋱
- 194 │       294      1             1.77951             -0.747876           -0 ⋯
- 195 │       295      1             2.53932             -0.793771           -0
- 196 │       296      1             1.97751             -0.901439           -1
- 197 │       297      1             1.18514             -1.4723             -1
- 198 │       298      1             1.48978             -1.35201            -1 ⋯
- 199 │       299      1             1.7037              -0.419608           -0
- 200 │       300      1            -1.59229              1.31269             0
+ 194 │       194      1           -0.0813862             1.21356               ⋯
+ 195 │       195      1           -1.18116               2.39241             -
+ 196 │       196      1           -1.09157               1.79303             -
+ 197 │       197      1           -0.594679              2.10244             -
+ 198 │       198      1           -0.418742              1.81579             - ⋯
+ 199 │       199      1           -1.59326               1.25143
+ 200 │       200      1           -1.45982               1.24145
 </span><span class="sgr36">                                                 63 columns and 185 rows omitted]]</span></span></code></pre><h2 id="3.-Visualizing-Results-Of-Repeated-Forecasts."><a class="docs-heading-anchor" href="#3.-Visualizing-Results-Of-Repeated-Forecasts.">3. Visualizing Results Of Repeated Forecasts.</a><a id="3.-Visualizing-Results-Of-Repeated-Forecasts.-1"></a><a class="docs-heading-anchor-permalink" href="#3.-Visualizing-Results-Of-Repeated-Forecasts." title="Permalink"></a></h2><p>We can take a look at these forecasts using the <code>uciwweihr_visualizer</code> function.  We can also add certain parameters to ensure we only see the plots we want.</p><pre><code class="language-julia hljs">for res_index in 1:length(forecast_points)
     uciwweihr_visualizer(
         data_hosp,
@@ -220,4 +220,4 @@ MCMC Diagnostics Plots are not requested.
 MCMC time varying parameter results are not requested.
 MCMC non-time varying parameter results are not requested.
 Plot saved to plots/mcmc_ode_solution_plots.png
-Plot saved to plots/mcmc_pred_parameter_plots_rep_res4.png</code></pre><h3 id="3.1.-Forecast-Point-1."><a class="docs-heading-anchor" href="#3.1.-Forecast-Point-1.">3.1. Forecast Point 1.</a><a id="3.1.-Forecast-Point-1.-1"></a><a class="docs-heading-anchor-permalink" href="#3.1.-Forecast-Point-1." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res1.png" alt="Plot 1"/></p><h3 id="3.2.-Forecast-Point-2."><a class="docs-heading-anchor" href="#3.2.-Forecast-Point-2.">3.2. Forecast Point 2.</a><a id="3.2.-Forecast-Point-2.-1"></a><a class="docs-heading-anchor-permalink" href="#3.2.-Forecast-Point-2." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res2.png" alt="Plot 2"/></p><h3 id="3.3.-Forecast-Point-3."><a class="docs-heading-anchor" href="#3.3.-Forecast-Point-3.">3.3. Forecast Point 3.</a><a id="3.3.-Forecast-Point-3.-1"></a><a class="docs-heading-anchor-permalink" href="#3.3.-Forecast-Point-3." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res3.png" alt="Plot 3"/></p><h3 id="3.4.-Forecast-Point-4."><a class="docs-heading-anchor" href="#3.4.-Forecast-Point-4.">3.4. Forecast Point 4.</a><a id="3.4.-Forecast-Point-4.-1"></a><a class="docs-heading-anchor-permalink" href="#3.4.-Forecast-Point-4." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res4.png" alt="Plot 4"/></p><h3 id="[Tutorial-Contents](@ref-tutorial_home)"><a class="docs-heading-anchor" href="#[Tutorial-Contents](@ref-tutorial_home)"><a href="../../tutorial_index/#tutorial_home">Tutorial Contents</a></a><a id="[Tutorial-Contents](@ref-tutorial_home)-1"></a><a class="docs-heading-anchor-permalink" href="#[Tutorial-Contents](@ref-tutorial_home)" title="Permalink"></a></h3></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uciwwiehr_model_fitting_forecast/">« UCIWWEIHR FITTING MODEL W/ FORECASTING</a><a class="docs-footer-nextpage" href="../../reference/">REFERENCE »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Monday 18 November 2024 23:27">Monday 18 November 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+Plot saved to plots/mcmc_pred_parameter_plots_rep_res4.png</code></pre><h3 id="3.1.-Forecast-Point-1."><a class="docs-heading-anchor" href="#3.1.-Forecast-Point-1.">3.1. Forecast Point 1.</a><a id="3.1.-Forecast-Point-1.-1"></a><a class="docs-heading-anchor-permalink" href="#3.1.-Forecast-Point-1." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res1.png" alt="Plot 1"/></p><h3 id="3.2.-Forecast-Point-2."><a class="docs-heading-anchor" href="#3.2.-Forecast-Point-2.">3.2. Forecast Point 2.</a><a id="3.2.-Forecast-Point-2.-1"></a><a class="docs-heading-anchor-permalink" href="#3.2.-Forecast-Point-2." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res2.png" alt="Plot 2"/></p><h3 id="3.3.-Forecast-Point-3."><a class="docs-heading-anchor" href="#3.3.-Forecast-Point-3.">3.3. Forecast Point 3.</a><a id="3.3.-Forecast-Point-3.-1"></a><a class="docs-heading-anchor-permalink" href="#3.3.-Forecast-Point-3." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res3.png" alt="Plot 3"/></p><h3 id="3.4.-Forecast-Point-4."><a class="docs-heading-anchor" href="#3.4.-Forecast-Point-4.">3.4. Forecast Point 4.</a><a id="3.4.-Forecast-Point-4.-1"></a><a class="docs-heading-anchor-permalink" href="#3.4.-Forecast-Point-4." title="Permalink"></a></h3><p><img src="../plots/mcmc_pred_parameter_plots_rep_res4.png" alt="Plot 4"/></p><h3 id="[Tutorial-Contents](@ref-tutorial_home)"><a class="docs-heading-anchor" href="#[Tutorial-Contents](@ref-tutorial_home)"><a href="../../tutorial_index/#tutorial_home">Tutorial Contents</a></a><a id="[Tutorial-Contents](@ref-tutorial_home)-1"></a><a class="docs-heading-anchor-permalink" href="#[Tutorial-Contents](@ref-tutorial_home)" title="Permalink"></a></h3></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uciwwiehr_model_fitting_forecast/">« UCIWWEIHR FITTING MODEL W/ FORECASTING</a><a class="docs-footer-nextpage" href="../../reference/">REFERENCE »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Tuesday 19 November 2024 22:40">Tuesday 19 November 2024</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
