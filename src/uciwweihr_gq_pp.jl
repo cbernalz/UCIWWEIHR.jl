@@ -42,7 +42,6 @@ function uciwweihr_gq_pp(
         last_value = obstimes_hosp[end]
         for i in 1:forecast_weeks
             next_value = last_value + 7
-            push!(param_change_times, next_value)
             push!(obstimes_hosp, next_value)
             push!(obstimes_wastewater, next_value)
             last_value = next_value
@@ -117,7 +116,6 @@ function uciwweihr_gq_pp(
         last_value = obstimes_hosp[end]
         for i in 1:forecast_weeks
             next_value = last_value + 7
-            push!(param_change_times, next_value)
             push!(obstimes_hosp, next_value)
             last_value = next_value
         end

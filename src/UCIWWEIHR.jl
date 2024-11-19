@@ -27,6 +27,7 @@ include("generate_simulation_data_agent.jl")
 include("eihr_ode.jl")
 include("negativebinomial2.jl")
 include("generalizedtdist.jl")
+include("optimize_many_MAP.jl")
 include("uciwweihr_model_params.jl")
 include("uciwweihr_model.jl")
 include("uciwweihr_fit.jl")
@@ -49,6 +50,8 @@ export generate_simulation_data_uciwweihr
 export generate_simulation_data_agent
 export NegativeBinomial2
 export GeneralizedTDist
+export optimize_many_MAP
+export optimize_many_MAP2
 export uciwweihr_model_params
 export create_uciwweihr_model_params
 export uciwweihr_model

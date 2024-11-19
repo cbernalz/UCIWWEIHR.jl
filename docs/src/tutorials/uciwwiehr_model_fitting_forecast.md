@@ -57,7 +57,10 @@ samples = uciwweihr_fit(
     param_change_times,
     priors_only,
     n_samples,
-    params = model_params
+    n_discard_initial = 100,
+    params = model_params,
+    optimize_init = true,
+    verbose_optimize = true
 )
 model_output = uciwweihr_gq_pp(
     samples,
