@@ -15,6 +15,8 @@ The defaults for this fuction will follow those of the default simulation in gen
 - `params::uciwweihr_model_params`: A struct containing parameters for the model.
 - `forecast::Bool=false`: A boolean to indicate if forecasting is to be done.
 - `forecast_weeks::Int64=4`: Number of weeks to forecast.
+- `return_bool::Bool=true`: A boolean to indicate if the model is to use the return statement.  **Only set to false if only forecast is desired**
+- `gq_bool::Bool=true`: A boolean to indicate if the model is to generate quantities.  **Only set to false if only forecast is desired**
 
 # Returns
 - Samples from the posterior or prior distribution.
@@ -29,7 +31,9 @@ function uciwweihr_gq_pp(
     param_change_times,
     seed::Int64=2024,
     params::uciwweihr_model_params,
-    forecast::Bool=false, forecast_weeks::Int64=4
+    forecast::Bool=false, forecast_weeks::Int64=4,
+    return_bool::Bool=true,
+    gq_bool::Bool=true
     )
 
     println("Using uciwweihr_model with wastewater!!!")
@@ -61,7 +65,8 @@ function uciwweihr_gq_pp(
         obstimes_hosp,
         obstimes_wastewater;
         param_change_times,
-        params
+        params,
+        return_bool# = true
     )
 
 
@@ -77,23 +82,29 @@ function uciwweihr_gq_pp(
         obstimes_hosp,
         obstimes_wastewater;
         param_change_times,
-        params
+        params,
+        return_bool# = true,
     )
-
-
-    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
-    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
-
-    Random.seed!(seed)
-    predictive_randn = predict(my_model_forecast_missing, samples_randn)
-
-    Random.seed!(seed)
-    gq_randn = Chains(generated_quantities(my_model, samples_randn))
 
     samples_df = DataFrame(samples)
 
-    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
-
+    if gq_bool
+        indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+        samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+    
+        Random.seed!(seed)
+        predictive_randn = predict(my_model_forecast_missing, samples_randn)
+        Random.seed!(seed)
+        println("Generating quantities...")
+        gq_randn = Chains(generated_quantities(my_model, samples_randn))
+        results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
+    else
+        println("Not generating quantities...")
+        println("**result will only contain pp**")
+        Random.seed!(seed)
+        predictive_randn = predict(my_model_forecast_missing, samples)
+        results = [DataFrame(predictive_randn)]
+    end
 
     return(results)
 end
@@ -105,7 +116,9 @@ function uciwweihr_gq_pp(
     param_change_times,
     seed::Int64=2024,
     params::uciwweihr_model_params,
-    forecast::Bool=false, forecast_weeks::Int64=4
+    forecast::Bool=false, forecast_weeks::Int64=4,
+    return_bool::Bool=true,
+    gq_bool::Bool=true
     )
     println("Using uciwweihr_model without wastewater!!!")
     obstimes_hosp = convert(Vector{Float64}, obstimes_hosp)
@@ -129,7 +142,8 @@ function uciwweihr_gq_pp(
         data_hosp,
         obstimes_hosp;
         param_change_times,
-        params
+        params,
+        return_bool
     )
 
 
@@ -143,7 +157,8 @@ function uciwweihr_gq_pp(
         missing_data_hosp,
         obstimes_hosp;
         param_change_times,
-        params
+        params,
+        return_bool
     )
 
 
@@ -154,13 +169,19 @@ function uciwweihr_gq_pp(
     Random.seed!(seed)
     predictive_randn = predict(my_model_forecast_missing, samples_randn)
 
-    Random.seed!(seed)
-    gq_randn = Chains(generated_quantities(my_model, samples_randn))
-
     samples_df = DataFrame(samples)
 
-    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
-
+    if gq_bool
+        Random.seed!(seed)
+        println("Generating quantities...")
+        gq_randn = Chains(generated_quantities(my_model, samples_randn))
+        results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
+    else
+        println("Not generating quantities...")
+        println("**result will only contain pp**")
+        results = [DataFrame(predictive_randn)]
+        
+    end
 
     return(results)
 end

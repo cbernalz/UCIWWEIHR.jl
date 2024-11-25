@@ -15,8 +15,8 @@ The defaults for this fuction will follow those of the default simulation in gen
 - `n_discard_initial::Int64=0`: Number of samples to be discarded.
 - `seed::Int64=2024`: Seed for the random number generator.
 - `params::uciwweihr_model_params`: A struct containing parameters for the model.
-- `optimize_init::Bool=false`: A boolean to indicate if the initial values are to be optimized.
-- `verbose_optimize::Bool=false`: A boolean to indicate if the optimization process is to be verbose.
+- `init_params`: Initial parameters for the model.  If supplied, `uciwweihr_init_param` can supply these values.
+- `return_bool`: A boolean to indicate if the model is to use the return statement.  **Only set to false if only forecast is desired**
 
 # Returns
 - Samples from the posterior or prior distribution.
@@ -31,22 +31,13 @@ function uciwweihr_fit(
     n_samples::Int64=500, n_chains::Int64=1, 
     n_discard_initial::Int64=0, seed::Int64=2024,
     params::uciwweihr_model_params,
-    optimize_init::Bool=false,
-    verbose_optimize::Bool=false
+    init_params = nothing,
+    return_bool::Bool=true,
     )
     println("Using uciwweihr_model with wastewater!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-
-    my_model_optimize = uciwweihr_model(
-        data_hosp, 
-        data_wastewater,
-        obstimes_hosp,
-        obstimes_wastewater;
-        param_change_times,
-        params
-    )
 
     my_model = uciwweihr_model(
         data_hosp, 
@@ -54,7 +45,8 @@ function uciwweihr_fit(
         obstimes_hosp,
         obstimes_wastewater;
         param_change_times,
-        params
+        params,
+        return_bool
     )
 
     # Sample Posterior
@@ -65,13 +57,8 @@ function uciwweihr_fit(
         Random.seed!(seed)
 
         # Optimize
-        if optimize_init
-            MAP_init = optimize_many_MAP2(my_model_optimize, 10, 1, verbose_optimize)[1]
-            Random.seed!(seed)
-            MAP_noise = vcat(randn(length(MAP_init) - 1, n_chains), transpose(zeros(n_chains)))
-            MAP_noise = [MAP_noise[:,i] for i in 1:size(MAP_noise,2)]
-            init = repeat([MAP_init], n_chains) .+ 0.05 * MAP_noise
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init)
+        if init_params === nothing
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
         else
             samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
         end
@@ -87,8 +74,8 @@ function uciwweihr_fit(
     n_samples::Int64=500, n_chains::Int64=1, 
     n_discard_initial::Int64=0, seed::Int64=2024,
     params::uciwweihr_model_params,
-    optimize_init::Bool=false,
-    verbose_optimize::Bool=false
+    init_params = nothing,
+    return_bool::Bool=true,
     )
     println("Using uciwweihr_model without wastewater!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
@@ -98,7 +85,8 @@ function uciwweihr_fit(
         data_hosp,
         obstimes_hosp; 
         param_change_times,
-        params
+        params,
+        return_bool
     )
 
 
@@ -106,7 +94,8 @@ function uciwweihr_fit(
         data_hosp,
         obstimes_hosp; 
         param_change_times,
-        params
+        params,
+        return_bool
     )
 
 
@@ -118,13 +107,8 @@ function uciwweihr_fit(
         Random.seed!(seed)
         
         # Optimize
-        if optimize_init
-            MAP_init = optimize_many_MAP2(my_model_optimize, 10, 1, verbose_optimize)[1]
-            Random.seed!(seed)
-            MAP_noise = vcat(randn(length(MAP_init) - 1, n_chains), transpose(zeros(n_chains)))
-            MAP_noise = [MAP_noise[:,i] for i in 1:size(MAP_noise,2)]
-            init = repeat([MAP_init], n_chains) .+ 0.05 * MAP_noise
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init)
+        if init_params === nothing
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
         else
             samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
         end

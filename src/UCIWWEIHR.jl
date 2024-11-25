@@ -28,6 +28,7 @@ include("eihr_ode.jl")
 include("negativebinomial2.jl")
 include("generalizedtdist.jl")
 include("optimize_many_MAP.jl")
+include("uciwweihr_init_param.jl")
 include("uciwweihr_model_params.jl")
 include("uciwweihr_model.jl")
 include("uciwweihr_fit.jl")
@@ -52,6 +53,7 @@ export NegativeBinomial2
 export GeneralizedTDist
 export optimize_many_MAP
 export optimize_many_MAP2
+export uciwweihr_init_param
 export uciwweihr_model_params
 export create_uciwweihr_model_params
 export uciwweihr_model

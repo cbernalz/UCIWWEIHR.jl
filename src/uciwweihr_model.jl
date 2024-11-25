@@ -10,6 +10,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 - `obstimes_wastewater`: An array of timepoints for observed wastewater data.
 - `param_change_times`: An array of timepoints where the parameters change.
 - `params::uciwweihr_model_params`: A struct containing parameters for the model.
+- `return_bool`: A boolean to indicate if the model is to use the return statement.  **Only set to false if only forecast is desired**
 
 """
 @model function uciwweihr_model(
@@ -18,7 +19,8 @@ The defaults for this fuction will follow those of the default simulation in gen
     obstimes_hosp,
     obstimes_wastewater;
     param_change_times,
-    params::uciwweihr_model_params
+    params::uciwweihr_model_params,
+    return_bool::Bool=true
     )
 
         # Prelims
@@ -161,31 +163,33 @@ The defaults for this fuction will follow those of the default simulation in gen
         rt_init = alpha_init / nu
         w_t = w_no_init
 
-        return (
-            E_init,
-            I_init,
-            H_init,
-            alpha_t = alpha_t,
-            gamma = gamma,
-            nu = nu,
-            w_t = w_t,
-            sigma_w = sigma_w,
-            epsilon = epsilon,
-            rt_vals = rt_vals,
-            sigma_Rt = sigma_Rt,
-            rho_gene = rho_gene,
+        if return_bool
+            return (
+                E_init,
+                I_init,
+                H_init,
+                alpha_t = alpha_t,
+                gamma = gamma,
+                nu = nu,
+                w_t = w_t,
+                sigma_w = sigma_w,
+                epsilon = epsilon,
+                rt_vals = rt_vals,
+                sigma_Rt = sigma_Rt,
+                rho_gene = rho_gene,
 
-            sigma_ww = sigma_ww,
-            sigma_hosp = sigma_hosp,
+                sigma_ww = sigma_ww,
+                sigma_hosp = sigma_hosp,
             
-            H = H_comp_sol,
-            I = I_comp_sol,
-            E = E_comp_sol,
-            H_means = H_means,
-            log_genes_mean = log_W_means,
-            rt_init = rt_init,
-            w_init = w_init
-        )
+                H = H_comp_sol,
+                I = I_comp_sol,
+                E = E_comp_sol,
+                H_means = H_means,
+                log_genes_mean = log_W_means,
+                rt_init = rt_init,
+                w_init = w_init
+            )
+        end
 
 
     end
@@ -196,10 +200,9 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_hosp,
     obstimes_hosp;
     param_change_times,
-    params::uciwweihr_model_params
+    params::uciwweihr_model_params,
+    return_bool::Bool=true
     )
-    
-    
         # Prelims
         max_neg_bin_sigma = 1e10
         min_neg_bin_sigma = 1e-10
@@ -309,28 +312,31 @@ The defaults for this fuction will follow those of the default simulation in gen
         rt_init = alpha_init / nu
         w_t = w_no_init
     
-        return (
-            E_init,
-            I_init,
-            H_init,
-            alpha_t = alpha_t,
-            gamma = gamma,
-            nu = nu,
-            w_t = w_t,
-            sigma_w = sigma_w,
-            epsilon = epsilon,
-            rt_vals = rt_vals,
-            sigma_Rt = sigma_Rt,
 
-            sigma_hosp = sigma_hosp, 
+        if return_bool
+            return (
+                E_init,
+                I_init,
+                H_init,
+                alpha_t = alpha_t,
+                gamma = gamma,
+                nu = nu,
+                w_t = w_t,
+                sigma_w = sigma_w,
+                epsilon = epsilon,
+                rt_vals = rt_vals,
+                sigma_Rt = sigma_Rt,
 
-            H = H_comp_sol,
-            I = I_comp_sol,
-            E = E_comp_sol,
-            H_means = H_means,
-            rt_init = rt_init,
-            w_init = w_init
-        )
+                sigma_hosp = sigma_hosp, 
+
+                H = H_comp_sol,
+                I = I_comp_sol,
+                E = E_comp_sol,
+                H_means = H_means,
+                rt_init = rt_init,
+                w_init = w_init
+            )
+        end
     
     
     end
