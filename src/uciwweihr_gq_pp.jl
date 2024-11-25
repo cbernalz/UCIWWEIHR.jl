@@ -109,6 +109,7 @@ function uciwweihr_gq_pp(
     return(results)
 end
 
+
 function uciwweihr_gq_pp(
     samples,
     data_hosp,
@@ -120,6 +121,7 @@ function uciwweihr_gq_pp(
     return_bool::Bool=true,
     gq_bool::Bool=true
     )
+
     println("Using uciwweihr_model without wastewater!!!")
     obstimes_hosp = convert(Vector{Float64}, obstimes_hosp)
     param_change_times = convert(Vector{Float64}, param_change_times)
@@ -139,11 +141,11 @@ function uciwweihr_gq_pp(
     end
 
     my_model = uciwweihr_model(
-        data_hosp,
+        data_hosp, 
         obstimes_hosp;
         param_change_times,
         params,
-        return_bool
+        return_bool# = true
     )
 
 
@@ -154,24 +156,21 @@ function uciwweihr_gq_pp(
     #gq_randn = Chains(generated_quantities(my_model, samples_randn))
 
     my_model_forecast_missing = uciwweihr_model(
-        missing_data_hosp,
+        missing_data_hosp, 
         obstimes_hosp;
         param_change_times,
         params,
-        return_bool
+        return_bool# = true,
     )
-
-
-    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
-    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
-
-
-    Random.seed!(seed)
-    predictive_randn = predict(my_model_forecast_missing, samples_randn)
 
     samples_df = DataFrame(samples)
 
     if gq_bool
+        indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+        samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+    
+        Random.seed!(seed)
+        predictive_randn = predict(my_model_forecast_missing, samples_randn)
         Random.seed!(seed)
         println("Generating quantities...")
         gq_randn = Chains(generated_quantities(my_model, samples_randn))
@@ -179,8 +178,9 @@ function uciwweihr_gq_pp(
     else
         println("Not generating quantities...")
         println("**result will only contain pp**")
+        Random.seed!(seed)
+        predictive_randn = predict(my_model_forecast_missing, samples)
         results = [DataFrame(predictive_randn)]
-        
     end
 
     return(results)
