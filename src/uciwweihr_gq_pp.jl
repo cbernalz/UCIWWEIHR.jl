@@ -37,9 +37,9 @@ function uciwweihr_gq_pp(
     )
 
     println("Using uciwweihr_model with wastewater!!!")
-    obstimes_hosp = convert(Vector{Float64}, obstimes_hosp)
-    obstimes_wastewater = convert(Vector{Float64}, obstimes_wastewater)
-    param_change_times = convert(Vector{Float64}, param_change_times)
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
+    param_change_times = convert(Vector{Int64}, param_change_times)
 
 
     if forecast

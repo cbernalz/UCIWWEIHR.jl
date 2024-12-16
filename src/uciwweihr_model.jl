@@ -17,7 +17,8 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_hosp,
     data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater;
+    obstimes_wastewater,
+    obstimes;
     param_change_times,
     params::uciwweihr_model_params,
     return_bool::Bool=true
@@ -27,11 +28,10 @@ The defaults for this fuction will follow those of the default simulation in gen
         max_neg_bin_sigma = 1e10
         min_neg_bin_sigma = 1e-10
 
-
         # Calculate number of observed datapoints timepoints
         l_obs_hosp = length(obstimes_hosp)
         l_obs_ww = length(obstimes_wastewater)
-        l_param_change_times = length(param_change_times)
+        l_param_change_times = length(param_change_times) - 1
 
 
         # PRIORS-----------------------------
@@ -111,36 +111,26 @@ The defaults for this fuction will follow those of the default simulation in gen
 
         # ODE SETUP--------------------------
         max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
-        obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
-        obstimes = sort(obstimes)
         prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, max_obstime_end), ones(5))
-        function param_affect_beta!(integrator)
-            ind_t = searchsortedfirst(param_change_times, integrator.t) # Find the index of param_change_times that contains the current timestep
-            integrator.p[1] = alpha_t_no_init[ind_t] # Replace alpha with a new value from alpha_t_no_init
-            integrator.p[4] = w_no_init[ind_t] # Replace w with a new value from w_no_init
-        end
-        param_callback = PresetTimeCallback(param_change_times, param_affect_beta!, save_positions=(false, false))
         u0 = [E_init, I_init, H_init]
-        p0 = [alpha_init, gamma, nu, w_init, epsilon]
+        p0 = (gamma, nu, epsilon, alpha_t, w_t, param_change_times)
         extra_ode_precision = false
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); callback=param_callback, saveat=0.0:max_obstime_end, save_start=true, 
+        sol = solve(prob, Tsit5(); saveat=0.0:max_obstime_end, save_start=true, 
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
             Turing.@addlogprob! -Inf
             return
         end
-        obstimes_hosp_indices = Int.(obstimes_hosp)
-        obstimes_wastewater_indices = Int.(obstimes_wastewater)
         sol_array = Array(sol)
         I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
         E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
         full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene) 
         H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
-        H_means = H_comp_sol[obstimes_hosp_indices]
-        log_W_means = full_log_genes_mean[obstimes_wastewater_indices]
+        H_means = H_comp_sol[obstimes_hosp]
+        log_W_means = full_log_genes_mean[obstimes_wastewater]
 
 
         # W-W means--------------------------
