@@ -79,21 +79,21 @@ Creates a `uciwweihr_sim_params` struct with the option to either use a predeter
 - `params::uciwweihr_sim_params`: A struct with simulation parameters.
 """
 function create_uciwweihr_model_params(; 
-    E_init_sd::Float64=50.0, log_E_init_mean::Float64=log(200),
-    I_init_sd::Float64=20.0, log_I_init_mean::Float64=log(100),
-    H_init_sd::Float64=5.0, log_H_init_mean::Float64=log(20),
+    E_init_sd::Float64=0.2, log_E_init_mean::Float64=log(200),
+    I_init_sd::Float64=0.2, log_I_init_mean::Float64=log(100),
+    H_init_sd::Float64=0.2, log_H_init_mean::Float64=log(20),
     gamma_sd::Float64=0.02, log_gamma_mean::Float64=log(1/4),
     nu_sd::Float64=0.02, log_nu_mean::Float64=log(1/7),
     epsilon_sd::Float64=0.02, log_epsilon_mean::Float64=log(1/5),
     rho_gene_sd::Float64=0.02, log_rho_gene_mean::Float64=log(0.011),
 
-    sigma_wastewater::Union{Float64, Nothing}=0.1,
-    sigma_hosp::Union{Float64, Nothing}=500.0,
+    sigma_wastewater::Union{Float64, Nothing}=nothing,
+    sigma_hosp::Union{Float64, Nothing}=nothing,
     
-    #sigma_ww_sd::Float64=0.02, log_sigma_ww_mean::Float64=log(0.1),
-    #sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
-    sigma_ww_sd::Union{Float64, Nothing}=nothing, log_sigma_ww_mean::Union{Float64, Nothing}=nothing,
-    sigma_hosp_sd::Union{Float64, Nothing}=nothing, sigma_hosp_mean::Union{Float64, Nothing}=nothing,
+    sigma_ww_sd::Float64=0.02, log_sigma_ww_mean::Float64=log(0.1),
+    sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
+    #sigma_ww_sd::Union{Float64, Nothing}=nothing, log_sigma_ww_mean::Union{Float64, Nothing}=nothing,
+    #sigma_hosp_sd::Union{Float64, Nothing}=nothing, sigma_hosp_mean::Union{Float64, Nothing}=nothing,
 
 
     Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,

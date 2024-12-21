@@ -17,12 +17,12 @@ Here we generate two datasets, one with 150 time points and one with 178 time po
 using UCIWWEIHR
 # Running simulation function with presets
 params = create_uciwweihr_sim_params(
-    time_points = 150
+    time_points = 70
 )
 df = generate_simulation_data_uciwweihr(params)
 
 params_ext = create_uciwweihr_sim_params(
-    time_points = 178
+    time_points = 84
 )
 df_ext = generate_simulation_data_uciwweihr(params_ext)
 first(df, 5)
@@ -46,7 +46,7 @@ param_change_times = 1:7:max_obstime # Change every week
 priors_only = false
 n_samples = 200
 forecast = true
-forecast_weeks = 4
+forecast_weeks = 2
 
 model_params = create_uciwweihr_model_params()
 samples = uciwweihr_fit(
