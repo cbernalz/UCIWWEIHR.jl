@@ -30,6 +30,7 @@ include("generalizedtdist.jl")
 include("optimize_many_MAP.jl")
 include("uciwweihr_model_params.jl")
 include("uciwweihr_init_param.jl")
+include("uciwweihr_likelihood_helpers.jl")
 include("uciwweihr_model.jl")
 include("uciwweihr_fit.jl")
 include("uciwweihr_gq_pp.jl")
@@ -55,6 +56,7 @@ export optimize_many_MAP
 export optimize_many_MAP2
 export uciwweihr_model_params
 export uciwweihr_init_param
+export uciwweihr_likelihood_helpers
 export create_uciwweihr_model_params
 export uciwweihr_model
 export uciwweihr_fit

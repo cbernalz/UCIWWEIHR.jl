@@ -19,9 +19,9 @@ function eihr_ode!(du, u, p, t)
     (gamma, nu, epsilon, alphas, ws, param_change_times) = p
 
     # Time varying
-    ind_t = searchsortedfirst(param_change_times, t) 
-    alpha = alpha_t_no_init[ind_t]
-    w = w_no_init[ind_t]
+    ind_t = searchsortedlast(param_change_times, t) 
+    alpha = alphas[ind_t]
+    w = ws[ind_t]
 
     # -> E
     exposed_in = alpha * I

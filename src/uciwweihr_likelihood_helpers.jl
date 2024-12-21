@@ -7,12 +7,10 @@
 
 """
 function uciwweihr_likelihood_helpers(
-    data_hosp,
-    data_wastewater,
+    param_change_times,
     obstimes_hosp,
     obstimes_wastewater,
-    obstimes;
-    param_change_times,
+    obstimes,
     params::uciwweihr_model_params,
     E_init_non_centered, I_init_non_centered, H_init_non_centered,
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
@@ -23,11 +21,6 @@ function uciwweihr_likelihood_helpers(
         # Prelims
         max_neg_bin_sigma = 1e10
         min_neg_bin_sigma = 1e-10
-
-        # Calculate number of observed datapoints timepoints
-        l_obs_hosp = length(obstimes_hosp)
-        l_obs_ww = length(obstimes_wastewater)
-        l_param_change_times = length(param_change_times) - 1
 
         # Non-constant Rt
         sigma_Rt_non_centered = Rt_params_non_centered[1]
@@ -73,6 +66,7 @@ function uciwweihr_likelihood_helpers(
         max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
         prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, max_obstime_end), ones(5))
         u0 = [E_init, I_init, H_init]
+        println(length(w_t))
         p0 = (gamma, nu, epsilon, alpha_t, w_t, param_change_times)
         extra_ode_precision = false
         abstol = extra_ode_precision ? 1e-11 : 1e-9
@@ -93,4 +87,14 @@ function uciwweihr_likelihood_helpers(
         log_W_means = full_log_genes_mean[obstimes_wastewater]
 
         # Return --------------------------
+        return (
+            E_init = E_init, I_init = I_init, H_init = H_init,
+            gamma = gamma, nu = nu, epsilon = epsilon,
+            rho_gene = rho_gene, sigma_ww = sigma_ww, 
+            sigma_hosp = sigma_hosp,
+            Rt_init = Rt_init, sigma_Rt = sigma_Rt, alpha_t = alpha_t,
+            w_init = w_init, sigma_w = sigma_w, w_t = w_t,
+            E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol,
+            log_W_means = log_W_means
+        )
 end
