@@ -66,7 +66,6 @@ function uciwweihr_likelihood_helpers(
         max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
         prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, max_obstime_end), ones(5))
         u0 = [E_init, I_init, H_init]
-        println(length(w_t))
         p0 = (gamma, nu, epsilon, alpha_t, w_t, param_change_times)
         extra_ode_precision = false
         abstol = extra_ode_precision ? 1e-11 : 1e-9
