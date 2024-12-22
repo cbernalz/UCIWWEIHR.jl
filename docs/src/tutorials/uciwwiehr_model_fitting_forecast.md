@@ -90,7 +90,7 @@ We can again look at model diagnostics, posterior distribution of time or non-ti
 uciwweihr_visualizer(
     data_hosp, 
     data_wastewater,
-    forecast_weeks,
+    forecast_days,
     obstimes_hosp,
     obstimes_wastewater,
     param_change_times,
