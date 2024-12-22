@@ -138,33 +138,31 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
     Random.seed!(params.seed)
     time_points = params.time_points
 
+    # Preping weekly params
     alpha_t = params.Rt .* params.nu
-    u0 = [params.E_init, params.I_init, params.H_init]
-    p0 = [alpha_t[1], params.gamma, params.nu, params.w[1], params.epsilon]
 
-    prob = ODEProblem(eihr_ode!, u0, (0.0, time_points), p0)
-    
-    function param_affect_beta!(integrator)
-        ind_t = searchsortedfirst(1:time_points, integrator.t)
-        integrator.p[1] = alpha_t[ind_t]
-        integrator.p[4] = params.w[ind_t]
-    end
-    param_callback = PresetTimeCallback(1:time_points, param_affect_beta!, save_positions=(false, false))
+    # ODE SETUP--------------------------
+    u0 = [params.E_init, params.I_init, params.H_init]
+    p0 = (params.gamma, params.nu, params.epsilon, alpha_t, params.w, 1:time_points)
+    prob = ODEProblem(eihr_ode!, u0, (1.0, time_points), p0)
     extra_ode_precision = false
     abstol = extra_ode_precision ? 1e-11 : 1e-9
     reltol = extra_ode_precision ? 1e-8 : 1e-6
-    sol = solve(prob, Tsit5(); callback=param_callback, saveat=collect(1:time_points), save_start=true, 
-                verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, time_points))
+    sol = solve(prob, Tsit5(); saveat=1:time_points, save_start=true, 
+                verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(1, time_points))
+    # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
     if sol.retcode != :Success
         Turing.@addlogprob! -Inf
         return
     end
     sol_array = Array(sol)
-    I_comp_sol = clamp.(sol_array[2, 2:end], 1, 1e10)
-    H_comp_sol = clamp.(sol_array[3, 2:end], 1, 1e10)
+    I_comp_sol = clamp.(sol_array[2, 1:end], 1, 1e10)
+    H_comp_sol = clamp.(sol_array[3, 1:end], 1, 1e10)
 
     # Log Gene Setup
     log_genes_mean = log.(I_comp_sol) .+ log(params.rho_gene)
+
+    # Data
     data_wastewater = [rand(Normal(log_genes_mean[t], params.sigma_ww)) for t in 1:time_points]
     data_hosp = [rand(NegativeBinomial2(H_comp_sol[t], params.sigma_hosp)) for t in 1:time_points]
 
@@ -174,7 +172,7 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
         hosp = data_hosp,
         rt = params.Rt,
         wt = params.w,
-        E_ode_comp_sol = clamp.(sol_array[1, 2:end], 1, 1e10),
+        E_ode_comp_sol = clamp.(sol_array[1, 1:end], 1, 1e10),
         I_ode_comp_sol = I_comp_sol,
         H_ode_comp_sol = H_comp_sol
     )

@@ -1,4 +1,4 @@
-# Fitting UCIWWEIHR model
+# GQ & PP UCIWWEIHR model
 # -------------------------------------------------
 """
     uciwweihr_gq_pp(...)
@@ -21,167 +21,245 @@ The defaults for this fuction will follow those of the default simulation in gen
 # Returns
 - Samples from the posterior or prior distribution.
 """
-
 function uciwweihr_gq_pp(
     samples,
     data_hosp,
     data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater;
+    obstimes_wastewater,
     param_change_times,
+    params::uciwweihr_model_params2;
     seed::Int64=2024,
-    params::uciwweihr_model_params,
-    forecast::Bool=false, forecast_weeks::Int64=4,
-    return_bool::Bool=true,
-    gq_bool::Bool=true
-    )
-
-    println("Using uciwweihr_model with wastewater!!!")
+    forecast::Bool=false, forecast_days::Int64=14
+)
+    println("Using uciwweihr_model with wastewater.  Priors on sigma_ww and sigma_hosp!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-
-
+    param_change_times = vcat(0, param_change_times)
+    obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
+    obstimes = sort(obstimes)
+    
     if forecast
         last_value = obstimes_hosp[end]
-        for i in 1:forecast_weeks
-            next_value = last_value + 7
-            push!(obstimes_hosp, next_value)
-            push!(obstimes_wastewater, next_value)
-            last_value = next_value
-        end
-        missing_data_ww = repeat([missing], length(obstimes_wastewater))
+        obstimes_hosp = vcat(obstimes_hosp,(last_value+1):(last_value+forecast_days))
+        obstimes_wastewater = vcat(obstimes_wastewater,(last_value+1):(last_value+forecast_days))
+        obstimes = vcat(obstimes, (last_value+1):(last_value+forecast_days))
         missing_data_hosp = repeat([missing], length(obstimes_hosp))
-        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_weeks))
-        data_wastewater = vcat(data_wastewater, repeat([data_wastewater[end]], forecast_weeks))
+        missing_data_ww = repeat([missing], length(obstimes_wastewater))
+        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_days))
+        data_wastewater = vcat(data_wastewater, repeat([data_wastewater[end]], forecast_days))
     else
         missing_data_ww = repeat([missing], length(data_wastewater))
         missing_data_hosp = repeat([missing], length(data_hosp))
     end
 
     my_model = uciwweihr_model(
-        data_hosp, 
+        data_hosp,
         data_wastewater,
         obstimes_hosp,
-        obstimes_wastewater;
+        obstimes_wastewater,
+        obstimes,
         param_change_times,
-        params,
-        return_bool# = true
+        params;
     )
-
-
-    #indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
-    #samples_randn = ChainsCustomIndex(samples, indices_to_keep)
-
-    #Random.seed!(seed)
-    #gq_randn = Chains(generated_quantities(my_model, samples_randn))
-
     my_model_forecast_missing = uciwweihr_model(
-        missing_data_hosp, 
+        missing_data_hosp,
         missing_data_ww,
         obstimes_hosp,
-        obstimes_wastewater;
+        obstimes_wastewater,
+        obstimes,
         param_change_times,
-        params,
-        return_bool# = true,
+        params;
     )
 
     samples_df = DataFrame(samples)
 
-    if gq_bool
-        indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
-        samples_randn = ChainsCustomIndex(samples, indices_to_keep)
-    
-        Random.seed!(seed)
-        predictive_randn = predict(my_model_forecast_missing, samples_randn)
-        Random.seed!(seed)
-        println("Generating quantities...")
-        gq_randn = Chains(generated_quantities(my_model, samples_randn))
-        results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
-    else
-        println("Not generating quantities...")
-        println("**result will only contain pp**")
-        Random.seed!(seed)
-        predictive_randn = predict(my_model_forecast_missing, samples)
-        results = [DataFrame(predictive_randn)]
-    end
+    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+
+    Random.seed!(seed)
+    predictive_randn = predict(my_model_forecast_missing, samples_randn)
+    Random.seed!(seed)
+    println("Generating quantities...")
+    gq_randn = Chains(generated_quantities(my_model, samples_randn))
+    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
 
     return(results)
+    
 end
 
 
 function uciwweihr_gq_pp(
     samples,
     data_hosp,
-    obstimes_hosp;
+    obstimes_hosp,
     param_change_times,
+    params::uciwweihr_model_params2;
     seed::Int64=2024,
-    params::uciwweihr_model_params,
-    forecast::Bool=false, forecast_weeks::Int64=4,
-    return_bool::Bool=true,
-    gq_bool::Bool=true
-    )
-
-    println("Using uciwweihr_model without wastewater!!!")
-    obstimes_hosp = convert(Vector{Float64}, obstimes_hosp)
-    param_change_times = convert(Vector{Float64}, param_change_times)
-
-
+    forecast::Bool=false, forecast_days::Int64=14
+)
+    println("Using uciwweihr_model w/out wastewater.  Priors on sigma_hosp!!!")
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    param_change_times = vcat(0, param_change_times)
+    
     if forecast
         last_value = obstimes_hosp[end]
-        for i in 1:forecast_weeks
-            next_value = last_value + 7
-            push!(obstimes_hosp, next_value)
-            last_value = next_value
-        end
+        obstimes_hosp = vcat(obstimes_hosp,(last_value+1):(last_value+forecast_days))
         missing_data_hosp = repeat([missing], length(obstimes_hosp))
-        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_weeks))
+        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_days))
     else
         missing_data_hosp = repeat([missing], length(data_hosp))
     end
 
     my_model = uciwweihr_model(
-        data_hosp, 
-        obstimes_hosp;
+        data_hosp,
+        obstimes_hosp,
         param_change_times,
-        params,
-        return_bool# = true
+        params;
     )
-
-
-    #indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
-    #samples_randn = ChainsCustomIndex(samples, indices_to_keep)
-
-    #Random.seed!(seed)
-    #gq_randn = Chains(generated_quantities(my_model, samples_randn))
-
     my_model_forecast_missing = uciwweihr_model(
-        missing_data_hosp, 
-        obstimes_hosp;
+        missing_data_hosp,
+        obstimes_hosp,
         param_change_times,
-        params,
-        return_bool# = true,
+        params;
     )
 
     samples_df = DataFrame(samples)
 
-    if gq_bool
-        indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
-        samples_randn = ChainsCustomIndex(samples, indices_to_keep)
-    
-        Random.seed!(seed)
-        predictive_randn = predict(my_model_forecast_missing, samples_randn)
-        Random.seed!(seed)
-        println("Generating quantities...")
-        gq_randn = Chains(generated_quantities(my_model, samples_randn))
-        results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
-    else
-        println("Not generating quantities...")
-        println("**result will only contain pp**")
-        Random.seed!(seed)
-        predictive_randn = predict(my_model_forecast_missing, samples)
-        results = [DataFrame(predictive_randn)]
-    end
+    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+
+    Random.seed!(seed)
+    predictive_randn = predict(my_model_forecast_missing, samples_randn)
+    Random.seed!(seed)
+    println("Generating quantities...")
+    gq_randn = Chains(generated_quantities(my_model, samples_randn))
+    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
 
     return(results)
+    
+end
+
+
+function uciwweihr_gq_pp(
+    samples,
+    data_hosp,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    params::uciwweihr_model_params1;
+    seed::Int64=2024,
+    forecast::Bool=false, forecast_days::Int64=14
+)
+    println("Using uciwweihr_model with wastewater.  Hardcoded sigma_ww and sigma_hosp!!!")
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    param_change_times = vcat(0, param_change_times)
+    obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
+    obstimes = sort(obstimes)
+    
+    if forecast
+        last_value = obstimes_hosp[end]
+        obstimes_hosp = vcat(obstimes_hosp,(last_value+1):(last_value+forecast_days))
+        obstimes_wastewater = vcat(obstimes_wastewater,(last_value+1):(last_value+forecast_days))
+        obstimes = vcat(obstimes, (last_value+1):(last_value+forecast_days))
+        missing_data_hosp = repeat([missing], length(obstimes_hosp))
+        missing_data_ww = repeat([missing], length(obstimes_wastewater))
+        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_days))
+        data_wastewater = vcat(data_wastewater, repeat([data_wastewater[end]], forecast_days))
+    else
+        missing_data_ww = repeat([missing], length(data_wastewater))
+        missing_data_hosp = repeat([missing], length(data_hosp))
+    end
+
+    my_model = uciwweihr_model(
+        data_hosp,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater,
+        obstimes,
+        param_change_times,
+        params;
+    )
+    my_model_forecast_missing = uciwweihr_model(
+        missing_data_hosp,
+        missing_data_ww,
+        obstimes_hosp,
+        obstimes_wastewater,
+        obstimes,
+        param_change_times,
+        params;
+    )
+
+    samples_df = DataFrame(samples)
+
+    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+
+    Random.seed!(seed)
+    predictive_randn = predict(my_model_forecast_missing, samples_randn)
+    Random.seed!(seed)
+    println("Generating quantities...")
+    gq_randn = Chains(generated_quantities(my_model, samples_randn))
+    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
+
+    return(results)
+    
+end
+
+
+function uciwweihr_gq_pp(
+    samples,
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
+    params::uciwweihr_model_params1;
+    seed::Int64=2024,
+    forecast::Bool=false, forecast_days::Int64=14
+)
+    println("Using uciwweihr_model w/out wastewater.  Hardcoded sigma_hosp!!!")
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    param_change_times = vcat(0, param_change_times)
+    
+    if forecast
+        last_value = obstimes_hosp[end]
+        obstimes_hosp = vcat(obstimes_hosp,(last_value+1):(last_value+forecast_days))
+        missing_data_hosp = repeat([missing], length(obstimes_hosp))
+        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_days))
+    else
+        missing_data_hosp = repeat([missing], length(data_hosp))
+    end
+
+    my_model = uciwweihr_model(
+        data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+    )
+    my_model_forecast_missing = uciwweihr_model(
+        missing_data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+    )
+
+    samples_df = DataFrame(samples)
+
+    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+
+    Random.seed!(seed)
+    predictive_randn = predict(my_model_forecast_missing, samples_randn)
+    Random.seed!(seed)
+    println("Generating quantities...")
+    gq_randn = Chains(generated_quantities(my_model, samples_randn))
+    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
+
+    return(results)
+    
 end

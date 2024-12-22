@@ -41,7 +41,6 @@ include("non_time_varying_param_vis.jl")
 include("predictive_param_vis.jl")
 include("ode_solution_vis.jl")
 include("uciwweihr_visualizer.jl")
-include("repeated_forecast.jl")
 
 export eihr_ode
 export uciwweihr_sim_params
@@ -54,10 +53,12 @@ export NegativeBinomial2
 export GeneralizedTDist
 export optimize_many_MAP
 export optimize_many_MAP2
-export uciwweihr_model_params
+export uciwweihr_model_params1
+export uciwweihr_model_params2
 export uciwweihr_init_param
 export uciwweihr_likelihood_helpers
-export create_uciwweihr_model_params
+export create_uciwweihr_model_params1
+export create_uciwweihr_model_params2
 export uciwweihr_model
 export uciwweihr_fit
 export uciwweihr_gq_pp
@@ -73,7 +74,6 @@ export time_varying_param_vis
 export non_time_varying_param_vis
 export ode_solution_vis
 export predictive_param_vis
-export repeated_forecast
 export is_time_varying_above_n
 export subset_desired_ode_from_gq
 export calculate_quantiles_without_chain
