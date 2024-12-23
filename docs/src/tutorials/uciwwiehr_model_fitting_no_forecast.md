@@ -97,7 +97,7 @@ We also provide a very basic way to visualize some MCMC diagnostics along with e
 uciwweihr_visualizer(
     data_hosp, 
     data_wastewater,
-    forecast_weeks,
+    forecast_days,
     obstimes_hosp,
     obstimes_wastewater,
     param_change_times,
