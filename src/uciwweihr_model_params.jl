@@ -148,10 +148,12 @@ function create_uciwweihr_model_params2(;
     Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
     sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
     w_init_sd::Float64=0.04, w_init_mean::Float64=logit(0.35),
-    sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5
+    sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5,
+    message::Bool=true
     )
-
-    println("Using prior for sigma_ww and sigma_hosp!!!")
+    if message
+        println("Using prior for sigma_ww and sigma_hosp!!!") 
+    end
     
     return uciwweihr_model_params2(
         E_init_sd, log_E_init_mean,
@@ -188,10 +190,12 @@ function create_uciwweihr_model_params1(;
     Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
     sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
     w_init_sd::Float64=0.04, w_init_mean::Float64=logit(0.35),
-    sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5
+    sigma_w_sd::Float64=0.2, sigma_w_mean::Float64=-3.5,
+    message::Bool=true
     )
-
-    println("Using hard coded for sigma_ww and sigma_hosp!!!")
+    if message
+        println("Using hard coded for sigma_ww and sigma_hosp!!!") 
+    end
     
     return uciwweihr_model_params1(
         E_init_sd, log_E_init_mean,
