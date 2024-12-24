@@ -12,11 +12,12 @@ using PreallocationTools
 using Distributions
 using Turing
 using Random
-using ForwardDiff
+using OrdinaryDiffEq
+#using ForwardDiff
 using Logging
 using CSV
 using DataFrames
-using DifferentialEquations
+#using DifferentialEquations
 using StatsBase
 using Plots
 using Printf
