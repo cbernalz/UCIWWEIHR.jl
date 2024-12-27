@@ -22,30 +22,61 @@ function uciwweihr_init_param(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater;
+    obstimes_wastewater,
     param_change_times,
+    params::uciwweihr_model_params2;
     n_chains::Int64=1,
     seed::Int64=2024,
-    params::uciwweihr_model_params,
     verbose_optimize::Bool=false
-    )
+)
     println("Getting init param values...")
-    println("Using uciwweihr_model with wastewater!!!")
+    println("Using uciwweihr_model with wastewater.  Priors on sigma_ww and sigma_hosp!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
 
     my_model_optimize = uciwweihr_model(
-        data_hosp, 
+        data_hosp,
         data_wastewater,
         obstimes_hosp,
-        obstimes_wastewater;
+        obstimes_wastewater,
+        obstimes,
         param_change_times,
-        params,
-        return_bool=false
+        params;
     )
     Random.seed!(seed)
+    # Optimize
+    MAP_init = optimize_many_MAP2(my_model_optimize, 10, 1, verbose_optimize)[1]
+    Random.seed!(seed)
+    MAP_noise = vcat(randn(length(MAP_init) - 1, n_chains), transpose(zeros(n_chains)))
+    MAP_noise = [MAP_noise[:,i] for i in 1:size(MAP_noise,2)]
+    init = repeat([MAP_init], n_chains) .+ 0.05 * MAP_noise
+    return(init)
+end
 
+
+
+function uciwweihr_init_param(
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
+    params::uciwweihr_model_params2;
+    n_chains::Int64=1,
+    seed::Int64=2024,
+    verbose_optimize::Bool=false
+)
+    println("Getting init param values...")
+    println("Using uciwweihr_model w/ wastewater.  Priors on sigma_ww and sigma_hosp!!!")
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+
+    my_model_optimize = uciwweihr_model(
+        data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+    )
+    Random.seed!(seed)
     # Optimize
     MAP_init = optimize_many_MAP2(my_model_optimize, 10, 1, verbose_optimize)[1]
     Random.seed!(seed)
@@ -58,27 +89,31 @@ end
 
 function uciwweihr_init_param(
     data_hosp,
-    obstimes_hosp;
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
     param_change_times,
+    params::uciwweihr_model_params1;
     n_chains::Int64=1,
     seed::Int64=2024,
-    params::uciwweihr_model_params,
     verbose_optimize::Bool=false
-    )
+)
     println("Getting init param values...")
-    println("Using uciwweihr_model with wastewater!!!")
+    println("Using uciwweihr_model with wastewater.  Hardcoded sigma_ww and sigma_hosp!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
 
     my_model_optimize = uciwweihr_model(
-        data_hosp, 
-        obstimes_hosp;
+        data_hosp,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater,
+        obstimes,
         param_change_times,
-        params,
-        return_bool=false
+        params;
     )
     Random.seed!(seed)
-
     # Optimize
     MAP_init = optimize_many_MAP2(my_model_optimize, 10, 1, verbose_optimize)[1]
     Random.seed!(seed)
@@ -87,3 +122,36 @@ function uciwweihr_init_param(
     init = repeat([MAP_init], n_chains) .+ 0.05 * MAP_noise
     return(init)
 end
+
+
+
+function uciwweihr_init_param(
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
+    params::uciwweihr_model_params1;
+    n_chains::Int64=1,
+    seed::Int64=2024,
+    verbose_optimize::Bool=false
+)
+    println("Getting init param values...")
+    println("Using uciwweihr_model w/ wastewater.  Hardcoded sigma_hosp!!!")
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+
+    my_model_optimize = uciwweihr_model(
+        data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+    )
+    Random.seed!(seed)
+    # Optimize
+    MAP_init = optimize_many_MAP2(my_model_optimize, 10, 1, verbose_optimize)[1]
+    Random.seed!(seed)
+    MAP_noise = vcat(randn(length(MAP_init) - 1, n_chains), transpose(zeros(n_chains)))
+    MAP_noise = [MAP_noise[:,i] for i in 1:size(MAP_noise,2)]
+    init = repeat([MAP_init], n_chains) .+ 0.05 * MAP_noise
+    return(init)
+end
+

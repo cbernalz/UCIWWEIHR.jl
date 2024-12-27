@@ -16,8 +16,12 @@ Returns:
 function eihr_ode!(du, u, p, t)
     # ODE for EIHR model with constant beta
     (E, I, H) = u
-    (alpha, gamma, nu, w, epsilon) = p
-    # w - ratio of infected individuals going to hospital
+    (gamma, nu, epsilon, alphas, ws, param_change_times) = p
+
+    # Time varying
+    ind_t = searchsortedlast(param_change_times, t) 
+    alpha = alphas[ind_t]
+    w = ws[ind_t]
 
     # -> E
     exposed_in = alpha * I

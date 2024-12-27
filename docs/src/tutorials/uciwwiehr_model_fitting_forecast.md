@@ -44,32 +44,31 @@ obstimes_wastewater = df.obstimes
 max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
 param_change_times = 1:7:max_obstime # Change every week
 priors_only = false
-n_samples = 200
+n_samples = 500
 forecast = true
-forecast_weeks = 2
+forecast_days = 14
 
-model_params = create_uciwweihr_model_params()
+model_params = create_uciwweihr_model_params2()
 samples = uciwweihr_fit(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater;
+    obstimes_wastewater,
     param_change_times,
+    model_params;
     priors_only,
     n_samples,
-    n_discard_initial = 100,
-    params = model_params
-)
+    n_discard_initial = 200
+    )
 model_output = uciwweihr_gq_pp(
     samples,
     data_hosp,
     data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater;
-    param_change_times = param_change_times,
-    params = model_params,
-    forecast = forecast,
-    forecast_weeks = forecast_weeks
+    obstimes_wastewater,
+    param_change_times,
+    model_params;
+    forecast=forecast, forecast_days=forecast_days
 )
 
 first(model_output[1][:,1:5], 5)
@@ -91,7 +90,7 @@ We can again look at model diagnostics, posterior distribution of time or non-ti
 uciwweihr_visualizer(
     data_hosp, 
     data_wastewater,
-    forecast_weeks,
+    forecast_days,
     obstimes_hosp,
     obstimes_wastewater,
     param_change_times,

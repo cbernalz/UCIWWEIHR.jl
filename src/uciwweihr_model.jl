@@ -17,22 +17,12 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_hosp,
     data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater;
+    obstimes_wastewater,
+    obstimes,
     param_change_times,
-    params::uciwweihr_model_params,
-    return_bool::Bool=true
+    params::uciwweihr_model_params2;
     )
-
-        # Prelims
-        max_neg_bin_sigma = 1e10
-        min_neg_bin_sigma = 1e-10
-
-
-        # Calculate number of observed datapoints timepoints
-        l_obs_hosp = length(obstimes_hosp)
-        l_obs_ww = length(obstimes_wastewater)
-        l_param_change_times = length(param_change_times)
-
+        # hosp_ww model with prior on sigma_ww and sigma_hosp 
 
         # PRIORS-----------------------------
         # Compartments
@@ -44,152 +34,128 @@ The defaults for this fuction will follow those of the default simulation in gen
         nu_non_centered ~ Normal()
         epsilon_non_centered ~ Normal()
         # Parameters for wastewater
-        rho_gene_non_centered ~ Normal() # gene detection rate
-
-        if isnothing(params.sigma_ww_sd)
-            sigma_ww = params.sigma_ww
-        else
-            sigma_ww_non_centered ~ Normal()
-        end
-
+        rho_gene_non_centered ~ Normal()
+        sigma_ww_non_centered ~ Normal()
         # Parameters for hospital
-
-        if isnothing(params.sigma_hosp_sd)
-            sigma_hosp = params.sigma_hosp
-        else
-            sigma_hosp_non_centered ~ Normal()
-        end
-
+        sigma_hosp_non_centered ~ Normal()
         # Non-constant Rt
-        Rt_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
-        sigma_Rt_non_centered = Rt_params_non_centered[1]
-        Rt_init_non_centered = Rt_params_non_centered[2]
-        log_Rt_steps_non_centered = Rt_params_non_centered[3:end]
+        Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
         # Non-constant Hosp Rate w
-        w_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
-        sigma_w_non_centered = w_params_non_centered[1]
-        w_init_non_centered = w_params_non_centered[2]
-        logit_w_steps_non_centered = w_params_non_centered[3:end]
+        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
 
-
-        # TRANSFORMATIONS--------------------
-        # Compartments
-        E_init = exp(E_init_non_centered * params.E_init_sd + params.log_E_init_mean)
-        I_init = exp(I_init_non_centered * params.I_init_sd + params.log_I_init_mean)
-        H_init = exp(H_init_non_centered * params.H_init_sd + params.log_H_init_mean)
-        # Parameters for compartments
-        gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
-        nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
-        epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
-        # Parameters for wastewater
-        rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
-
-        if !isnothing(params.sigma_ww_sd)
-            sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean)
-        end
-
-        # Parameters for hospital
-
-        if !isnothing(params.sigma_hosp_sd)
-            sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
-        end
-
-        # Non-constant Rt
-        Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
-        sigma_Rt = exp(sigma_Rt_non_centered * params.sigma_Rt_sd + params.sigma_Rt_mean)
-        alpha_t_no_init = exp.(log(Rt_init) .+ cumsum(log_Rt_steps_non_centered) * sigma_Rt) * nu
-        alpha_init = Rt_init * nu
-        alpha_t = vcat(alpha_init, alpha_t_no_init)
-        # Non-constant Hosp Prob w
-        w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
-        sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
-        logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
-        w_init = logistic(w_init_logit)
-        w_no_init = logistic.(logit_w_no_init)
-        w_t = vcat(w_init, w_no_init)
-
-
-        # ODE SETUP--------------------------
-        max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
-        obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
-        obstimes = sort(obstimes)
-        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, max_obstime_end), ones(5))
-        function param_affect_beta!(integrator)
-            ind_t = searchsortedfirst(param_change_times, integrator.t) # Find the index of param_change_times that contains the current timestep
-            integrator.p[1] = alpha_t_no_init[ind_t] # Replace alpha with a new value from alpha_t_no_init
-            integrator.p[4] = w_no_init[ind_t] # Replace w with a new value from w_no_init
-        end
-        param_callback = PresetTimeCallback(param_change_times, param_affect_beta!, save_positions=(false, false))
-        u0 = [E_init, I_init, H_init]
-        p0 = [alpha_init, gamma, nu, w_init, epsilon]
-        extra_ode_precision = false
-        abstol = extra_ode_precision ? 1e-11 : 1e-9
-        reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); callback=param_callback, saveat=0.0:max_obstime_end, save_start=true, 
-                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes[end]))
-        # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
-        if sol.retcode != :Success
-            Turing.@addlogprob! -Inf
-            return
-        end
-        obstimes_hosp_indices = Int.(obstimes_hosp)
-        obstimes_wastewater_indices = Int.(obstimes_wastewater)
-        sol_array = Array(sol)
-        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
-        E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
-        full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene) 
-        H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
-        H_means = H_comp_sol[obstimes_hosp_indices]
-        log_W_means = full_log_genes_mean[obstimes_wastewater_indices]
-
+        # TRANSFORMATIONS-----------------------------
+        trans = uciwweihr_likelihood_helpers(
+            obstimes_hosp,
+            obstimes_wastewater,
+            obstimes,
+            param_change_times,
+            params;
+            E_init_non_centered, I_init_non_centered, H_init_non_centered,
+            gamma_non_centered, nu_non_centered, epsilon_non_centered,
+            rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
+            Rt_params_non_centered, w_params_non_centered,
+        )
 
         # W-W means--------------------------
         # E - 1 // I - 2 // H - 3 // R - 4
         # Likelihood calculations------------
-        for i in 1:l_obs_ww
-            #data_wastewater[i] ~ Normal(log_W_means[i], params.sigma_wastewater)
-            data_wastewater[i] ~ Normal(log_W_means[i], sigma_ww)
+        for i in 1:length(obstimes_wastewater)
+            data_wastewater[i] ~ Normal(trans.log_W_means[i], trans.sigma_ww)
         end
-        for i in 1:l_obs_hosp
-            #data_hosp[i] ~ NegativeBinomial2(H_means[i], params.sigma_hosp)
-            data_hosp[i] ~ NegativeBinomial2(H_means[i], sigma_hosp)
+        for i in 1:length(obstimes_hosp)
+            data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
         end
 
+        return (
+            E_init = trans.E_init,
+            I_init = trans.I_init,
+            H_init = trans.H_init,
+            alpha_t = trans.alpha_t,
+            gamma = trans.gamma,
+            nu = trans.nu,
+            w_t = trans.w_t,
+            sigma_w = trans.sigma_w,
+            epsilon = trans.epsilon,
+            rt_vals = trans.Rt_t,
+            sigma_Rt = trans.sigma_Rt,
+            rho_gene = trans.rho_gene,
+            sigma_ww = trans.sigma_ww,
+            sigma_hosp = trans.sigma_hosp,
+            H = trans.H_comp_sol,
+            I = trans.I_comp_sol,
+            E = trans.E_comp_sol,
+            H_means = trans.H_means,
+            log_genes_mean = trans.log_W_means,
+            rt_init = trans.Rt_init,
+            w_init = trans.w_init
+        )
 
-        
 
-        # Generated quantities
-        rt_vals = alpha_t_no_init / nu
-        rt_init = alpha_init / nu
-        w_t = w_no_init
+    end
 
-        if return_bool
-            return (
-                E_init,
-                I_init,
-                H_init,
-                alpha_t = alpha_t,
-                gamma = gamma,
-                nu = nu,
-                w_t = w_t,
-                sigma_w = sigma_w,
-                epsilon = epsilon,
-                rt_vals = rt_vals,
-                sigma_Rt = sigma_Rt,
-                rho_gene = rho_gene,
 
-                sigma_ww = sigma_ww,
-                sigma_hosp = sigma_hosp,
-            
-                H = H_comp_sol,
-                I = I_comp_sol,
-                E = E_comp_sol,
-                H_means = H_means,
-                log_genes_mean = log_W_means,
-                rt_init = rt_init,
-                w_init = w_init
-            )
+@model function uciwweihr_model(
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
+    params::uciwweihr_model_params2;
+    )
+        # hosp_only model with prior sigma_hosp
+
+        # PRIORS-----------------------------
+        # Compartments
+        E_init_non_centered ~ Normal()
+        I_init_non_centered ~ Normal()
+        H_init_non_centered ~ Normal()
+        # Parameters for compartments
+        gamma_non_centered ~ Normal()
+        nu_non_centered ~ Normal()
+        epsilon_non_centered ~ Normal()
+        # Parameters for hospital
+        sigma_hosp_non_centered ~ Normal()
+        # Non-constant Rt
+        Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
+        # Non-constant Hosp Rate w
+        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
+
+        # TRANSFORMATIONS-----------------------------
+        trans = uciwweihr_likelihood_helpers(
+            obstimes_hosp,
+            param_change_times,
+            params;
+            E_init_non_centered, I_init_non_centered, H_init_non_centered,
+            gamma_non_centered, nu_non_centered, epsilon_non_centered,
+            sigma_hosp_non_centered,
+            Rt_params_non_centered, w_params_non_centered,
+        )
+
+        # W-W means--------------------------
+        # E - 1 // I - 2 // H - 3 // R - 4
+        # Likelihood calculations------------
+        for i in 1:length(obstimes_hosp)
+            data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
         end
+
+        return (
+            E_init = trans.E_init,
+            I_init = trans.I_init,
+            H_init = trans.H_init,
+            alpha_t = trans.alpha_t,
+            gamma = trans.gamma,
+            nu = trans.nu,
+            w_t = trans.w_t,
+            sigma_w = trans.sigma_w,
+            epsilon = trans.epsilon,
+            rt_vals = trans.Rt_t,
+            sigma_Rt = trans.sigma_Rt,
+            sigma_hosp = trans.sigma_hosp,
+            H = trans.H_comp_sol,
+            I = trans.I_comp_sol,
+            E = trans.E_comp_sol,
+            H_means = trans.H_means,
+            rt_init = trans.Rt_init,
+            w_init = trans.w_init
+        )
 
 
     end
@@ -198,20 +164,90 @@ The defaults for this fuction will follow those of the default simulation in gen
 
 @model function uciwweihr_model(
     data_hosp,
-    obstimes_hosp;
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    obstimes,
     param_change_times,
-    params::uciwweihr_model_params,
-    return_bool::Bool=true
+    params::uciwweihr_model_params1;
     )
-        # Prelims
-        max_neg_bin_sigma = 1e10
-        min_neg_bin_sigma = 1e-10
+        # hosp_ww model with hard coded sigma_ww and sigma_hosp
+
+        # PRIORS-----------------------------
+        # Compartments
+        E_init_non_centered ~ Normal()
+        I_init_non_centered ~ Normal()
+        H_init_non_centered ~ Normal()
+        # Parameters for compartments
+        gamma_non_centered ~ Normal()
+        nu_non_centered ~ Normal()
+        epsilon_non_centered ~ Normal()
+        # Parameters for wastewater
+        rho_gene_non_centered ~ Normal()
+        # Parameters for hospital
+        # Non-constant Rt
+        Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
+        # Non-constant Hosp Rate w
+        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
+
+        # TRANSFORMATIONS-----------------------------
+        trans = uciwweihr_likelihood_helpers(
+            obstimes_hosp,
+            obstimes_wastewater,
+            obstimes,
+            param_change_times,
+            params;
+            E_init_non_centered, I_init_non_centered, H_init_non_centered,
+            gamma_non_centered, nu_non_centered, epsilon_non_centered,
+            rho_gene_non_centered, 
+            Rt_params_non_centered, w_params_non_centered,
+        )
+
+        # W-W means--------------------------
+        # E - 1 // I - 2 // H - 3 // R - 4
+        # Likelihood calculations------------
+        for i in 1:length(obstimes_wastewater)
+            data_wastewater[i] ~ Normal(trans.log_W_means[i], trans.sigma_ww)
+        end
+        for i in 1:length(obstimes_hosp)
+            data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
+        end
+
+        return (
+            E_init=trans.E_init,
+            I_init=trans.I_init,
+            H_init=trans.H_init,
+            alpha_t=trans.alpha_t,
+            gamma=trans.gamma,
+            nu=trans.nu,
+            w_t=trans.w_t,
+            sigma_w=trans.sigma_w,
+            epsilon=trans.epsilon,
+            rt_vals=trans.Rt_t,
+            sigma_Rt=trans.sigma_Rt,
+            rho_gene=trans.rho_gene,
+            sigma_ww=trans.sigma_ww,
+            sigma_hosp=trans.sigma_hosp,
+            H=trans.H_comp_sol,
+            I=trans.I_comp_sol,
+            E=trans.E_comp_sol,
+            H_means=trans.H_means,
+            log_genes_mean=trans.log_W_means,
+            rt_init=trans.Rt_init,
+            w_init=trans.w_init
+        )
+
+
+    end
+
     
-    
-        # Calculate number of observed datapoints timepoints
-        l_obs = length(obstimes_hosp)
-        l_param_change_times = length(param_change_times)
-    
+@model function uciwweihr_model(
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
+    params::uciwweihr_model_params1;
+    )   
+        # hosp_only model with hard coded sigma_hosp
     
         # PRIORS-----------------------------
         # Compartments
@@ -223,120 +259,48 @@ The defaults for this fuction will follow those of the default simulation in gen
         nu_non_centered ~ Normal()
         epsilon_non_centered ~ Normal()
         # Parameters for hospital
-
-        if isnothing(params.sigma_hosp_sd)
-            sigma_hosp = params.sigma_hosp
-        else
-            sigma_hosp_non_centered ~ Normal()
-        end
-
         # Non-constant Rt
-        Rt_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
-        sigma_Rt_non_centered = Rt_params_non_centered[1]
-        Rt_init_non_centered = Rt_params_non_centered[2]
-        log_Rt_steps_non_centered = Rt_params_non_centered[3:end]
+        Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
         # Non-constant Hosp Rate w
-        w_params_non_centered ~ MvNormal(zeros(l_param_change_times + 2), I) # +2 for sigma and init
-        sigma_w_non_centered = w_params_non_centered[1]
-        w_init_non_centered = w_params_non_centered[2]
-        logit_w_steps_non_centered = w_params_non_centered[3:end]
-    
-    
-        # TRANSFORMATIONS--------------------
-        # Compartments
-        E_init = exp(E_init_non_centered * params.E_init_sd + params.log_E_init_mean)
-        I_init = exp(I_init_non_centered * params.I_init_sd + params.log_I_init_mean)
-        H_init = exp(H_init_non_centered * params.H_init_sd + params.log_H_init_mean)
-        # Parameters for compartments
-        gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
-        nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
-        epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
-        # Parameters for hospital
+        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
 
-        if !isnothing(params.sigma_hosp_sd)
-            sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
-        end
-
-        # Non-constant Rt
-        Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
-        sigma_Rt = exp(sigma_Rt_non_centered * params.sigma_Rt_sd + params.sigma_Rt_mean)
-        alpha_t_no_init = exp.(log(Rt_init) .+ cumsum(log_Rt_steps_non_centered) * sigma_Rt) * nu
-        alpha_init = Rt_init * nu
-        alpha_t = vcat(alpha_init, alpha_t_no_init)
-        # Non-constant Hosp Prob w
-        w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
-        sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
-        logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
-        w_init = logistic(w_init_logit)
-        w_no_init = logistic.(logit_w_no_init)
-        w_t = vcat(w_init, w_no_init)
+        # TRANSFORMATIONS-----------------------------
+        trans = uciwweihr_likelihood_helpers(
+            obstimes_hosp,
+            param_change_times,
+            params;
+            E_init_non_centered, I_init_non_centered, H_init_non_centered,
+            gamma_non_centered, nu_non_centered, epsilon_non_centered,
+            Rt_params_non_centered, w_params_non_centered,
+        )
     
-    
-        # ODE SETUP--------------------------
-        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, obstimes_hosp[end]), ones(5))
-        function param_affect_beta!(integrator)
-            ind_t = searchsortedfirst(param_change_times, integrator.t) # Find the index of param_change_times that contains the current timestep
-            integrator.p[1] = alpha_t_no_init[ind_t] # Replace alpha with a new value from alpha_t_no_init
-            integrator.p[4] = w_no_init[ind_t] # Replace w with a new value from w_no_init
-        end
-        param_callback = PresetTimeCallback(param_change_times, param_affect_beta!, save_positions=(false, false))
-        u0 = [E_init, I_init, H_init]
-        p0 = [alpha_init, gamma, nu, w_init, epsilon]
-        extra_ode_precision = false
-        abstol = extra_ode_precision ? 1e-11 : 1e-9
-        reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); callback=param_callback, saveat=0.0:obstimes_hosp[end], save_start=true, 
-                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes_hosp[end]))
-        # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
-        if sol.retcode != :Success
-            Turing.@addlogprob! -Inf
-            return
-        end
-        sol_array = Array(sol)
-        H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
-        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
-        E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
-        obstimes_hosp_indices = Int.(obstimes_hosp)
-        H_means = H_comp_sol[obstimes_hosp_indices]
-    
-    
+        # W-W means--------------------------
+        # E - 1 // I - 2 // H - 3 // R - 4
         # Likelihood calculations------------
-        for i in 1:l_obs
-            #data_hosp[i] ~ NegativeBinomial2(sol_hosp[i], params.sigma_hosp)
-            data_hosp[i] ~ NegativeBinomial2(H_means[i], sigma_hosp)
+        for i in 1:length(obstimes_hosp)
+            data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
         end
     
-    
-        # Generated quantities
-        rt_vals = alpha_t_no_init / nu
-        rt_init = alpha_init / nu
-        w_t = w_no_init
-    
-
-        if return_bool
-            return (
-                E_init,
-                I_init,
-                H_init,
-                alpha_t = alpha_t,
-                gamma = gamma,
-                nu = nu,
-                w_t = w_t,
-                sigma_w = sigma_w,
-                epsilon = epsilon,
-                rt_vals = rt_vals,
-                sigma_Rt = sigma_Rt,
-
-                sigma_hosp = sigma_hosp, 
-
-                H = H_comp_sol,
-                I = I_comp_sol,
-                E = E_comp_sol,
-                H_means = H_means,
-                rt_init = rt_init,
-                w_init = w_init
-            )
-        end
+        return (
+            E_init = trans.E_init,
+            I_init = trans.I_init,
+            H_init = trans.H_init,
+            alpha_t = trans.alpha_t,
+            gamma = trans.gamma,
+            nu = trans.nu,
+            w_t = trans.w_t,
+            sigma_w = trans.sigma_w,
+            epsilon = trans.epsilon,
+            rt_vals = trans.Rt_t,
+            sigma_Rt = trans.sigma_Rt,
+            sigma_hosp = trans.sigma_hosp,
+            H = trans.H_comp_sol,
+            I = trans.I_comp_sol,
+            E = trans.E_comp_sol,
+            H_means = trans.H_means,
+            rt_init = trans.Rt_init,
+            w_init = trans.w_init
+        )
     
     
     end

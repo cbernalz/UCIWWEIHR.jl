@@ -15,20 +15,20 @@ This package has a way to sample from a posterior or prior that is defined in th
 using UCIWWEIHR
 # Running simulation function with presets
 rt_custom = vcat(
-    range(1, stop=1.8, length=7*4),
-    fill(1.8, 7*2),
-    range(1.8, stop=1, length=7*8),
-    range(0.98, stop=0.8, length=7*2),
-    range(0.8, stop=1.1, length=7*6),
-    range(1.1, stop=0.97, length=7*3)
+    range(1, stop=1.8, length=7*2),
+    fill(1.8, 7*1),
+    range(1.8, stop=1, length=7*4),
+    range(0.98, stop=0.8, length=7*1),
+    range(0.8, stop=1.1, length=7*3),
+    range(1.1, stop=0.97, length=7*1)
 )
 w_custom = vcat(
-    range(0.3, stop=0.38, length=7*5),
-    fill(0.38, 7*2),
-    range(0.38, stop=0.25, length=7*8),
-    range(0.25, stop=0.28, length=7*2),
-    range(0.28, stop=0.34, length=7*6),
-    range(0.34, stop=0.28, length=7*2)
+    range(0.3, stop=0.38, length=7*2),
+    fill(0.38, 7*1),
+    range(0.38, stop=0.25, length=7*4),
+    range(0.25, stop=0.28, length=7*1),
+    range(0.28, stop=0.34, length=7*3),
+    range(0.34, stop=0.28, length=7*1)
 )
 params = create_uciwweihr_sim_params(
     time_points = length(rt_custom),
@@ -51,30 +51,31 @@ obstimes_wastewater = df.obstimes
 max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
 param_change_times = 1:7:max_obstime # Change every week
 priors_only = false
-n_samples = 200
+n_samples = 500
 forecast = false
-forecast_weeks = 0
+forecast_days = 0
 
-model_params = create_uciwweihr_model_params()
+model_params = create_uciwweihr_model_params2()
 samples = uciwweihr_fit(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater;
+    obstimes_wastewater,
     param_change_times,
+    model_params;
     priors_only,
     n_samples,
-    n_discard_initial = 100,
-    params = model_params
-)
+    n_discard_initial = 200
+    )
 model_output = uciwweihr_gq_pp(
     samples,
     data_hosp,
     data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater;
-    param_change_times = param_change_times,
-    params = model_params
+    obstimes_wastewater,
+    param_change_times,
+    model_params;
+    forecast=forecast, forecast_days=forecast_days
 )
 
 first(model_output[1][:,1:5], 5)
@@ -96,7 +97,7 @@ We also provide a very basic way to visualize some MCMC diagnostics along with e
 uciwweihr_visualizer(
     data_hosp, 
     data_wastewater,
-    forecast_weeks,
+    forecast_days,
     obstimes_hosp,
     obstimes_wastewater,
     param_change_times,

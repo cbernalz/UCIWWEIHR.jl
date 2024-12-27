@@ -17,7 +17,7 @@ function predictive_param_vis(;
     pp_samples = nothing,
     data_wastewater = nothing,
     data_hosp = nothing,
-    forecast_weeks = 0,
+    forecast_days = 0,
     vars_to_pred = ["data_wastewater", "data_hosp"],
     quantiles = [0.5, 0.8, 0.95],
     bayes_dist_type = "Posterior",
@@ -35,9 +35,9 @@ function predictive_param_vis(;
             pred_var_elem = pred_var_df[:, [pred_var_names..., "chain"]]
             medians, lower_bounds, upper_bounds = calculate_quantiles(pred_var_elem, chain, var_prefix, quantiles)
             ribbon_colors = generate_colors(length(quantiles))
-            preped_medians = repeat_last_n_elements(medians, forecast_weeks, 7)
-            preped_lower_bounds = repeat_last_n_elements(lower_bounds, forecast_weeks, 7)
-            preped_upper_bounds = repeat_last_n_elements(upper_bounds, forecast_weeks, 7)
+            preped_medians = medians   # repeat_last_n_elements(medians, forecast_weeks, 7)
+            preped_lower_bounds = lower_bounds  # repeat_last_n_elements(lower_bounds, forecast_weeks, 7)
+            preped_upper_bounds = upper_bounds  # repeat_last_n_elements(upper_bounds, forecast_weeks, 7)
             time_index = 1:length(preped_medians)
             plt = plot(title = "$bayes_dist_type Quantiles for Chain $chain for $var_prefix",
                         xlabel = "Time Points (daily scale)",
