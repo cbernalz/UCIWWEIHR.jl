@@ -55,6 +55,11 @@ The defaults for this fuction will follow those of the default simulation in gen
             rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
             Rt_params_non_centered, w_params_non_centered,
         )
+        # Reject if the helper function failed and skip sample
+        if !trans.success
+            Turing.@addlogprob! -Inf
+            return
+        end
 
         # W-W means--------------------------
         # E - 1 // I - 2 // H - 3 // R - 4
@@ -128,6 +133,11 @@ The defaults for this fuction will follow those of the default simulation in gen
             sigma_hosp_non_centered,
             Rt_params_non_centered, w_params_non_centered,
         )
+        # Reject if the helper function failed and skip sample
+        if !trans.success
+            Turing.@addlogprob! -Inf
+            return
+        end
 
         # W-W means--------------------------
         # E - 1 // I - 2 // H - 3 // R - 4
@@ -202,6 +212,11 @@ The defaults for this fuction will follow those of the default simulation in gen
             rho_gene_non_centered, 
             Rt_params_non_centered, w_params_non_centered,
         )
+        # Reject if the helper function failed and skip sample
+        if !trans.success
+            Turing.@addlogprob! -Inf
+            return
+        end
 
         # W-W means--------------------------
         # E - 1 // I - 2 // H - 3 // R - 4
@@ -273,6 +288,11 @@ The defaults for this fuction will follow those of the default simulation in gen
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
             Rt_params_non_centered, w_params_non_centered,
         )
+        # Reject if the helper function failed and skip sample
+        if !trans.success
+            Turing.@addlogprob! -Inf
+            return
+        end
     
         # W-W means--------------------------
         # E - 1 // I - 2 // H - 3 // R - 4

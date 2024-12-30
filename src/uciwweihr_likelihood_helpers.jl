@@ -17,7 +17,7 @@ function uciwweihr_likelihood_helpers(
     rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
     Rt_params_non_centered, w_params_non_centered,
 )
-
+    try
         # Prelims
         max_neg_bin_sigma = 1e10
         min_neg_bin_sigma = 1e-10
@@ -74,9 +74,9 @@ function uciwweihr_likelihood_helpers(
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
-            Turing.@addlogprob! -Inf
-            return
+            throw(ArgumentError("ODE solver failed!!!"))
         end
+
         sol_array = Array(sol)
         I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
         E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
@@ -87,6 +87,7 @@ function uciwweihr_likelihood_helpers(
 
         # Return --------------------------
         return (
+            success = true,
             E_init = E_init, I_init = I_init, H_init = H_init,
             gamma = gamma, nu = nu, epsilon = epsilon,
             rho_gene = rho_gene, sigma_ww = sigma_ww, 
@@ -96,6 +97,11 @@ function uciwweihr_likelihood_helpers(
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol,
             H_means = H_means, log_W_means = log_W_means
         )
+    catch e
+        @warn "ODE solver or transformation failed: $e"
+        return (success = false,)
+    end
+
 end
 
 
@@ -110,7 +116,7 @@ function uciwweihr_likelihood_helpers(
     rho_gene_non_centered, 
     Rt_params_non_centered, w_params_non_centered,
 )
-
+    try
         # Non-constant Rt
         sigma_Rt_non_centered = Rt_params_non_centered[1]
         Rt_init_non_centered = Rt_params_non_centered[2]
@@ -162,8 +168,7 @@ function uciwweihr_likelihood_helpers(
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
-            Turing.@addlogprob! -Inf
-            return
+            throw(ArgumentError("ODE solver failed!!!"))
         end
         sol_array = Array(sol)
         I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
@@ -175,6 +180,7 @@ function uciwweihr_likelihood_helpers(
 
         # Return --------------------------
         return (
+            success = true,
             E_init = E_init, I_init = I_init, H_init = H_init,
             gamma = gamma, nu = nu, epsilon = epsilon,
             rho_gene = rho_gene, sigma_ww = params.sigma_wastewater, 
@@ -184,6 +190,10 @@ function uciwweihr_likelihood_helpers(
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol,
             H_means = H_means, log_W_means = log_W_means
         )
+    catch e
+        @warn "ODE solver or transformation failed: $e"
+        return (success = false,)
+    end
 end
 
 function uciwweihr_likelihood_helpers(
@@ -195,7 +205,7 @@ function uciwweihr_likelihood_helpers(
     sigma_hosp_non_centered,
     Rt_params_non_centered, w_params_non_centered,
 )
-
+    try
         # Prelims
         max_neg_bin_sigma = 1e10
         min_neg_bin_sigma = 1e-10
@@ -249,8 +259,7 @@ function uciwweihr_likelihood_helpers(
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes_hosp[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
-            Turing.@addlogprob! -Inf
-            return
+            throw(ArgumentError("ODE solver failed!!!"))
         end
         sol_array = Array(sol)
         I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
@@ -260,6 +269,7 @@ function uciwweihr_likelihood_helpers(
 
         # Return --------------------------
         return (
+            success = true,
             E_init = E_init, I_init = I_init, H_init = H_init,
             gamma = gamma, nu = nu, epsilon = epsilon,
             sigma_hosp = sigma_hosp,
@@ -268,6 +278,10 @@ function uciwweihr_likelihood_helpers(
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol,
             H_means = H_means
         )
+    catch e
+        @warn "ODE solver or transformation failed: $e"
+        return (success = false,)
+    end
 end
 
 
@@ -279,7 +293,7 @@ function uciwweihr_likelihood_helpers(
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
     Rt_params_non_centered, w_params_non_centered,
 )
-
+    try
         # Non-constant Rt
         sigma_Rt_non_centered = Rt_params_non_centered[1]
         Rt_init_non_centered = Rt_params_non_centered[2]
@@ -327,8 +341,7 @@ function uciwweihr_likelihood_helpers(
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes_hosp[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
-            Turing.@addlogprob! -Inf
-            return
+            throw(ArgumentError("ODE solver failed!!!"))
         end
         sol_array = Array(sol)
         I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
@@ -338,6 +351,7 @@ function uciwweihr_likelihood_helpers(
 
         # Return --------------------------
         return (
+            success = true,
             E_init = E_init, I_init = I_init, H_init = H_init,
             gamma = gamma, nu = nu, epsilon = epsilon,
             sigma_hosp = params.sigma_hosp,
@@ -346,4 +360,8 @@ function uciwweihr_likelihood_helpers(
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol,
             H_means = H_means
         )
+    catch e
+        @warn "ODE solver or transformation failed: $e"
+        return (success = false,)
+    end
 end
