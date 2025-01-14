@@ -16,6 +16,7 @@ function uciwweihr_likelihood_helpers(
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
     rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
     Rt_params_non_centered, w_params_non_centered,
+    warning_bool=true
 )
     try
         # Prelims
@@ -98,7 +99,9 @@ function uciwweihr_likelihood_helpers(
             H_means = H_means, log_W_means = log_W_means
         )
     catch e
-        @warn "ODE solver or transformation failed: $e"
+        if warning_bool
+            @warn "ODE solver or transformation failed: $e"
+        end
         return (success = false,)
     end
 
@@ -115,6 +118,7 @@ function uciwweihr_likelihood_helpers(
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
     rho_gene_non_centered, 
     Rt_params_non_centered, w_params_non_centered,
+    warning_bool=true
 )
     try
         # Non-constant Rt
@@ -191,7 +195,9 @@ function uciwweihr_likelihood_helpers(
             H_means = H_means, log_W_means = log_W_means
         )
     catch e
-        @warn "ODE solver or transformation failed: $e"
+        if warning_bool
+            @warn "ODE solver or transformation failed: $e"
+        end
         return (success = false,)
     end
 end
@@ -204,6 +210,7 @@ function uciwweihr_likelihood_helpers(
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
     sigma_hosp_non_centered,
     Rt_params_non_centered, w_params_non_centered,
+    warning_bool=true
 )
     try
         # Prelims
@@ -279,7 +286,9 @@ function uciwweihr_likelihood_helpers(
             H_means = H_means
         )
     catch e
-        @warn "ODE solver or transformation failed: $e"
+        if warning_bool
+            @warn "ODE solver or transformation failed: $e"
+        end
         return (success = false,)
     end
 end
@@ -292,6 +301,7 @@ function uciwweihr_likelihood_helpers(
     E_init_non_centered, I_init_non_centered, H_init_non_centered,
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
     Rt_params_non_centered, w_params_non_centered,
+    warning_bool=true
 )
     try
         # Non-constant Rt
@@ -361,7 +371,9 @@ function uciwweihr_likelihood_helpers(
             H_means = H_means
         )
     catch e
-        @warn "ODE solver or transformation failed: $e"
+        if warning_bool
+            @warn "ODE solver or transformation failed: $e"
+        end
         return (success = false,)
     end
 end

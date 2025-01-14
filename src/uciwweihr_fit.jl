@@ -59,6 +59,7 @@ function uciwweihr_fit(
         if init_params === nothing
             samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
         else
+            println("Using Initial Parameters...")
             samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
         end
     end 

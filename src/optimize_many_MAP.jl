@@ -64,3 +64,114 @@ function optimize_many_MAP2(model, n_reps=100, top_n=1, verbose=true)
         return result.values.array
     end
 end
+
+"""
+    optimize_many_MAP2_wrapper(...)
+
+Wrapper function for optimize_many_MAP2 that uses model based on inputs to function.
+
+Created by Christian Bernal Zelaya
+"""
+function optimize_many_MAP2_wrapper(
+    data_hosp,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    params::uciwweihr_model_params2;
+    n_reps=100,
+    top_n=1,
+    verbose=true
+)
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    param_change_times = vcat(0, param_change_times)
+    obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
+    obstimes = sort(obstimes)
+    my_model = uciwweihr_model(
+        data_hosp,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater,
+        obstimes,
+        param_change_times,
+        params;
+        warning_bool=false
+    )
+    return optimize_many_MAP2(my_model, n_reps, top_n, verbose)
+end
+
+function optimize_many_MAP2_wrapper(
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
+    params::uciwweihr_model_params2;
+    n_reps=100,
+    top_n=1,
+    verbose=true
+)
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    param_change_times = vcat(0, param_change_times)
+    my_model = uciwweihr_model(
+        data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+        warning_bool=false
+    )
+    return optimize_many_MAP2(my_model, n_reps, top_n, verbose)
+end
+
+function optimize_many_MAP2_wrapper(
+    data_hosp,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    params::uciwweihr_model_params1;
+    n_reps=100,
+    top_n=1,
+    verbose=true
+)
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    param_change_times = vcat(0, param_change_times)
+    obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
+    obstimes = sort(obstimes)
+    my_model = uciwweihr_model(
+        data_hosp,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater,
+        obstimes,
+        param_change_times,
+        params;
+        warning_bool=false
+    )
+    return optimize_many_MAP2(my_model, n_reps, top_n, verbose)
+end
+
+function optimize_many_MAP2_wrapper(
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
+    params::uciwweihr_model_params1;
+    n_reps=100,
+    top_n=1,
+    verbose=true
+)
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    param_change_times = vcat(0, param_change_times)
+    my_model = uciwweihr_model(
+        data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+        warning_bool=false
+    )
+    return optimize_many_MAP2(my_model, n_reps, top_n, verbose)
+end

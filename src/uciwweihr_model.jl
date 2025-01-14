@@ -21,6 +21,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     obstimes,
     param_change_times,
     params::uciwweihr_model_params2;
+    warning_bool=true
     )
         # hosp_ww model with prior on sigma_ww and sigma_hosp 
 
@@ -54,6 +55,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
             rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
             Rt_params_non_centered, w_params_non_centered,
+            warning_bool=warning_bool
         )
         # Reject if the helper function failed and skip sample
         if !trans.success
@@ -104,6 +106,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     obstimes_hosp,
     param_change_times,
     params::uciwweihr_model_params2;
+    warning_bool=true
     )
         # hosp_only model with prior sigma_hosp
 
@@ -132,6 +135,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
             sigma_hosp_non_centered,
             Rt_params_non_centered, w_params_non_centered,
+            warning_bool=warning_bool
         )
         # Reject if the helper function failed and skip sample
         if !trans.success
@@ -180,6 +184,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     obstimes,
     param_change_times,
     params::uciwweihr_model_params1;
+    warning_bool=true
     )
         # hosp_ww model with hard coded sigma_ww and sigma_hosp
 
@@ -211,6 +216,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
             rho_gene_non_centered, 
             Rt_params_non_centered, w_params_non_centered,
+            warning_bool=warning_bool
         )
         # Reject if the helper function failed and skip sample
         if !trans.success
@@ -261,6 +267,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     obstimes_hosp,
     param_change_times,
     params::uciwweihr_model_params1;
+    warning_bool=true
     )   
         # hosp_only model with hard coded sigma_hosp
     
@@ -287,6 +294,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             E_init_non_centered, I_init_non_centered, H_init_non_centered,
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
             Rt_params_non_centered, w_params_non_centered,
+            warning_bool=warning_bool
         )
         # Reject if the helper function failed and skip sample
         if !trans.success
