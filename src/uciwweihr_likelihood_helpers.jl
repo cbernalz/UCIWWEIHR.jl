@@ -91,7 +91,7 @@ function uciwweihr_likelihood_helpers(
         log_W_means = full_log_genes_mean[obstimes_wastewater]
 
         # Return --------------------------
-        if sigma_hosp == min_neg_bin_sigma | sigma_hosp == max_neg_bin_sigma
+        if isapprox(sigma_hosp, min_neg_bin_sigma) || isapprox(sigma_hosp, max_neg_bin_sigma)
             @warn "sigma_hosp is at the boundary of the parameter space"
             return (success = false,)
         end

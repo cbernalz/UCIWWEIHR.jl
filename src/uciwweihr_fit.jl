@@ -55,55 +55,17 @@ function uciwweihr_fit(
         samples = sample(my_model, Prior(), MCMCThreads(), 400, n_chains)
     else
         Random.seed!(seed)
-
-        # Retry loop to re-sample until success is achieved
-        max_retries = 10  # maximum number of retries
-        retries = 0
-        success = false
-        samples = nothing
-
-        while !success && retries < max_retries
-            try
-                println("Sampling attempt ", retries + 1)
-                # Optimize if initial parameters are provided or use default NUTS sampling
-                if init_params === nothing
-                    samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
-                else
-                    println("Using Initial Parameters...")
-                    samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
-                end
-
-                # Check if samples were valid (e.g., check if trans.success was true inside the model)
-                if !isempty(samples)  # This check could be more specific depending on your model
-                    success = true
-                end
-            catch e
-                println("Error detected during sampling: ", e)
-                retries += 1
-                println("Retrying...")
-                # Optional: Adjust the parameters or tweak the model if needed before retrying
-            end
+        # Optimize
+        if init_params === nothing
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
+        else
+            println("Using Initial Parameters...")
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
         end
-        
-        if !success
-            error("Sampling failed after $max_retries attempts.")
-        end
-    end
-
-    return samples
-end
-#        Random.seed!(seed)
-#        # Optimize
-#        if init_params === nothing
-#            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
-#        else
-#            println("Using Initial Parameters...")
-#            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
-#        end
-#    end 
-#    return(samples)
+    end 
+    return(samples)
  
-#end
+end
 
 
 function uciwweihr_fit(
