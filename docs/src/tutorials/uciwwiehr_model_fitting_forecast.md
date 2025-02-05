@@ -109,11 +109,11 @@ uciwweihr_visualizer(
     actual_non_time_varying_vals = params,
     bayes_dist_type = "Posterior",
     save_plots = true,
-    plot_name_to_save_mcmcdiag = "mcmc_diagnosis_plots1",
-    plot_name_to_save_time_varying = "mcmc_time_varying_parameter_plots1",
-    plot_name_to_save_non_time_varying = "mcmc_nontime_varying_parameter_plots1",
-    plot_name_to_save_ode_sol = "mcmc_ode_solution_plots1",
-    plot_name_to_save_pred_param = "mcmc_pred_parameter_plots1"
+    plot_name_to_save_mcmcdiag = "plots/mcmc_diagnosis_plots1",
+    plot_name_to_save_time_varying = "plots/mcmc_time_varying_parameter_plots1",
+    plot_name_to_save_non_time_varying = "plots/mcmc_nontime_varying_parameter_plots1",
+    plot_name_to_save_ode_sol = "plots/mcmc_ode_solution_plots1",
+    plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots1"
 )
 ```
 
