@@ -48,8 +48,8 @@ function uciwweihr_likelihood_helpers(
         # Parameters for hospital
         sigma_hosp = min(max(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma), max_neg_bin_sigma)    
         #sigma_hosp = exp(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean)
-        println("sigma_hosp = $sigma_hosp")
-        println("pre_clamp = $(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean)")
+        #println("sigma_hosp = $sigma_hosp")
+        #println("pre_clamp = $(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean)")
 
 
         # Non-constant Rt
