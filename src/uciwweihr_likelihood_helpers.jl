@@ -46,8 +46,8 @@ function uciwweihr_likelihood_helpers(
         rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
         sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean)
         # Parameters for hospital
-        #sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
-        sigma_hosp = exp(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean)
+        sigma_hosp = clamp.(exp(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean), min_neg_bin_sigma, max_neg_bin_sigma)    
+        #sigma_hosp = exp(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean)
         println("sigma_hosp = $sigma_hosp")
         println("pre_clamp = $(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean)")
 
