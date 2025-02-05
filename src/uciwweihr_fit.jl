@@ -57,10 +57,10 @@ function uciwweihr_fit(
         Random.seed!(seed)
         # Optimize
         if init_params === nothing
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
         else
             println("Using Initial Parameters...")
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
         end
     end 
     return(samples)
@@ -96,9 +96,10 @@ function uciwweihr_fit(
         Random.seed!(seed)
         # Optimize
         if init_params === nothing
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
-        else
             samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
+        else
+            println("Using Initial Parameters...")
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
         end
     end 
     return(samples)
@@ -142,9 +143,10 @@ function uciwweihr_fit(
         Random.seed!(seed)
         # Optimize
         if init_params === nothing
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
-        else
             samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
+        else
+            println("Using Initial Parameters...")
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
         end
     end 
     return(samples)
@@ -180,9 +182,10 @@ function uciwweihr_fit(
         Random.seed!(seed)
         # Optimize
         if init_params === nothing
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
-        else
             samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
+        else
+            println("Using Initial Parameters...")
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
         end
     end 
     return(samples)
