@@ -130,7 +130,7 @@ Saves plots to docs/plots directory.
 
 """
 function save_plots_to_docs(plot, filename; format = "png")
-    file_target_path = joinpath(filename, "$filename.$format")
+    file_target_path = "$filename.$format"
     savefig(plot, file_target_path)
     println("Plot saved to $file_target_path")
 end
