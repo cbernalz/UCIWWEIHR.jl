@@ -22,7 +22,7 @@ Used in the `uciwweihr_visualizer` to create visuals for time varying parameters
 """
 
 function time_varying_param_vis(
-    build_params::uciwweihr_model_params2,
+    build_params::uciwweihr_model_params4,
     data_hosp, 
     obstimes_hosp,
     param_change_times,
@@ -32,12 +32,12 @@ function time_varying_param_vis(
     gq_samples=nothing,
     actual_rt_vals=nothing,
     actual_w_t=nothing,
-    time_varying_params = ["rt_vals", "w_t"],
+    time_varying_params = ["rt_vals"],
     quantiles = [0.5, 0.8, 0.95],
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_time_varying_parameter_plots"
     )
-    println("Generating time varying parameter plots (with priors and w/out wastewater)...")
+    println("Generating time varying parameter plots (with priors, w/out wastewater, w const hospitalization probability)...")
     samples = uciwweihr_fit(
         data_hosp,
         obstimes_hosp,
@@ -289,7 +289,7 @@ end
 
 
 function time_varying_param_vis(
-    build_params::uciwweihr_model_params1,
+    build_params::uciwweihr_model_params3,
     data_hosp, 
     obstimes_hosp,
     param_change_times,
@@ -299,12 +299,12 @@ function time_varying_param_vis(
     gq_samples=nothing,
     actual_rt_vals=nothing,
     actual_w_t=nothing,
-    time_varying_params = ["rt_vals", "w_t"],
+    time_varying_params = ["rt_vals"],
     quantiles = [0.5, 0.8, 0.95],
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_time_varying_parameter_plots"
     )
-    println("Generating time varying parameter plots (with priors and w/out wastewater)...")
+    println("Generating time varying parameter plots (with priors, w/out wastewater, w const hospitalization probability)...")
     samples = uciwweihr_fit(
         data_hosp,
         obstimes_hosp,

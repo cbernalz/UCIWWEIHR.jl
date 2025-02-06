@@ -72,13 +72,13 @@ function uciwweihr_fit(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params2;
+    params::uciwweihr_model_params4;
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1,
     n_discard_initial::Int64=0, seed::Int64=2024,
     init_params=nothing
     )
-    println("Using uciwweihr_model w/out wastewater. Priors sigma_hosp!!!")
+    println("Using uciwweihr_model w/out wastewater. Priors sigma_hosp and constant hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     param_change_times = vcat(0, param_change_times)
@@ -158,13 +158,13 @@ function uciwweihr_fit(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params1;
+    params::uciwweihr_model_params3;
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1,
     n_discard_initial::Int64=0, seed::Int64=2024,
     init_params=nothing
     )
-    println("Using uciwweihr_model w/out wastewater. Hardcoded sigma_hosp!!!")
+    println("Using uciwweihr_model w/out wastewater. Hardcoded sigma_hosp and const hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     param_change_times = vcat(0, param_change_times)

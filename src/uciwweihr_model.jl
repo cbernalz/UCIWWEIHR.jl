@@ -105,10 +105,10 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params2;
+    params::uciwweihr_model_params4;
     warning_bool=true
     )
-        # hosp_only model with prior sigma_hosp
+        # hosp_only model with prior sigma_hosp and w/out time-varying w
 
         # PRIORS-----------------------------
         # Compartments
@@ -119,12 +119,11 @@ The defaults for this fuction will follow those of the default simulation in gen
         gamma_non_centered ~ Normal()
         nu_non_centered ~ Normal()
         epsilon_non_centered ~ Normal()
+        w_param_non_centered ~ Normal()
         # Parameters for hospital
         sigma_hosp_non_centered ~ Normal()
         # Non-constant Rt
         Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
-        # Non-constant Hosp Rate w
-        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
 
         # TRANSFORMATIONS-----------------------------
         trans = uciwweihr_likelihood_helpers(
@@ -134,7 +133,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             E_init_non_centered, I_init_non_centered, H_init_non_centered,
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
             sigma_hosp_non_centered,
-            Rt_params_non_centered, w_params_non_centered,
+            Rt_params_non_centered, w_param_non_centered,
             warning_bool=warning_bool
         )
         # Reject if the helper function failed and skip sample
@@ -157,9 +156,8 @@ The defaults for this fuction will follow those of the default simulation in gen
             alpha_t = trans.alpha_t,
             gamma = trans.gamma,
             nu = trans.nu,
-            w_t = trans.w_t,
-            sigma_w = trans.sigma_w,
             epsilon = trans.epsilon,
+            w = trans.w,
             rt_vals = trans.Rt_t,
             sigma_Rt = trans.sigma_Rt,
             sigma_hosp = trans.sigma_hosp,
@@ -167,8 +165,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             I = trans.I_comp_sol,
             E = trans.E_comp_sol,
             H_means = trans.H_means,
-            rt_init = trans.Rt_init,
-            w_init = trans.w_init
+            rt_init = trans.Rt_init
         )
 
 
@@ -266,10 +263,10 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params1;
+    params::uciwweihr_model_params3;
     warning_bool=true
     )   
-        # hosp_only model with hard coded sigma_hosp
+        # hosp_only model with hard coded sigma_hosp w/out time-varying w
     
         # PRIORS-----------------------------
         # Compartments
@@ -280,11 +277,10 @@ The defaults for this fuction will follow those of the default simulation in gen
         gamma_non_centered ~ Normal()
         nu_non_centered ~ Normal()
         epsilon_non_centered ~ Normal()
+        w_param_non_centered ~ Normal()
         # Parameters for hospital
         # Non-constant Rt
         Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
-        # Non-constant Hosp Rate w
-        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
 
         # TRANSFORMATIONS-----------------------------
         trans = uciwweihr_likelihood_helpers(
@@ -293,7 +289,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             params;
             E_init_non_centered, I_init_non_centered, H_init_non_centered,
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
-            Rt_params_non_centered, w_params_non_centered,
+            Rt_params_non_centered, w_param_non_centered,
             warning_bool=warning_bool
         )
         # Reject if the helper function failed and skip sample
@@ -316,9 +312,8 @@ The defaults for this fuction will follow those of the default simulation in gen
             alpha_t = trans.alpha_t,
             gamma = trans.gamma,
             nu = trans.nu,
-            w_t = trans.w_t,
-            sigma_w = trans.sigma_w,
             epsilon = trans.epsilon,
+            w = trans.w,
             rt_vals = trans.Rt_t,
             sigma_Rt = trans.sigma_Rt,
             sigma_hosp = trans.sigma_hosp,
@@ -326,8 +321,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             I = trans.I_comp_sol,
             E = trans.E_comp_sol,
             H_means = trans.H_means,
-            rt_init = trans.Rt_init,
-            w_init = trans.w_init
+            rt_init = trans.Rt_init
         )
     
     

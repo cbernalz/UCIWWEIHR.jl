@@ -45,7 +45,7 @@ function uciwweihr_visualizer(
     param_change_times,
     seed,
     forecast,
-    build_params::uciwweihr_model_params2;
+    build_params::uciwweihr_model_params4;
     pp_samples = nothing,
     gq_samples = nothing,
     obs_data_hosp = nothing,
@@ -58,14 +58,12 @@ function uciwweihr_visualizer(
     actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
         ["E_init", "I_init", "H_init"],
-        ["gamma", "nu", "epsilon"],
-        ["rt_init", "w_init"],
-        ["sigma_w", "sigma_Rt"],
-        ["sigma_ww", "sigma_hosp"],
-        ["rho_gene"]
+        ["gamma", "nu", "epsilon", "w"],
+        ["rt_init", "sigma_Rt"],
+        ["sigma_hosp"]
     ],
-    time_varying_params = ["rt_vals", "w_t"],
-    var_to_pred = ["data_wastewater", "data_hosp"],
+    time_varying_params = ["rt_vals"],
+    var_to_pred = ["data_hosp"],
     quantiles = [0.5, 0.8, 0.95],
     bayes_dist_type = nothing,
     mcmcdaigs::Bool = true,
@@ -174,7 +172,7 @@ function uciwweihr_visualizer(
     param_change_times,
     seed,
     forecast,
-    build_params::uciwweihr_model_params1;
+    build_params::uciwweihr_model_params3;
     pp_samples = nothing,
     gq_samples = nothing,
     obs_data_hosp = nothing,
@@ -187,14 +185,12 @@ function uciwweihr_visualizer(
     actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
         ["E_init", "I_init", "H_init"],
-        ["gamma", "nu", "epsilon"],
-        ["rt_init", "w_init"],
-        ["sigma_w", "sigma_Rt"],
-        ["sigma_ww", "sigma_hosp"],
-        ["rho_gene"]
+        ["gamma", "nu", "epsilon", "w"],
+        ["rt_init", "sigma_Rt"],
+        ["sigma_hosp"]
     ],
-    time_varying_params = ["rt_vals", "w_t"],
-    var_to_pred = ["data_wastewater", "data_hosp"],
+    time_varying_params = ["rt_vals"],
+    var_to_pred = ["data_hosp"],
     quantiles = [0.5, 0.8, 0.95],
     bayes_dist_type = nothing,
     mcmcdaigs::Bool = true,

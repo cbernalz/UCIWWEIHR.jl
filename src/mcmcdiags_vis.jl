@@ -11,13 +11,7 @@ Default visualizer for results of the UCIWWEIHR model, includes posterior/priors
 """
 function mcmcdiags_vis(;
     gq_samples=nothing,
-    desired_params=[
-        ["E_init", "I_init", "H_init"],
-        ["gamma", "nu", "epsilon"],
-        ["rt_init", "w_init"],
-        ["rho_gene", "sigma_ww"],
-        ["sigma_hosp"]
-    ],
+    desired_params=nothing,
     actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_diagnosis_plots"

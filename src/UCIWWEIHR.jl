@@ -44,6 +44,7 @@ include("ode_solution_vis.jl")
 include("uciwweihr_visualizer.jl")
 
 export eihr_ode
+export eihr_ode_const_w
 export uciwweihr_sim_params
 export create_uciwweihr_sim_params
 export generate_random_walk
@@ -54,10 +55,14 @@ export NegativeBinomial2
 export GeneralizedTDist
 export uciwweihr_model_params1
 export uciwweihr_model_params2
+export uciwweihr_model_params3
+export uciwweihr_model_params4
 export uciwweihr_init_param
 export uciwweihr_likelihood_helpers
 export create_uciwweihr_model_params1
 export create_uciwweihr_model_params2
+export create_uciwweihr_model_params3
+export create_uciwweihr_model_params4
 export uciwweihr_model
 export uciwweihr_fit
 export uciwweihr_gq_pp

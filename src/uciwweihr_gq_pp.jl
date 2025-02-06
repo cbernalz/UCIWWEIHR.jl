@@ -95,11 +95,11 @@ function uciwweihr_gq_pp(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params2;
+    params::uciwweihr_model_params4;
     seed::Int64=2024,
     forecast::Bool=false, forecast_days::Int64=14
 )
-    println("Using uciwweihr_model w/out wastewater.  Priors on sigma_hosp!!!")
+    println("Using uciwweihr_model w/out wastewater.  Priors on sigma_hosp and const hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     param_change_times = vcat(0, param_change_times)
@@ -217,11 +217,11 @@ function uciwweihr_gq_pp(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params1;
+    params::uciwweihr_model_params3;
     seed::Int64=2024,
     forecast::Bool=false, forecast_days::Int64=14
 )
-    println("Using uciwweihr_model w/out wastewater.  Hardcoded sigma_hosp!!!")
+    println("Using uciwweihr_model w/out wastewater.  Hardcoded sigma_hosp and const hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     param_change_times = vcat(0, param_change_times)

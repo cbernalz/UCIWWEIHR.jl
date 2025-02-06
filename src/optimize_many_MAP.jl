@@ -106,7 +106,7 @@ function optimize_many_MAP2_wrapper(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params2;
+    params::uciwweihr_model_params4;
     n_reps=100,
     top_n=1,
     verbose=true
@@ -158,7 +158,7 @@ function optimize_many_MAP2_wrapper(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params1;
+    params::uciwweihr_model_params3;
     n_reps=100,
     top_n=1,
     verbose=true

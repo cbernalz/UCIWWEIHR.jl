@@ -46,8 +46,11 @@ function uciwweihr_likelihood_helpers(
         rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
         sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean)
         # Parameters for hospital
-        sigma_hosp = min(max(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma), max_neg_bin_sigma)    
-
+        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
+        if isapprox(sigma_hosp, min_neg_bin_sigma) || isapprox(sigma_hosp, max_neg_bin_sigma)
+            #@warn "sigma_hosp is at the boundary of the parameter space; sampling new value"
+            return (success = false,)
+        end
 
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
@@ -88,10 +91,6 @@ function uciwweihr_likelihood_helpers(
         log_W_means = full_log_genes_mean[obstimes_wastewater]
 
         # Return --------------------------
-        if isapprox(sigma_hosp, min_neg_bin_sigma) || isapprox(sigma_hosp, max_neg_bin_sigma)
-            #@warn "sigma_hosp is at the boundary of the parameter space; sampling new value"
-            return (success = false,)
-        end
         return (
             success = true,
             E_init = E_init, I_init = I_init, H_init = H_init,
@@ -210,11 +209,11 @@ end
 function uciwweihr_likelihood_helpers(
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params2;
+    params::uciwweihr_model_params4;
     E_init_non_centered, I_init_non_centered, H_init_non_centered,
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
     sigma_hosp_non_centered,
-    Rt_params_non_centered, w_params_non_centered,
+    Rt_params_non_centered, w_param_non_centered,
     warning_bool=true
 )
     try
@@ -226,10 +225,6 @@ function uciwweihr_likelihood_helpers(
         sigma_Rt_non_centered = Rt_params_non_centered[1]
         Rt_init_non_centered = Rt_params_non_centered[2]
         log_Rt_steps_non_centered = Rt_params_non_centered[3:end]
-        # Non-constant Hosp Rate w
-        sigma_w_non_centered = w_params_non_centered[1]
-        w_init_non_centered = w_params_non_centered[2]
-        logit_w_steps_non_centered = w_params_non_centered[3:end]
 
 
         # TRANSFORMATIONS--------------------
@@ -241,8 +236,13 @@ function uciwweihr_likelihood_helpers(
         gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
         nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
         epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
+        w = logistic(w_param_non_centered * params.w_sd + params.logit_w_mean)
         # Parameters for hospital
-        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
+        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)  
+        if isapprox(sigma_hosp, min_neg_bin_sigma) || isapprox(sigma_hosp, max_neg_bin_sigma)
+            #@warn "sigma_hosp is at the boundary of the parameter space; sampling new value"
+            return (success = false,)
+        end  
 
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
@@ -251,19 +251,12 @@ function uciwweihr_likelihood_helpers(
         alpha_init = Rt_init * nu
         alpha_t = vcat(alpha_init, alpha_t_no_init)
         Rt_t = alpha_t / nu
-        # Non-constant Hosp Prob w
-        w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
-        sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
-        logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
-        w_init = logistic(w_init_logit)
-        w_no_init = logistic.(logit_w_no_init)
-        w_t = vcat(w_init, w_no_init)
 
 
         # ODE SETUP--------------------------
-        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, obstimes_hosp[end]), ones(5))
+        prob = ODEProblem{true}(eihr_ode_const_w!, zeros(3), (0.0, obstimes_hosp[end]), ones(5))
         u0 = [E_init, I_init, H_init]
-        p0 = (gamma, nu, epsilon, alpha_t, w_t, param_change_times)
+        p0 = (gamma, nu, epsilon, alpha_t, w, param_change_times)
         extra_ode_precision = false
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
@@ -283,10 +276,9 @@ function uciwweihr_likelihood_helpers(
         return (
             success = true,
             E_init = E_init, I_init = I_init, H_init = H_init,
-            gamma = gamma, nu = nu, epsilon = epsilon,
+            gamma = gamma, nu = nu, epsilon = epsilon, w = w,
             sigma_hosp = sigma_hosp,
             Rt_t = Rt_t, Rt_init = Rt_init, sigma_Rt = sigma_Rt, alpha_t = alpha_t,
-            w_init = w_init, sigma_w = sigma_w, w_t = w_t,
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol,
             H_means = H_means
         )
@@ -302,10 +294,10 @@ end
 function uciwweihr_likelihood_helpers(
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params1;
+    params::uciwweihr_model_params3;
     E_init_non_centered, I_init_non_centered, H_init_non_centered,
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
-    Rt_params_non_centered, w_params_non_centered,
+    Rt_params_non_centered, w_param_non_centered,
     warning_bool=true
 )
     try
@@ -313,10 +305,6 @@ function uciwweihr_likelihood_helpers(
         sigma_Rt_non_centered = Rt_params_non_centered[1]
         Rt_init_non_centered = Rt_params_non_centered[2]
         log_Rt_steps_non_centered = Rt_params_non_centered[3:end]
-        # Non-constant Hosp Rate w
-        sigma_w_non_centered = w_params_non_centered[1]
-        w_init_non_centered = w_params_non_centered[2]
-        logit_w_steps_non_centered = w_params_non_centered[3:end]
 
 
         # TRANSFORMATIONS--------------------
@@ -328,6 +316,7 @@ function uciwweihr_likelihood_helpers(
         gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
         nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
         epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
+        w = logistic(w_param_non_centered * params.w_sd + params.logit_w_mean)
 
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
@@ -336,19 +325,12 @@ function uciwweihr_likelihood_helpers(
         alpha_init = Rt_init * nu
         alpha_t = vcat(alpha_init, alpha_t_no_init)
         Rt_t = alpha_t / nu
-        # Non-constant Hosp Prob w
-        w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
-        sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
-        logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
-        w_init = logistic(w_init_logit)
-        w_no_init = logistic.(logit_w_no_init)
-        w_t = vcat(w_init, w_no_init)
 
 
         # ODE SETUP--------------------------
-        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, obstimes_hosp[end]), ones(5))
+        prob = ODEProblem{true}(eihr_ode_const_w!, zeros(3), (0.0, obstimes_hosp[end]), ones(5))
         u0 = [E_init, I_init, H_init]
-        p0 = (gamma, nu, epsilon, alpha_t, w_t, param_change_times)
+        p0 = (gamma, nu, epsilon, alpha_t, w, param_change_times)
         extra_ode_precision = false
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
@@ -368,10 +350,9 @@ function uciwweihr_likelihood_helpers(
         return (
             success = true,
             E_init = E_init, I_init = I_init, H_init = H_init,
-            gamma = gamma, nu = nu, epsilon = epsilon,
+            gamma = gamma, nu = nu, epsilon = epsilon, w = w,
             sigma_hosp = params.sigma_hosp,
             Rt_t = Rt_t, Rt_init = Rt_init, sigma_Rt = sigma_Rt, alpha_t = alpha_t,
-            w_init = w_init, sigma_w = sigma_w, w_t = w_t,
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol,
             H_means = H_means
         )

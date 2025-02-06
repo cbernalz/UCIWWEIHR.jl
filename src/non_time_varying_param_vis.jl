@@ -20,7 +20,7 @@ Used in the `uciwweihr_visualizer` to create visuals for non-time varying parame
 - `plot_name_to_save`: A string to indicate the name of the plot to save. Default is "mcmc_nontime_varying_parameter_plots".
 """
 function non_time_varying_param_vis(
-    build_params::uciwweihr_model_params2,
+    build_params::uciwweihr_model_params4,
     data_hosp, 
     obstimes_hosp,
     param_change_times,
@@ -33,7 +33,7 @@ function non_time_varying_param_vis(
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_nontime_varying_parameter_plots"
     )
-    println("Generating non-time varying parameter plots (with priors and w/out wastewater)...")
+    println("Generating non-time varying parameter plots (with priors, w/out wastewater, w const hospitalization probability)...")
     samples = uciwweihr_fit(
         data_hosp,
         obstimes_hosp,
@@ -213,7 +213,7 @@ end
 
 
 function non_time_varying_param_vis(
-    build_params::uciwweihr_model_params1,
+    build_params::uciwweihr_model_params3,
     data_hosp, 
     obstimes_hosp,
     param_change_times,
@@ -226,7 +226,7 @@ function non_time_varying_param_vis(
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_nontime_varying_parameter_plots"
     )
-    println("Generating non-time varying parameter plots (with priors and w/out wastewater)...")
+    println("Generating non-time varying parameter plots (with priors, w/out wastewater, w const hospitalization probability)...")
     samples = uciwweihr_fit(
         data_hosp,
         obstimes_hosp,
