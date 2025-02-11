@@ -47,10 +47,10 @@ function uciwweihr_likelihood_helpers(
         sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean)
         # Parameters for hospital
         sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
-        #if isapprox(sigma_hosp, min_neg_bin_sigma) || isapprox(sigma_hosp, max_neg_bin_sigma)
-        #    #@warn "sigma_hosp is at the boundary of the parameter space; sampling new value"
-        #    return (success = false,)
-        #end
+        if isapprox(sigma_hosp, min_neg_bin_sigma) || isapprox(sigma_hosp, max_neg_bin_sigma)
+            #@warn "sigma_hosp is at the boundary of the parameter space; sampling new value"
+            return (success = false,)
+        end
 
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
