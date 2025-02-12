@@ -19,10 +19,6 @@ function uciwweihr_likelihood_helpers(
     warning_bool=true
 )
     try
-        # Prelims
-        max_neg_bin_sigma = 1e10
-        min_neg_bin_sigma = 1e-10
-
         # Non-constant Rt
         sigma_Rt_non_centered = Rt_params_non_centered[1]
         Rt_init_non_centered = Rt_params_non_centered[2]
@@ -46,12 +42,7 @@ function uciwweihr_likelihood_helpers(
         rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
         sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean)
         # Parameters for hospital
-        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)    
-        if isapprox(sigma_hosp, min_neg_bin_sigma) || isapprox(sigma_hosp, max_neg_bin_sigma)
-            #@warn "sigma_hosp is at the boundary of the parameter space; sampling new value"
-            return (success = false,)
-        end
-
+        sigma_hosp = exp(sigma_hosp_non_centered * params.sigma_hosp_sd + params.log_sigma_hosp_mean) 
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
         sigma_Rt = exp(sigma_Rt_non_centered * params.sigma_Rt_sd + params.sigma_Rt_mean)
@@ -217,10 +208,6 @@ function uciwweihr_likelihood_helpers(
     warning_bool=true
 )
     try
-        # Prelims
-        max_neg_bin_sigma = 1e10
-        min_neg_bin_sigma = 1e-10
-        
         # Non-constant Rt
         sigma_Rt_non_centered = Rt_params_non_centered[1]
         Rt_init_non_centered = Rt_params_non_centered[2]
@@ -238,11 +225,7 @@ function uciwweihr_likelihood_helpers(
         epsilon = exp(epsilon_non_centered * params.epsilon_sd + params.log_epsilon_mean)
         w = logistic(w_param_non_centered * params.w_sd + params.logit_w_mean)
         # Parameters for hospital
-        sigma_hosp = clamp.(sigma_hosp_non_centered * params.sigma_hosp_sd + params.sigma_hosp_mean, min_neg_bin_sigma, max_neg_bin_sigma)  
-        if isapprox(sigma_hosp, min_neg_bin_sigma) || isapprox(sigma_hosp, max_neg_bin_sigma)
-            #@warn "sigma_hosp is at the boundary of the parameter space; sampling new value"
-            return (success = false,)
-        end  
+        sigma_hosp = exp(sigma_hosp_non_centered * params.sigma_hosp_sd + params.log_sigma_hosp_mean) 
 
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)

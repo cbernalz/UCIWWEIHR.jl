@@ -83,7 +83,7 @@ This will use a time-varying hospitalization probability.
 - `sigma_ww_sd::Float64=nothing`: Standard deviation for the normal prior of the log standard deviation of the wastewater data. If `nothing`, the sigma_ww is used.
 - `log_sigma_ww_mean::Float64=nothing`: Mean for the normal prior of the log standard deviation of the wastewater data. If `nothing`, the sigma_ww is used.
 - `sigma_hosp_sd::Float64=nothing`: Standard deviation for the normal prior of the log standard deviation of the hospital data. If `nothing`, the sigma_hosp is used.
-- `sigma_hosp_mean::Float64=nothing`: Mean for the normal prior of the log standard deviation of the hospital data. If `nothing`, the sigma_hosp is used.
+- `log_sigma_hosp_mean::Float64=nothing`: Mean for the normal prior of the log standard deviation of the hospital data. If `nothing`, the sigma_hosp is used.
 - `Rt_init_sd::Float64=0.3`: Standard deviation for the initial value of the time-varying reproduction number.
 - `Rt_init_mean::Float64=0.2`: Mean for the initial value of the time-varying reproduction number.
 - `sigma_Rt_sd::Float64=0.2`: Standard deviation for normal prior of log time-varying reproduction number standard deviation.
@@ -112,7 +112,7 @@ struct uciwweihr_model_params2
     sigma_ww_sd::Float64
     log_sigma_ww_mean::Float64
     sigma_hosp_sd::Float64
-    sigma_hosp_mean::Float64
+    log_sigma_hosp_mean::Float64
 
     Rt_init_sd::Float64
     Rt_init_mean::Float64
@@ -147,7 +147,7 @@ This not will use a time-varying hospitalization probability.
 - `rho_gene_sd::Float64=0.02`: Standard deviation for the rho prior.
 - `log_rho_gene_mean::Float64=log(0.011)`: Mean for the row prior on log scale.
 - `sigma_ww::Float64=log(0.1)`: Standard deviation for the normal distribution for wastewater data.  Not infered.
-- `sigma_hosp::Float64=500.0`: Standard deviation for the negative binomial distribution for hospital data.  Not infered.
+- `log_sigma_hosp::Float64=500.0`: Standard deviation for the negative binomial distribution for hospital data.  Not infered.
 - `Rt_init_sd::Float64=0.3`: Standard deviation for the initial value of the time-varying reproduction number.
 - `Rt_init_mean::Float64=0.2`: Mean for the initial value of the time-varying reproduction number.
 - `sigma_Rt_sd::Float64=0.2`: Standard deviation for normal prior of log time-varying reproduction number standard deviation.
@@ -206,7 +206,7 @@ This will not use a time-varying hospitalization probability.
 - `sigma_ww_sd::Float64=nothing`: Standard deviation for the normal prior of the log standard deviation of the wastewater data. If `nothing`, the sigma_ww is used.
 - `log_sigma_ww_mean::Float64=nothing`: Mean for the normal prior of the log standard deviation of the wastewater data. If `nothing`, the sigma_ww is used.
 - `sigma_hosp_sd::Float64=nothing`: Standard deviation for the normal prior of the log standard deviation of the hospital data. If `nothing`, the sigma_hosp is used.
-- `sigma_hosp_mean::Float64=nothing`: Mean for the normal prior of the log standard deviation of the hospital data. If `nothing`, the sigma_hosp is used.
+- `log_sigma_hosp_mean::Float64=nothing`: Mean for the normal prior of the log standard deviation of the hospital data. If `nothing`, the sigma_hosp is used.
 - `Rt_init_sd::Float64=0.3`: Standard deviation for the initial value of the time-varying reproduction number.
 - `Rt_init_mean::Float64=0.2`: Mean for the initial value of the time-varying reproduction number.
 - `sigma_Rt_sd::Float64=0.2`: Standard deviation for normal prior of log time-varying reproduction number standard deviation.
@@ -233,7 +233,7 @@ struct uciwweihr_model_params4
     sigma_ww_sd::Float64
     log_sigma_ww_mean::Float64
     sigma_hosp_sd::Float64
-    sigma_hosp_mean::Float64
+    log_sigma_hosp_mean::Float64
 
     Rt_init_sd::Float64
     Rt_init_mean::Float64
@@ -270,7 +270,7 @@ function create_uciwweihr_model_params2(;
     rho_gene_sd::Float64=0.02, log_rho_gene_mean::Float64=log(0.011),
     
     sigma_ww_sd::Float64=0.02, log_sigma_ww_mean::Float64=log(0.1),
-    sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
+    sigma_hosp_sd::Float64=0.01, log_sigma_hosp_mean::Float64=log(500.0),
 
     Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
     sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
@@ -292,7 +292,7 @@ function create_uciwweihr_model_params2(;
         rho_gene_sd, log_rho_gene_mean,
 
         sigma_ww_sd, log_sigma_ww_mean,
-        sigma_hosp_sd, sigma_hosp_mean,
+        sigma_hosp_sd, log_sigma_hosp_mean,
 
         Rt_init_sd, Rt_init_mean,
         sigma_Rt_sd, sigma_Rt_mean,
@@ -354,7 +354,7 @@ function create_uciwweihr_model_params4(;
     rho_gene_sd::Float64=0.02, log_rho_gene_mean::Float64=log(0.011),
     
     sigma_ww_sd::Float64=0.02, log_sigma_ww_mean::Float64=log(0.1),
-    sigma_hosp_sd::Float64=50.0, sigma_hosp_mean::Float64=500.0,
+    sigma_hosp_sd::Float64=0.01, log_sigma_hosp_mean::Float64=log(500.0),
 
     Rt_init_sd::Float64=0.3, Rt_init_mean::Float64=0.2,
     sigma_Rt_sd::Float64=0.2, sigma_Rt_mean::Float64=-3.0,
@@ -375,7 +375,7 @@ function create_uciwweihr_model_params4(;
         rho_gene_sd, log_rho_gene_mean,
 
         sigma_ww_sd, log_sigma_ww_mean,
-        sigma_hosp_sd, sigma_hosp_mean,
+        sigma_hosp_sd, log_sigma_hosp_mean,
 
         Rt_init_sd, Rt_init_mean,
         sigma_Rt_sd, sigma_Rt_mean,
