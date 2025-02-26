@@ -240,11 +240,11 @@ function uciwweihr_likelihood_helpers(
         prob = ODEProblem{true}(eihr_ode_const_w!, zeros(3), (0.0, obstimes_hosp[end]), ones(5))
         u0 = [E_init, I_init, H_init]
         p0 = (gamma, nu, epsilon, alpha_t, w, param_change_times)
-        extra_ode_precision = true
+        extra_ode_precision = false
         #abstol = extra_ode_precision ? 1e-11 : 1e-9
         #reltol = extra_ode_precision ? 1e-8 : 1e-6
-        abstol = extra_ode_precision ? 1e-15 : 1e-9
-        reltol = extra_ode_precision ? 1e-12 : 1e-6
+        abstol = extra_ode_precision ? 1e-15 : 1e-5
+        reltol = extra_ode_precision ? 1e-12 : 1e-2
         sol = solve(prob, Tsit5(); saveat=0.0:obstimes_hosp[end], save_start=true, 
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, obstimes_hosp[end]))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
