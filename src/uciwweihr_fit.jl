@@ -72,11 +72,11 @@ function uciwweihr_fit(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params4,
-    init_params;
+    params::uciwweihr_model_params4;
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1,
-    n_discard_initial::Int64=0, seed::Int64=2024
+    n_discard_initial::Int64=0, seed::Int64=2024,
+    init_params=nothing
     )
     println("Using uciwweihr_model w/out wastewater. Priors sigma_hosp and constant hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
@@ -95,13 +95,12 @@ function uciwweihr_fit(
     else
         Random.seed!(seed)
         # Optimize
-        #if init_params === nothing
-        #    samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
-        #else
-            #println("Using Initial Parameters...")
-            println(" ONly Initial Parameters...")
+        if init_params === nothing
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
+        else
+            println("Using Initial Parameters...")
             samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
-        #end
+        end
     end 
     return(samples)
  
