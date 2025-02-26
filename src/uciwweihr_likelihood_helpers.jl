@@ -240,7 +240,7 @@ function uciwweihr_likelihood_helpers(
         prob = ODEProblem{true}(eihr_ode_const_w!, zeros(3), (0.0, obstimes_hosp[end]), ones(5))
         u0 = [E_init, I_init, H_init]
         p0 = (gamma, nu, epsilon, alpha_t, w, param_change_times)
-        extra_ode_precision = false
+        extra_ode_precision = true
         #abstol = extra_ode_precision ? 1e-11 : 1e-9
         #reltol = extra_ode_precision ? 1e-8 : 1e-6
         abstol = extra_ode_precision ? 1e-15 : 1e-5
