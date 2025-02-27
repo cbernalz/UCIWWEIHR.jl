@@ -135,7 +135,7 @@ function save_plots_to_docs(plot, filename; format = "png")
     end
     dir_target_path = dirname(filename)
     if !isdir(dir_target_path)
-        mkdirp(dir_target_path)
+        mkpath(dir_target_path)
     end
     savefig(plot, filename)
     println("Plot saved to $filename")
