@@ -99,6 +99,7 @@ uciwweihr_visualizer(
     model_params;
     pp_samples = model_output[1],
     gq_samples = model_output[2],
+    samples = model_output[3],
     obs_data_hosp = df_ext.hosp,
     obs_data_wastewater = df_ext.log_ww_conc, 
     actual_rt_vals = df_ext.rt, 
@@ -113,7 +114,8 @@ uciwweihr_visualizer(
     plot_name_to_save_time_varying = "plots/mcmc_time_varying_parameter_plots1",
     plot_name_to_save_non_time_varying = "plots/mcmc_nontime_varying_parameter_plots1",
     plot_name_to_save_ode_sol = "plots/mcmc_ode_solution_plots1",
-    plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots1"
+    plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots1",
+    plot_name_to_save_log_prob_trace = "plots/mcmc_log_prob_trace_plot1"
 )
 ```
 
@@ -134,6 +136,9 @@ uciwweihr_visualizer(
 ### 3.5. Posterior Predictive Distribution Plot.
 
 ![Plot 4](plots/mcmc_pred_parameter_plots1.png)
+
+### 3.6. Log Prob Trace Plot.
+![Plot 5](plots/mcmc_log_prob_trace_plot1.png)
 
 
 ### [Tutorial Contents](@ref tutorial_home)
