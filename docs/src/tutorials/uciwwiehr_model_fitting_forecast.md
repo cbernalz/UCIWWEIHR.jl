@@ -115,7 +115,7 @@ uciwweihr_visualizer(
     plot_name_to_save_non_time_varying = "plots/mcmc_nontime_varying_parameter_plots1",
     plot_name_to_save_ode_sol = "plots/mcmc_ode_solution_plots1",
     plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots1",
-    plot_name_to_save_log_prob_trace = "plots/mcmc_log_prob_trace_plot1"
+    plot_name_to_save_log_like = "plots/mcmc_log_prob_trace_plot1"
 )
 ```
 
