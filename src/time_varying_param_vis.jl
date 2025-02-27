@@ -38,12 +38,14 @@ function time_varying_param_vis(
     plot_name_to_save = "mcmc_time_varying_parameter_plots"
     )
     println("Generating time varying parameter plots (with priors, w/out wastewater, w const hospitalization probability)...")
+    chains = unique(gq_samples.chain)
     samples = uciwweihr_fit(
         data_hosp,
         obstimes_hosp,
         param_change_times,
         build_params;
         priors_only=true,
+        n_chains=length(chains),
         seed=seed
         )
     prior_model_output = uciwweihr_gq_pp(
@@ -171,6 +173,7 @@ function time_varying_param_vis(
     plot_name_to_save = "mcmc_time_varying_parameter_plots"
     )
     println("Generating time varying parameter plots (with priors and with wastewater)...")
+    chains = unique(gq_samples.chain)
     samples = uciwweihr_fit(
         data_hosp,
         data_wastewater,
@@ -179,6 +182,7 @@ function time_varying_param_vis(
         param_change_times,
         build_params;
         priors_only=true,
+        n_chains=length(chains),
         seed=seed
         )
     prior_model_output = uciwweihr_gq_pp(
@@ -305,12 +309,14 @@ function time_varying_param_vis(
     plot_name_to_save = "mcmc_time_varying_parameter_plots"
     )
     println("Generating time varying parameter plots (with priors, w/out wastewater, w const hospitalization probability)...")
+    chains = unique(gq_samples.chain)
     samples = uciwweihr_fit(
         data_hosp,
         obstimes_hosp,
         param_change_times,
         build_params;
         priors_only=true,
+        n_chains=length(chains),
         seed=seed
         )
     prior_model_output = uciwweihr_gq_pp(
@@ -438,6 +444,7 @@ function time_varying_param_vis(
     plot_name_to_save = "mcmc_time_varying_parameter_plots"
     )
     println("Generating time varying parameter plots (with priors and with wastewater)...")
+    chains = unique(gq_samples.chain)
     samples = uciwweihr_fit(
         data_hosp,
         data_wastewater,
@@ -446,6 +453,7 @@ function time_varying_param_vis(
         param_change_times,
         build_params;
         priors_only=true,
+        n_chains=length(chains),
         seed=seed
         )
     prior_model_output = uciwweihr_gq_pp(
