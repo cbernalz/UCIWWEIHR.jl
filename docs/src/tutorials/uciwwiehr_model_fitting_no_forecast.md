@@ -117,35 +117,35 @@ uciwweihr_visualizer(
     actual_non_time_varying_vals = params,
     bayes_dist_type = "Posterior",
     save_plots = true,
-    plot_name_to_save_mcmcdiag = "plots/mcmc_diagnosis_plots",
-    plot_name_to_save_time_varying = "plots/mcmc_time_varying_parameter_plots",
-    plot_name_to_save_non_time_varying = "plots/mcmc_nontime_varying_parameter_plots",
-    plot_name_to_save_ode_sol = "plots/mcmc_ode_solution_plots",
-    plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots",
-    plot_name_to_save_log_like = "plots/mcmc_log_prob_trace_plot"
+    plot_name_to_save_mcmcdiag = "docs/build/tutorials/plots/mcmc_diagnosis_plots",
+    plot_name_to_save_time_varying = "docs/build/tutorials/plots/mcmc_time_varying_parameter_plots",
+    plot_name_to_save_non_time_varying = "docs/build/tutorials/plots/mcmc_nontime_varying_parameter_plots",
+    plot_name_to_save_ode_sol = "docs/build/tutorials/plots/mcmc_ode_solution_plots",
+    plot_name_to_save_pred_param = "docs/build/tutorials/plots/mcmc_pred_parameter_plots",
+    plot_name_to_save_log_like = "docs/build/tutorials/plots/mcmc_log_prob_trace_plot"
 )
 ```
 
 ### 3.1. MCMC Diagnostic Plots.
 
-![Plot 1](plots/mcmc_diagnosis_plots.png)
+![Plot 1](docs/build/tutorials/plots/mcmc_diagnosis_plots.png)
 
 ### 3.2. Time Varying Parameter Results Plot.
 
-![Plot 2](plots/mcmc_time_varying_parameter_plots.png)
+![Plot 2](docs/build/tutorials/plots/mcmc_time_varying_parameter_plots.png)
 
 ### 3.3. Non-Time Varying Parameter Results Plot.
-![Plot 3](plots/mcmc_nontime_varying_parameter_plots.png)
+![Plot 3](docs/build/tutorials/plots/mcmc_nontime_varying_parameter_plots.png)
 
 ### 3.4. ODE Solution Plot.
-![Plot 4](plots/mcmc_ode_solution_plots.png)
+![Plot 4](docs/build/tutorials/plots/mcmc_ode_solution_plots.png)
 
 ### 3.4. Posterior Predictive Distribution Plot.
 
-![Plot 4](plots/mcmc_pred_parameter_plots.png)
+![Plot 4](docs/build/tutorials/plots/mcmc_pred_parameter_plots.png)
 
 ### 3.5. Log Prob Trace Plot.
-![Plot 5](plots/mcmc_log_prob_trace_plot.png)
+![Plot 5](docs/build/tutorials/plots/mcmc_log_prob_trace_plot.png)
 
 
 ### [Tutorial Contents](@ref tutorial_home)
