@@ -51,7 +51,7 @@ obstimes_wastewater = df.obstimes
 max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
 param_change_times = 1:7:max_obstime # Change every week
 priors_only = false
-n_samples = 25#500
+n_samples = 500
 forecast = false
 forecast_days = 0
 
@@ -65,7 +65,7 @@ samples = uciwweihr_fit(
     model_params;
     priors_only,
     n_samples,
-    n_discard_initial = 10#200
+    n_discard_initial = 200
     )
 model_output = uciwweihr_gq_pp(
     samples,
