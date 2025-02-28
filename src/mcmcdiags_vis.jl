@@ -9,10 +9,10 @@ Default visualizer for results of the UCIWWEIHR model, includes posterior/priors
 - `save_plots::Bool=false`: A boolean to indicate if user wants to save the plots as pngs into a plots folder.
 - `plot_name_to_save`: A string to indicate the name of the plot to save. Default is "mcmc_diagnosis_plots".
 """
-function mcmcdiags_vis(;
+function mcmcdiags_vis(
     gq_samples=nothing,
     desired_params=nothing,
-    actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
+    actual_non_time_varying_vals::uciwweihr_sim_params = nothing;
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_diagnosis_plots"
     )
@@ -60,6 +60,64 @@ function mcmcdiags_vis(;
                                 marker = :circle,
                                 legendfont = font(8))
                     end
+                else
+                    println("PARAMETER $param NOT IN GENERATED QUANTITIES!!!")
+                end
+            end
+        end
+    end
+    if !isempty(cat_plots)
+        num_plots = length(cat_plots)
+        num_chains = length(unique(gq_samples.chain))
+        num_params = length(desired_params)
+        layout_rows = num_chains * length(desired_params[1])
+        layout_cols = num_params
+        
+        final_plot = plot(cat_plots..., 
+                            layout = (layout_rows, layout_cols), 
+                            size = (1500, 1500))
+        display(final_plot)
+        if save_plots
+            save_plots_to_docs(final_plot, plot_name_to_save)
+        end
+    else
+        println("NO MCMC DIAGNOSIS PLOTS TO DISPLAY!!!")
+    end
+
+end
+
+
+
+function mcmcdiags_vis(
+    gq_samples=nothing,
+    desired_params=nothing;
+    save_plots::Bool=false,
+    plot_name_to_save = "mcmc_diagnosis_plots"
+    )
+
+    # Posterior/Prior Samples
+    ## MCMC evaluation
+    cat_plots = []
+    for chain in unique(gq_samples.chain)
+        for param_group in desired_params
+            long_df = stack(gq_samples[gq_samples.chain .== chain, :], Not([:iteration, :chain]), variable_name=:name, value_name=:value)
+            df_filtered = filter(row -> row.name in param_group, long_df)
+
+            for param in param_group
+                if param in names(gq_samples)
+                    df_param = filter(row -> row.name == param, df_filtered)
+                    plt = plot(df_param.iteration, df_param.value, 
+                        label = "Chain $chain",
+                        title = "Trace of $param", 
+                        xlabel = "Iteration", ylabel="Value Drawn",
+                        color = :black, lw = 2,
+                        xguidefont = font(8),
+                        yguidefont = font(8), 
+                        titlefont = font(10), 
+                        legendfont = font(8),
+                        legend = :topright
+                    )            
+                    push!(cat_plots, plt) 
                 else
                     println("PARAMETER $param NOT IN GENERATED QUANTITIES!!!")
                 end
