@@ -20,10 +20,10 @@ The defaults for this fuction will follow those of the default simulation in gen
     obstimes_wastewater,
     obstimes,
     param_change_times,
-    params::uciwweihr_model_params2;
+    params::model_params_time_var_hosp;
     warning_bool=true
     )
-        # hosp_ww model with prior on sigma_ww and sigma_hosp 
+        # hosp_ww model w/ time-varying w
 
         # PRIORS-----------------------------
         # Compartments
@@ -45,7 +45,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
 
         # TRANSFORMATIONS-----------------------------
-        trans = uciwweihr_likelihood_helpers(
+        trans = likelihood_helpers(
             obstimes_hosp,
             obstimes_wastewater,
             obstimes,
@@ -63,8 +63,6 @@ The defaults for this fuction will follow those of the default simulation in gen
             return
         end
 
-        # W-W means--------------------------
-        # E - 1 // I - 2 // H - 3 // R - 4
         # Likelihood calculations------------
         for i in 1:length(obstimes_wastewater)
             data_wastewater[i] ~ Normal(trans.log_W_means[i], trans.sigma_ww)
@@ -105,10 +103,10 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params4;
+    params::model_params_non_time_var_hosp_no_ww;
     warning_bool=true
     )
-        # hosp_only model with prior sigma_hosp and w/out time-varying w
+        # hosp_only model without time-varying hosp probability
 
         # PRIORS-----------------------------
         # Compartments
@@ -126,7 +124,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
 
         # TRANSFORMATIONS-----------------------------
-        trans = uciwweihr_likelihood_helpers(
+        trans = likelihood_helpers(
             obstimes_hosp,
             param_change_times,
             params;
@@ -142,8 +140,6 @@ The defaults for this fuction will follow those of the default simulation in gen
             return
         end
 
-        # W-W means--------------------------
-        # E - 1 // I - 2 // H - 3 // R - 4
         # Likelihood calculations------------
         for i in 1:length(obstimes_hosp)
             data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
@@ -172,158 +168,5 @@ The defaults for this fuction will follow those of the default simulation in gen
     end
 
 
-
-@model function uciwweihr_model(
-    data_hosp,
-    data_wastewater,
-    obstimes_hosp,
-    obstimes_wastewater,
-    obstimes,
-    param_change_times,
-    params::uciwweihr_model_params1;
-    warning_bool=true
-    )
-        # hosp_ww model with hard coded sigma_ww and sigma_hosp
-
-        # PRIORS-----------------------------
-        # Compartments
-        E_init_non_centered ~ Normal()
-        I_init_non_centered ~ Normal()
-        H_init_non_centered ~ Normal()
-        # Parameters for compartments
-        gamma_non_centered ~ Normal()
-        nu_non_centered ~ Normal()
-        epsilon_non_centered ~ Normal()
-        # Parameters for wastewater
-        rho_gene_non_centered ~ Normal()
-        # Parameters for hospital
-        # Non-constant Rt
-        Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
-        # Non-constant Hosp Rate w
-        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
-
-        # TRANSFORMATIONS-----------------------------
-        trans = uciwweihr_likelihood_helpers(
-            obstimes_hosp,
-            obstimes_wastewater,
-            obstimes,
-            param_change_times,
-            params;
-            E_init_non_centered, I_init_non_centered, H_init_non_centered,
-            gamma_non_centered, nu_non_centered, epsilon_non_centered,
-            rho_gene_non_centered, 
-            Rt_params_non_centered, w_params_non_centered,
-            warning_bool=warning_bool
-        )
-        # Reject if the helper function failed and skip sample
-        if !trans.success
-            Turing.@addlogprob! -Inf
-            return
-        end
-
-        # W-W means--------------------------
-        # E - 1 // I - 2 // H - 3 // R - 4
-        # Likelihood calculations------------
-        for i in 1:length(obstimes_wastewater)
-            data_wastewater[i] ~ Normal(trans.log_W_means[i], trans.sigma_ww)
-        end
-        for i in 1:length(obstimes_hosp)
-            data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
-        end
-
-        return (
-            E_init=trans.E_init,
-            I_init=trans.I_init,
-            H_init=trans.H_init,
-            alpha_t=trans.alpha_t,
-            gamma=trans.gamma,
-            nu=trans.nu,
-            w_t=trans.w_t,
-            sigma_w=trans.sigma_w,
-            epsilon=trans.epsilon,
-            rt_vals=trans.Rt_t,
-            sigma_Rt=trans.sigma_Rt,
-            rho_gene=trans.rho_gene,
-            sigma_ww=trans.sigma_ww,
-            sigma_hosp=trans.sigma_hosp,
-            H=trans.H_comp_sol,
-            I=trans.I_comp_sol,
-            E=trans.E_comp_sol,
-            H_means=trans.H_means,
-            log_genes_mean=trans.log_W_means,
-            rt_init=trans.Rt_init,
-            w_init=trans.w_init
-        )
-
-
-    end
-
-    
-@model function uciwweihr_model(
-    data_hosp,
-    obstimes_hosp,
-    param_change_times,
-    params::uciwweihr_model_params3;
-    warning_bool=true
-    )   
-        # hosp_only model with hard coded sigma_hosp w/out time-varying w
-    
-        # PRIORS-----------------------------
-        # Compartments
-        E_init_non_centered ~ Normal()
-        I_init_non_centered ~ Normal()
-        H_init_non_centered ~ Normal()
-        # Parameters for compartments
-        gamma_non_centered ~ Normal()
-        nu_non_centered ~ Normal()
-        epsilon_non_centered ~ Normal()
-        w_param_non_centered ~ Normal()
-        # Parameters for hospital
-        # Non-constant Rt
-        Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
-
-        # TRANSFORMATIONS-----------------------------
-        trans = uciwweihr_likelihood_helpers(
-            obstimes_hosp,
-            param_change_times,
-            params;
-            E_init_non_centered, I_init_non_centered, H_init_non_centered,
-            gamma_non_centered, nu_non_centered, epsilon_non_centered,
-            Rt_params_non_centered, w_param_non_centered,
-            warning_bool=warning_bool
-        )
-        # Reject if the helper function failed and skip sample
-        if !trans.success
-            Turing.@addlogprob! -Inf
-            return
-        end
-    
-        # W-W means--------------------------
-        # E - 1 // I - 2 // H - 3 // R - 4
-        # Likelihood calculations------------
-        for i in 1:length(obstimes_hosp)
-            data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
-        end
-    
-        return (
-            E_init = trans.E_init,
-            I_init = trans.I_init,
-            H_init = trans.H_init,
-            alpha_t = trans.alpha_t,
-            gamma = trans.gamma,
-            nu = trans.nu,
-            epsilon = trans.epsilon,
-            w = trans.w,
-            rt_vals = trans.Rt_t,
-            sigma_Rt = trans.sigma_Rt,
-            sigma_hosp = trans.sigma_hosp,
-            H = trans.H_comp_sol,
-            I = trans.I_comp_sol,
-            E = trans.E_comp_sol,
-            H_means = trans.H_means,
-            rt_init = trans.Rt_init
-        )
-    
-    
-    end
-    
+## model w/ wastewater and non-time varying hosp - not implemented
+## model w/out wastewater and time-varying hosp - not implemented

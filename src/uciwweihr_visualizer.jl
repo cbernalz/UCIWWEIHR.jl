@@ -45,7 +45,7 @@ function uciwweihr_visualizer(
     param_change_times,
     seed,
     forecast,
-    build_params::uciwweihr_model_params4;
+    build_params::model_params_non_time_var_hosp_no_ww;
     pp_samples = nothing,
     gq_samples = nothing,
     samples = nothing,
@@ -81,148 +81,7 @@ function uciwweihr_visualizer(
     plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots",
     plot_name_to_save_log_like = "plots/mcmc_log_likelihood_plots"
     )
-    # Visualizer without wastewater data
-    # Posterior/Prior Samples
-    ## MCMC evaluation
-    if mcmcdaigs
-        mcmcdiags_vis(
-            gq_samples, 
-            desired_params, 
-            actual_non_time_varying_vals;
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_mcmcdiag
-        )
-    else
-        println("MCMC Diagnostics Plots are not requested.")
-    end
-
-    if time_varying_plots
-        time_varying_param_vis(
-            build_params,
-            data_hosp, 
-            obstimes_hosp,
-            param_change_times,
-            seed,
-            forecast,
-            forecast_days;
-            gq_samples = gq_samples,
-            actual_rt_vals = actual_rt_vals,
-            actual_w_t = actual_w_t,
-            time_varying_params = time_varying_params,
-            quantiles = quantiles,
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_time_varying
-        )
-    else
-        println("MCMC time varying parameter results are not requested.")
-    end
-
-    if non_time_varying_plots
-        non_time_varying_param_vis(
-            build_params,
-            data_hosp, 
-            obstimes_hosp,
-            param_change_times,
-            seed,
-            forecast,
-            forecast_days;
-            gq_samples = gq_samples,
-            desired_params = desired_params,
-            actual_non_time_varying_vals = actual_non_time_varying_vals,
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_non_time_varying
-        )
-    else
-        println("MCMC non-time varying parameter results are not requested.")
-    end
-
-    if ode_sol_plots
-        ode_solution_vis(
-            gq_samples = gq_samples,
-            actual_E_ode_sol = actual_E_ode_sol,
-            actual_I_ode_sol = actual_I_ode_sol,
-            actual_H_ode_sol = actual_H_ode_sol,
-            quantiles = quantiles,
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_ode_sol
-        )
-    else
-        println("ODE Solution Plots are not requested.")
-    end
-
-    if pred_param_plots
-        predictive_param_vis(
-            pp_samples = pp_samples,
-            data_wastewater = obs_data_wastewater,
-            data_hosp = obs_data_hosp,
-            forecast_days = forecast_days,
-            vars_to_pred = var_to_pred, 
-            quantiles = quantiles,
-            bayes_dist_type = bayes_dist_type,
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_pred_param
-        )
-    else
-        println("MCMC posterior (or prior) predictive parameter results are not requested.")
-    end
-
-    if log_like_plots
-        mcmcdiags_vis(
-            samples, 
-            [["lp"]];
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_log_like
-        )
-    else
-        println("MCMC Log Probs trace plot are not requested.")
-    end
-end
-
-
-function uciwweihr_visualizer(
-    data_hosp, 
-    forecast_days,
-    obstimes_hosp,
-    param_change_times,
-    seed,
-    forecast,
-    build_params::uciwweihr_model_params3;
-    pp_samples = nothing,
-    gq_samples = nothing,
-    samples = nothing,
-    obs_data_hosp = nothing,
-    obs_data_wastewater = nothing,
-    actual_rt_vals = nothing,
-    actual_w_t = nothing,
-    actual_E_ode_sol = nothing,
-    actual_I_ode_sol = nothing,
-    actual_H_ode_sol = nothing,
-    actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
-    desired_params = [
-        ["E_init", "I_init", "H_init"],
-        ["gamma", "nu", "epsilon", "w"],
-        ["rt_init", "sigma_Rt"],
-        ["sigma_hosp"]
-    ],
-    time_varying_params = ["rt_vals"],
-    var_to_pred = ["data_hosp"],
-    quantiles = [0.5, 0.8, 0.95],
-    bayes_dist_type = nothing,
-    mcmcdaigs::Bool = true,
-    time_varying_plots::Bool = true,
-    non_time_varying_plots::Bool = true,
-    ode_sol_plots::Bool = true,
-    pred_param_plots::Bool = true,
-    log_like_plots::Bool = true,
-    save_plots::Bool = false,
-    plot_name_to_save_mcmcdiag = "plots/mcmc_diagnosis_plots",
-    plot_name_to_save_time_varying = "plots/mcmc_time_varying_parameter_plots",
-    plot_name_to_save_non_time_varying = "plots/mcmc_nontime_varying_parameter_plots",
-    plot_name_to_save_ode_sol = "plots/mcmc_ode_solution_plots",
-    plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots",
-    plot_name_to_save_log_like = "plots/mcmc_log_likelihood_plots"
-    )
-    # Visualizer without wastewater data
+    # Visualizer without wastewater data and constant hospitalization probability
     # Posterior/Prior Samples
     ## MCMC evaluation
     if mcmcdaigs
@@ -329,7 +188,7 @@ function uciwweihr_visualizer(
     param_change_times,
     seed,
     forecast,
-    build_params::uciwweihr_model_params2;
+    build_params::model_params_time_var_hosp;
     pp_samples = nothing,
     gq_samples = nothing,
     samples = nothing,
@@ -469,152 +328,8 @@ function uciwweihr_visualizer(
 end
 
 
-function uciwweihr_visualizer(
-    data_hosp, 
-    data_wastewater,
-    forecast_days,
-    obstimes_hosp,
-    obstimes_wastewater,
-    param_change_times,
-    seed,
-    forecast,
-    build_params::uciwweihr_model_params1;
-    pp_samples = nothing,
-    gq_samples = nothing,
-    samples = nothing,
-    obs_data_hosp = nothing,
-    obs_data_wastewater = nothing,
-    actual_rt_vals = nothing,
-    actual_w_t = nothing,
-    actual_E_ode_sol = nothing,
-    actual_I_ode_sol = nothing,
-    actual_H_ode_sol = nothing,
-    actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
-    desired_params = [
-        ["E_init", "I_init", "H_init"],
-        ["gamma", "nu", "epsilon"],
-        ["rt_init", "w_init"],
-        ["sigma_w", "sigma_Rt"],
-        ["sigma_ww", "sigma_hosp"], # For identifyability issue checking
-        ["rho_gene"]
-    ],
-    time_varying_params = ["rt_vals", "w_t"],
-    var_to_pred = ["data_wastewater", "data_hosp"],
-    quantiles = [0.5, 0.8, 0.95],
-    bayes_dist_type = nothing,
-    mcmcdaigs::Bool = true,
-    time_varying_plots::Bool = true,
-    non_time_varying_plots::Bool = true,
-    ode_sol_plots::Bool = true,
-    pred_param_plots::Bool = true,
-    save_plots::Bool = false,
-    plot_name_to_save_mcmcdiag = "plots/mcmc_diagnosis_plots",
-    plot_name_to_save_time_varying = "plots/mcmc_time_varying_parameter_plots",
-    plot_name_to_save_non_time_varying = "plots/mcmc_nontime_varying_parameter_plots",
-    plot_name_to_save_ode_sol = "plots/mcmc_ode_solution_plots",
-    plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots",
-    plot_name_to_save_log_like = "plots/mcmc_log_likelihood_plots"
-    )
-
-    # Posterior/Prior Samples
-    ## MCMC evaluation
-    if mcmcdaigs
-        mcmcdiags_vis(
-            gq_samples, 
-            desired_params, 
-            actual_non_time_varying_vals;
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_mcmcdiag
-        )
-    else
-        println("MCMC Diagnostics Plots are not requested.")
-    end
-
-    if time_varying_plots
-        time_varying_param_vis(
-            build_params,
-            data_hosp, 
-            data_wastewater,
-            obstimes_hosp,
-            obstimes_wastewater,
-            param_change_times,
-            seed,
-            forecast,
-            forecast_days;
-            gq_samples = gq_samples,
-            actual_rt_vals = actual_rt_vals,
-            actual_w_t = actual_w_t,
-            time_varying_params = time_varying_params,
-            quantiles = quantiles,
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_time_varying
-        )
-    else
-        println("MCMC time varying parameter results are not requested.")
-    end
-
-    if non_time_varying_plots
-        non_time_varying_param_vis(
-            build_params,
-            data_hosp, 
-            data_wastewater,
-            obstimes_hosp,
-            obstimes_wastewater,
-            param_change_times,
-            seed,
-            forecast,
-            forecast_days;
-            gq_samples = gq_samples,
-            desired_params = desired_params,
-            actual_non_time_varying_vals = actual_non_time_varying_vals,
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_non_time_varying
-        )
-    else
-        println("MCMC non-time varying parameter results are not requested.")
-    end
-
-    if ode_sol_plots
-        ode_solution_vis(
-            gq_samples = gq_samples,
-            actual_E_ode_sol = actual_E_ode_sol,
-            actual_I_ode_sol = actual_I_ode_sol,
-            actual_H_ode_sol = actual_H_ode_sol,
-            quantiles = quantiles,
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_ode_sol
-        )
-    else
-        println("ODE Solution Plots are not requested.")
-    end
-
-    if pred_param_plots
-        predictive_param_vis(
-            pp_samples = pp_samples,
-            data_wastewater = obs_data_wastewater,
-            data_hosp = obs_data_hosp,
-            forecast_days = forecast_days,
-            vars_to_pred = var_to_pred, 
-            quantiles = quantiles,
-            bayes_dist_type = bayes_dist_type,
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_pred_param
-        )
-    else
-        println("MCMC posterior (or prior) predictive parameter results are not requested.")
-    end
-
-    if log_like_plots
-        mcmcdiags_vis(
-            samples, 
-            [["lp"]];
-            save_plots = save_plots,
-            plot_name_to_save = plot_name_to_save_log_like
-        )
-    else
-        println("MCMC Log Probs trace plot are not requested.")
-    end
-end
+## model with wastewater and without time-varying hospitalization probability - not implemented
+## model without wastewaeter and with time-varying hospitalization probability - not implemented
 
 
 function uciwweihr_visualizer(
