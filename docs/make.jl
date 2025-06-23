@@ -21,7 +21,6 @@ makedocs(;
       "TUTORIAL CONTENTS" => "tutorial_index.md",
       "GETTING STARTED" => "tutorials/getting_started.md",
       "UCIWWEIHR SIMULATION DATA" => "tutorials/uciwweihr_simulation_data.md",
-      "AGENT-BASED SIMULATION DATA" => "tutorials/agent_based_simulation_data.md",
       "UCIWWEIHR FITTING MODEL W/OUT FORECASTING" => "tutorials/uciwwiehr_model_fitting_no_forecast.md",
       "UCIWWEIHR FITTING MODEL W/ FORECASTING" => "tutorials/uciwwiehr_model_fitting_forecast.md",
     ]
