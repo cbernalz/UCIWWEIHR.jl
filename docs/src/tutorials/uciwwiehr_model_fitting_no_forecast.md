@@ -1,5 +1,5 @@
 ```@setup tutorial
-using Plots, StatsPlots; gr()
+using Plots, StatsPlots, LogExpFunctions; gr()
 Plots.reset_defaults()
 
 ```
