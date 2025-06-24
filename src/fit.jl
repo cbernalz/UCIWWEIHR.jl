@@ -1,7 +1,7 @@
 # Fitting UCIWWEIHR model
 # -------------------------------------------------
 """
-    uciwweihr_fit(...)
+    fit(...)
 This is the sampler for the bayesian semi-parametric model for the wastewater EIHR compartmental model.  
 The defaults for this fuction will follow those of the default simulation in generate_simulation_data_ww_eihr.jl function.
 
@@ -21,19 +21,19 @@ The defaults for this fuction will follow those of the default simulation in gen
 # Returns
 - Samples from the posterior or prior distribution.
 """
-function uciwweihr_fit(
+function fit(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
     obstimes_wastewater,
     param_change_times,
-    params::uciwweihr_model_params2;
+    params::model_params_time_var_hosp;
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1,
     n_discard_initial::Int64=0, seed::Int64=2024,
     init_params=nothing
     )
-    println("Using uciwweihr_model with wastewater.  Priors on sigma_ww and sigma_hosp!!!")
+    println("Using uciwweihr_model with wastewater.  With time-varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
@@ -68,70 +68,26 @@ function uciwweihr_fit(
 end
 
 
-function uciwweihr_fit(
+
+function fit(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params4;
+    params::model_params_non_time_var_hosp_no_ww;
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1,
     n_discard_initial::Int64=0, seed::Int64=2024,
     init_params=nothing
     )
-    println("Using uciwweihr_model w/out wastewater. Priors sigma_hosp and constant hospitalization probability!!!")
+    println("Using uciwweihr_model w/out wastewater.  With time-varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     param_change_times = vcat(0, param_change_times)
-    my_model = uciwweihr_model(
-        data_hosp,
-        obstimes_hosp,
-        param_change_times,
-        params;
-    )
-    # Sample Posterior
-    if priors_only
-        Random.seed!(seed)
-        samples = sample(my_model, Prior(), MCMCThreads(), 400, n_chains)
-    else
-        Random.seed!(seed)
-        # Optimize
-        if init_params === nothing
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
-        else
-            println("Using Initial Parameters...")
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
-        end
-    end 
-    return(samples)
- 
-end
-
-
-function uciwweihr_fit(
-    data_hosp,
-    data_wastewater,
-    obstimes_hosp,
-    obstimes_wastewater,
-    param_change_times,
-    params::uciwweihr_model_params1;
-    priors_only::Bool=false,
-    n_samples::Int64=500, n_chains::Int64=1,
-    n_discard_initial::Int64=0, seed::Int64=2024,
-    init_params=nothing
-    )
-    println("Using uciwweihr_model with wastewater. Hardcoded sigma_ww and sigma_hosp!!!")
-    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
-    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
-    param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
-    obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
+    obstimes = unique(vcat(obstimes_hosp))
     obstimes = sort(obstimes)
     my_model = uciwweihr_model(
         data_hosp,
-        data_wastewater,
         obstimes_hosp,
-        obstimes_wastewater,
-        obstimes,
         param_change_times,
         params;
     )
@@ -153,41 +109,5 @@ function uciwweihr_fit(
  
 end
 
-
-function uciwweihr_fit(
-    data_hosp,
-    obstimes_hosp,
-    param_change_times,
-    params::uciwweihr_model_params3;
-    priors_only::Bool=false,
-    n_samples::Int64=500, n_chains::Int64=1,
-    n_discard_initial::Int64=0, seed::Int64=2024,
-    init_params=nothing
-    )
-    println("Using uciwweihr_model w/out wastewater. Hardcoded sigma_hosp and const hospitalization probability!!!")
-    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
-    param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
-    my_model = uciwweihr_model(
-        data_hosp,
-        obstimes_hosp,
-        param_change_times,
-        params;
-    )  
-    # Sample Posterior
-    if priors_only
-        Random.seed!(seed)
-        samples = sample(my_model, Prior(), MCMCThreads(), 400, n_chains)
-    else
-        Random.seed!(seed)
-        # Optimize
-        if init_params === nothing
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
-        else
-            println("Using Initial Parameters...")
-            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
-        end
-    end 
-    return(samples)
- 
-end
+## model w/out wastewater and with non time-varying hospitalization probability - not implemented
+## model w wastewater and with non time-varying hospitalization probability - not implemented

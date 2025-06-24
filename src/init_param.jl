@@ -1,7 +1,5 @@
-# Fitting UCIWWEIHR model
-# -------------------------------------------------
 """
-    uciwweihr_init_param(...)
+    init_param(...)
 Gets initial parameters values for the UCIWWEIHR model.  Only need to run once.
 
 # Arguments
@@ -18,19 +16,19 @@ Gets initial parameters values for the UCIWWEIHR model.  Only need to run once.
 # Returns
 - Samples from the posterior or prior distribution.
 """
-function uciwweihr_init_param(
+function init_param(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
     obstimes_wastewater,
     param_change_times,
-    params::uciwweihr_model_params2;
+    params::model_params_time_var_hosp;
     n_chains::Int64=1,
     seed::Int64=2024,
     verbose_optimize::Bool=false
 )
     println("Getting init param values...")
-    println("Using uciwweihr_model with wastewater.  Priors on sigma_ww and sigma_hosp!!!")
+    println("Using uciwweihr_model with wastewater!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
@@ -56,17 +54,17 @@ end
 
 
 
-function uciwweihr_init_param(
+function init_param(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params4;
+    params::model_params_time_var_hosp_no_ww;
     n_chains::Int64=1,
     seed::Int64=2024,
     verbose_optimize::Bool=false
 )
     println("Getting init param values...")
-    println("Using uciwweihr_model w/ wastewater.  Priors on sigma_hosp and const hospitalization probability!!!")
+    println("Using uciwweihr_model w/out wastewater!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
 
@@ -87,19 +85,19 @@ function uciwweihr_init_param(
 end
 
 
-function uciwweihr_init_param(
+function init_param(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
     obstimes_wastewater,
     param_change_times,
-    params::uciwweihr_model_params1;
+    params::model_params_non_time_var_hosp;
     n_chains::Int64=1,
     seed::Int64=2024,
     verbose_optimize::Bool=false
 )
     println("Getting init param values...")
-    println("Using uciwweihr_model with wastewater.  Hardcoded sigma_ww and sigma_hosp!!!")
+    println("Using uciwweihr_model with wastewater w/out time-varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
@@ -125,17 +123,17 @@ end
 
 
 
-function uciwweihr_init_param(
+function init_param(
     data_hosp,
     obstimes_hosp,
     param_change_times,
-    params::uciwweihr_model_params3;
+    params::model_params_non_time_var_hosp_no_ww;
     n_chains::Int64=1,
     seed::Int64=2024,
     verbose_optimize::Bool=false
 )
     println("Getting init param values...")
-    println("Using uciwweihr_model w/ wastewater.  Hardcoded sigma_hosp and const hospitalization probability!!!")
+    println("Using uciwweihr_model w/out wastewater and time varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
 
@@ -154,4 +152,3 @@ function uciwweihr_init_param(
     init = repeat([MAP_init], n_chains) .+ 0.05 * MAP_noise
     return(init)
 end
-

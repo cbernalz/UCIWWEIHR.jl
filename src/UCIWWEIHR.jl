@@ -1,4 +1,4 @@
-module UCIWWEIHR  
+module UCIWWEIHR   
 
 using AxisArrays
 using MCMCChains
@@ -24,16 +24,15 @@ using Printf
 using Colors
 
 include("generate_simulation_data_uciwweihr.jl")
-include("generate_simulation_data_agent.jl")
 include("eihr_ode.jl")
 include("negativebinomial2.jl")
 include("generalizedtdist.jl")
-include("uciwweihr_model_params.jl")
-include("uciwweihr_init_param.jl")
-include("uciwweihr_likelihood_helpers.jl")
+include("model_params.jl")
+include("init_param.jl")
+include("likelihood_helpers.jl")
 include("uciwweihr_model.jl")
-include("uciwweihr_fit.jl")
-include("uciwweihr_gq_pp.jl")
+include("fit.jl")
+include("generate_pq_pp.jl")
 include("optimize_many_MAP.jl")
 include("helper_functions.jl")
 include("mcmcdiags_vis.jl")
@@ -50,22 +49,17 @@ export create_uciwweihr_sim_params
 export generate_random_walk
 export generate_logit_normal_random_walk
 export generate_simulation_data_uciwweihr
-export generate_simulation_data_agent
 export NegativeBinomial2
 export GeneralizedTDist
-export uciwweihr_model_params1
-export uciwweihr_model_params2
-export uciwweihr_model_params3
-export uciwweihr_model_params4
-export uciwweihr_init_param
-export uciwweihr_likelihood_helpers
-export create_uciwweihr_model_params1
-export create_uciwweihr_model_params2
-export create_uciwweihr_model_params3
-export create_uciwweihr_model_params4
+export model_params_time_var_hosp
+export model_params_non_time_var_hosp
+export create_model_params_time_var_hosp
+export create_model_params_non_time_var_hosp
+export init_param
+export likelihood_helpers
 export uciwweihr_model
-export uciwweihr_fit
-export uciwweihr_gq_pp
+export fit
+export generate_pq_pp
 export optimize_many_MAP
 export optimize_many_MAP2
 export optimize_many_MAP2_wrapper

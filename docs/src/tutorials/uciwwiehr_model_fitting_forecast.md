@@ -1,5 +1,5 @@
 ```@setup tutorial_forecast
-using Plots, StatsPlots; gr()
+using Plots, StatsPlots, LogExpFunctions; gr()
 Plots.reset_defaults()
 
 ```
@@ -48,8 +48,49 @@ n_samples = 500
 forecast = true
 forecast_days = 14
 
-model_params = create_uciwweihr_model_params2()
-samples = uciwweihr_fit(
+E_init_sd=0.2; log_E_init_mean=log(200)
+I_init_sd=0.2; log_I_init_mean=log(100)
+H_init_sd=0.2; log_H_init_mean=log(20)
+gamma_sd=0.02; log_gamma_mean=log(1/4)
+nu_sd=0.02; log_nu_mean=log(1/7)
+epsilon_sd=0.02; log_epsilon_mean=log(1/5)
+rho_gene_sd=0.02; log_rho_gene_mean=log(0.011)
+    
+sigma_ww_sd=0.02; log_sigma_ww_mean=log(0.1)
+sigma_hosp_sd=0.01; log_sigma_hosp_mean=log(500.0)
+
+Rt_init_sd=0.3; Rt_init_mean=0.2
+sigma_Rt_sd=0.2; sigma_Rt_mean=-3.0
+w_init_sd=0.04; w_init_mean=logit(0.35)
+sigma_w_sd=0.2; sigma_w_mean=-3.5
+message = true
+model_params = create_model_params_time_var_hosp(
+    E_init_sd, log_E_init_mean,
+    I_init_sd, log_I_init_mean,
+    H_init_sd, log_H_init_mean,
+    gamma_sd, log_gamma_mean,
+    nu_sd, log_nu_mean,
+    epsilon_sd, log_epsilon_mean,
+    rho_gene_sd, log_rho_gene_mean,
+    sigma_ww_sd, log_sigma_ww_mean,
+    sigma_hosp_sd, log_sigma_hosp_mean,
+    Rt_init_sd, Rt_init_mean,
+    sigma_Rt_sd, sigma_Rt_mean,
+    w_init_sd, w_init_mean,
+    sigma_w_sd, sigma_w_mean,
+    message;
+)
+init_params = optimize_many_MAP2_wrapper(
+    data_hosp,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    model_params;
+    verbose=false,
+    warning_bool=false,
+)
+samples = fit(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
@@ -58,9 +99,11 @@ samples = uciwweihr_fit(
     model_params;
     priors_only,
     n_samples,
-    n_discard_initial = 200
+    n_discard_initial = 200,
+    n_chains = 1,
+    init_params = init_params
     )
-model_output = uciwweihr_gq_pp(
+model_output = generate_pq_pp(
     samples,
     data_hosp,
     data_wastewater,
@@ -68,7 +111,7 @@ model_output = uciwweihr_gq_pp(
     obstimes_wastewater,
     param_change_times,
     model_params;
-    forecast=forecast, forecast_days=forecast_days
+    forecast=true, forecast_days=forecast_days
 )
 
 first(model_output[1][:,1:5], 5)
@@ -99,6 +142,7 @@ uciwweihr_visualizer(
     model_params;
     pp_samples = model_output[1],
     gq_samples = model_output[2],
+    samples = model_output[3],
     obs_data_hosp = df_ext.hosp,
     obs_data_wastewater = df_ext.log_ww_conc, 
     actual_rt_vals = df_ext.rt, 
@@ -113,7 +157,8 @@ uciwweihr_visualizer(
     plot_name_to_save_time_varying = "plots/mcmc_time_varying_parameter_plots1",
     plot_name_to_save_non_time_varying = "plots/mcmc_nontime_varying_parameter_plots1",
     plot_name_to_save_ode_sol = "plots/mcmc_ode_solution_plots1",
-    plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots1"
+    plot_name_to_save_pred_param = "plots/mcmc_pred_parameter_plots1",
+    plot_name_to_save_log_like = "plots/mcmc_log_prob_trace_plot1"
 )
 ```
 
@@ -134,6 +179,9 @@ uciwweihr_visualizer(
 ### 3.5. Posterior Predictive Distribution Plot.
 
 ![Plot 4](plots/mcmc_pred_parameter_plots1.png)
+
+### 3.6. Log Prob Trace Plot.
+![Plot 5](plots/mcmc_log_prob_trace_plot1.png)
 
 
 ### [Tutorial Contents](@ref tutorial_home)
