@@ -21,11 +21,6 @@ jobs:
           version: "1.10"
       - name: Use Julia cache
         uses: julia-actions/cache@v2
-        with:
-          path: ~/.julia
-          key: ${{ runner.os }}-julia-${{ hashFiles('docs/Project.toml', 'docs/Manifest.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-julia-
       - run: |
           julia --project=docs -e '
             using Pkg
