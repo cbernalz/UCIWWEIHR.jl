@@ -18,9 +18,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
         with:
-          version: "1.9"
-      - name: Use Julia cache
-        uses: julia-actions/cache@v2
+          version: "1.10"
+      #- name: Use Julia cache
+      #  uses: julia-actions/cache@v2
       - run: |
           julia --project=docs -e '
             using Pkg
