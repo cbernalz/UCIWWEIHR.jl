@@ -79,26 +79,30 @@ function optimize_many_MAP2_wrapper(
     obstimes_wastewater,
     param_change_times,
     params::model_params_time_var_hosp;
+    incidence_model_bool=false,
     n_reps=100,
     top_n=1,
     verbose=true,
     warning_bool=true
 )
+    if incidence_model_bool
+        println("Using incidence model!!!")
+    else
+        println("Using prevalence model!!!")
+    end
     ## model with wastewater and time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
     param_change_times = vcat(0, param_change_times)
-    obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
-    obstimes = sort(obstimes)
     my_model = uciwweihr_model(
         data_hosp,
         data_wastewater,
         obstimes_hosp,
         obstimes_wastewater,
-        obstimes,
         param_change_times,
         params;
+        incidence_model_bool=incidence_model_bool,
         warning_bool=warning_bool
     )
     return optimize_many_MAP2(my_model, n_reps, top_n, verbose)

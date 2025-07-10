@@ -43,6 +43,7 @@ obstimes_hosp = df.obstimes
 obstimes_wastewater = df.obstimes
 max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
 param_change_times = 1:7:max_obstime # Change every week
+incidence_model_bool = false
 priors_only = false
 n_samples = 500
 forecast = true
@@ -51,6 +52,7 @@ forecast_days = 14
 E_init_sd=0.2; log_E_init_mean=log(200)
 I_init_sd=0.2; log_I_init_mean=log(100)
 H_init_sd=0.2; log_H_init_mean=log(20)
+CH_init = 5.0
 gamma_sd=0.02; log_gamma_mean=log(1/4)
 nu_sd=0.02; log_nu_mean=log(1/7)
 epsilon_sd=0.02; log_epsilon_mean=log(1/5)
@@ -68,6 +70,7 @@ model_params = create_model_params_time_var_hosp(
     E_init_sd, log_E_init_mean,
     I_init_sd, log_I_init_mean,
     H_init_sd, log_H_init_mean,
+    CH_init,
     gamma_sd, log_gamma_mean,
     nu_sd, log_nu_mean,
     epsilon_sd, log_epsilon_mean,
@@ -87,6 +90,7 @@ init_params = optimize_many_MAP2_wrapper(
     obstimes_wastewater,
     param_change_times,
     model_params;
+    incidence_model_bool=incidence_model_bool,
     verbose=false,
     warning_bool=false,
 )
@@ -97,6 +101,7 @@ samples = fit(
     obstimes_wastewater,
     param_change_times,
     model_params;
+    incidence_model_bool = incidence_model_bool,
     priors_only,
     n_samples,
     n_discard_initial = 200,
@@ -111,6 +116,7 @@ model_output = generate_pq_pp(
     obstimes_wastewater,
     param_change_times,
     model_params;
+    incidence_model_bool=incidence_model_bool,
     forecast=true, forecast_days=forecast_days
 )
 

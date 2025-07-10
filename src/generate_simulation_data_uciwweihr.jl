@@ -164,7 +164,7 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
     sol_array = Array(sol)
     I_comp_sol = clamp.(sol_array[2, 1:end], 1, 1e10)
     H_comp_sol = clamp.(sol_array[3, 1:end], 1, 1e10)
-    pushfirst!(sol_array[4, 2:end] - sol_array[4, 1:end-1], params.H_init_inc)
+    CH_comp_sol = clamp.(sol_array[4, 1:end], 1, 1e10)
     H_inc_comp_sol = clamp.(pushfirst!(sol_array[4, 2:end] - sol_array[4, 1:end-1], params.H_init_inc), 1, 1e10)
 
     # Log Gene Setup
@@ -185,6 +185,7 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
         E_ode_comp_sol = clamp.(sol_array[1, 1:end], 1, 1e10),
         I_ode_comp_sol = I_comp_sol,
         H_ode_comp_sol = H_comp_sol,
+        CH_ode_comp_sol = CH_comp_sol,
         H_ode_inc_comp_sol = H_inc_comp_sol,
     )
 

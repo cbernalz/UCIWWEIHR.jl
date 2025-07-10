@@ -29,10 +29,16 @@ function generate_pq_pp(
     obstimes_wastewater,
     param_change_times,
     params::model_params_time_var_hosp;
+    incidence_model_bool=false,
     seed::Int64=2024,
     forecast::Bool=false, forecast_days::Int64=14
 )
     println("Using uciwweihr_model with wastewater and time-varying hospitlaization probability!!!")
+    if incidence_model_bool
+        println("Using incidence model!!!")
+    else
+        println("Using prevalence model!!!")
+    end
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
@@ -44,7 +50,6 @@ function generate_pq_pp(
         last_value = obstimes_hosp[end]
         obstimes_hosp = vcat(obstimes_hosp,(last_value+1):(last_value+forecast_days))
         obstimes_wastewater = vcat(obstimes_wastewater,(last_value+1):(last_value+forecast_days))
-        obstimes = vcat(obstimes, (last_value+1):(last_value+forecast_days))
         missing_data_hosp = repeat([missing], length(obstimes_hosp))
         missing_data_ww = repeat([missing], length(obstimes_wastewater))
         data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_days))
@@ -59,18 +64,18 @@ function generate_pq_pp(
         data_wastewater,
         obstimes_hosp,
         obstimes_wastewater,
-        obstimes,
         param_change_times,
         params;
+        incidence_model_bool=incidence_model_bool
     )
     my_model_forecast_missing = uciwweihr_model(
         missing_data_hosp,
         missing_data_ww,
         obstimes_hosp,
         obstimes_wastewater,
-        obstimes,
         param_change_times,
         params;
+        incidence_model_bool=incidence_model_bool
     )
 
     samples_df = DataFrame(samples)

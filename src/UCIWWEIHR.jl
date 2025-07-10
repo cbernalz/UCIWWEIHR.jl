@@ -28,7 +28,6 @@ include("eihr_ode.jl")
 include("negativebinomial2.jl")
 include("generalizedtdist.jl")
 include("model_params.jl")
-include("init_param.jl")
 include("likelihood_helpers.jl")
 include("uciwweihr_model.jl")
 include("fit.jl")
@@ -55,7 +54,6 @@ export model_params_time_var_hosp
 export model_params_non_time_var_hosp
 export create_model_params_time_var_hosp
 export create_model_params_non_time_var_hosp
-export init_param
 export likelihood_helpers
 export uciwweihr_model
 export fit

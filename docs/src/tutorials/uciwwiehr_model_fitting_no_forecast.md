@@ -6,7 +6,7 @@ Plots.reset_defaults()
 
 # [Generating Posterior Distribution Samples with UCIWWEIHR ODE Compartmental Based Model without Forecasting.](@id uciwwiehr_model_fitting_no_forecast)
 
-This package has a way to sample from a posterior or prior that is defined in the future paper using the `uciwweihr_fit.jl` and `uciwweihr_model.jl`.  We can then generate desired quantities and forecast for a given time period with the posterior predictive distribution, using `uciwweihr_gq_pp.jl`.  We first generate data using the `generate_simulation_data_uciwweihr` function which is a non-mispecified version of the model, we will also be using prespecified effective reporduction curves and prespecified hospitalization probability curves.
+This package has a way to sample from a posterior or prior that is defined in the future paper using the `uciwweihr_fit.jl` and `uciwweihr_model.jl`.  We can then generate desired quantities and forecast for a given time period with the posterior predictive distribution, using `uciwweihr_gq_pp.jl`.  We first generate data using the `generate_simulation_data_uciwweihr` function which is a non-mispecified version of the model, we will also be using prespecified effective reproduction curves and prespecified hospitalization probability curves.
 
 
 ## 1. Data Generation.
@@ -50,6 +50,7 @@ obstimes_hosp = df.obstimes
 obstimes_wastewater = df.obstimes
 max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
 param_change_times = 1:7:max_obstime # Change every week
+incidence_model_bool = false
 priors_only = false
 n_samples = 500
 forecast = false
@@ -58,6 +59,7 @@ forecast_days = 0
 E_init_sd=0.2; log_E_init_mean=log(200)
 I_init_sd=0.2; log_I_init_mean=log(100)
 H_init_sd=0.2; log_H_init_mean=log(20)
+CH_init = 5.0
 gamma_sd=0.02; log_gamma_mean=log(1/4)
 nu_sd=0.02; log_nu_mean=log(1/7)
 epsilon_sd=0.02; log_epsilon_mean=log(1/5)
@@ -75,6 +77,7 @@ model_params = create_model_params_time_var_hosp(
     E_init_sd, log_E_init_mean,
     I_init_sd, log_I_init_mean,
     H_init_sd, log_H_init_mean,
+    CH_init,
     gamma_sd, log_gamma_mean,
     nu_sd, log_nu_mean,
     epsilon_sd, log_epsilon_mean,
@@ -94,6 +97,7 @@ init_params = optimize_many_MAP2_wrapper(
     obstimes_wastewater,
     param_change_times,
     model_params;
+    incidence_model_bool = incidence_model_bool,
     verbose=false,
     warning_bool=false,
 )
@@ -104,6 +108,7 @@ samples = fit(
     obstimes_wastewater,
     param_change_times,
     model_params;
+    incidence_model_bool = incidence_model_bool,
     priors_only,
     n_samples,
     n_discard_initial = 200,
@@ -118,6 +123,7 @@ model_output = generate_pq_pp(
     obstimes_wastewater,
     param_change_times,
     model_params;
+    incidence_model_bool=incidence_model_bool,
     forecast=true, forecast_days=forecast_days
 )
 
