@@ -18,9 +18,9 @@ The defaults for this fuction will follow those of the default simulation in gen
     data_wastewater,
     obstimes_hosp,
     obstimes_wastewater,
-    obstimes,
     param_change_times,
     params::model_params_time_var_hosp;
+    incidence_model_bool=false,
     warning_bool=true
     )
         # hosp_ww model w/ time-varying w
@@ -48,9 +48,9 @@ The defaults for this fuction will follow those of the default simulation in gen
         trans = likelihood_helpers(
             obstimes_hosp,
             obstimes_wastewater,
-            obstimes,
             param_change_times,
             params;
+            incidence_model=incidence_model_bool,
             E_init_non_centered, I_init_non_centered, H_init_non_centered,
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
             rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
@@ -68,33 +68,37 @@ The defaults for this fuction will follow those of the default simulation in gen
             data_wastewater[i] ~ Normal(trans.log_W_means[i], trans.sigma_ww)
         end
         for i in 1:length(obstimes_hosp)
-            data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
+            if incidence_model_bool
+                # If incidence model, use the incidence data
+                data_hosp[i] ~ NegativeBinomial2(trans.H_inc_means[i], trans.sigma_hosp)
+            else
+                data_hosp[i] ~ NegativeBinomial2(trans.H_prev_means[i], trans.sigma_hosp)
+            end
         end
 
-        return (
-            E_init = trans.E_init,
-            I_init = trans.I_init,
-            H_init = trans.H_init,
-            alpha_t = trans.alpha_t,
-            gamma = trans.gamma,
-            nu = trans.nu,
-            w_t = trans.w_t,
-            sigma_w = trans.sigma_w,
-            epsilon = trans.epsilon,
-            rt_vals = trans.Rt_t,
-            sigma_Rt = trans.sigma_Rt,
-            rho_gene = trans.rho_gene,
-            sigma_ww = trans.sigma_ww,
-            sigma_hosp = trans.sigma_hosp,
-            H = trans.H_comp_sol,
-            I = trans.I_comp_sol,
-            E = trans.E_comp_sol,
-            H_means = trans.H_means,
-            log_genes_mean = trans.log_W_means,
-            rt_init = trans.Rt_init,
-            w_init = trans.w_init
-        )
-
+        if incidence_model_bool
+            return (
+                E_init = trans.E_init, I_init = trans.I_init, H_init = trans.H_init,
+                alpha_t = trans.alpha_t, w_t = trans.w_t, rt_vals = trans.Rt_t,
+                gamma = trans.gamma, nu = trans.nu, epsilon = trans.epsilon,
+                sigma_Rt = trans.sigma_Rt, sigma_w = trans.sigma_w, rt_init = trans.Rt_init, w_init = trans.w_init,
+                rho_gene = trans.rho_gene,
+                sigma_ww = trans.sigma_ww, sigma_hosp = trans.sigma_hosp,
+                H = trans.H_comp_sol, I = trans.I_comp_sol, E = trans.E_comp_sol, CH = trans.CH_comp_sol, H_inc_comp_sol = trans.H_inc_comp_sol,
+                H_inc_means = trans.H_inc_means, log_genes_mean = trans.log_W_means,
+            )
+        else
+            return (
+                E_init = trans.E_init, I_init = trans.I_init, H_init = trans.H_init,
+                alpha_t = trans.alpha_t, w_t = trans.w_t, rt_vals = trans.Rt_t,
+                gamma = trans.gamma, nu = trans.nu, epsilon = trans.epsilon,
+                sigma_Rt = trans.sigma_Rt, sigma_w = trans.sigma_w, rt_init = trans.Rt_init, w_init = trans.w_init,
+                rho_gene = trans.rho_gene,
+                sigma_ww = trans.sigma_ww, sigma_hosp = trans.sigma_hosp,
+                H = trans.H_comp_sol, I = trans.I_comp_sol, E = trans.E_comp_sol, CH = trans.CH_comp_sol, H_inc_comp_sol = trans.H_inc_comp_sol,
+                H_prev_means = trans.H_prev_means, log_genes_mean = trans.log_W_means,
+            )
+        end
 
     end
 
@@ -142,7 +146,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 
         # Likelihood calculations------------
         for i in 1:length(obstimes_hosp)
-            data_hosp[i] ~ NegativeBinomial2(trans.H_means[i], trans.sigma_hosp)
+            data_hosp[i] ~ NegativeBinomial2(trans.H_prev_means[i], trans.sigma_hosp)
         end
 
         return (
@@ -160,7 +164,9 @@ The defaults for this fuction will follow those of the default simulation in gen
             H = trans.H_comp_sol,
             I = trans.I_comp_sol,
             E = trans.E_comp_sol,
-            H_means = trans.H_means,
+            CH = trans.CH_comp_sol,
+            H_inc_comp_sol = trans.H_inc_comp_sol,
+            H_prev_means = trans.H_prev_means,
             rt_init = trans.Rt_init
         )
 

@@ -10,9 +10,9 @@ Default visualizer for results of the UCIWWEIHR model, includes posterior/priors
 - `plot_name_to_save`: A string to indicate the name of the plot to save. Default is "mcmc_diagnosis_plots".
 """
 function mcmcdiags_vis(
-    gq_samples=nothing,
-    desired_params=nothing,
-    actual_non_time_varying_vals::uciwweihr_sim_params = nothing;
+    gq_samples,
+    desired_params,
+    actual_non_time_varying_vals::uciwweihr_sim_params;
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_diagnosis_plots"
     )
@@ -89,8 +89,8 @@ end
 
 
 function mcmcdiags_vis(
-    gq_samples=nothing,
-    desired_params=nothing;
+    gq_samples,
+    desired_params;
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_diagnosis_plots"
     )

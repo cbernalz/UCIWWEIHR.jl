@@ -19,7 +19,7 @@ function eihr_ode!(du, u, p, t)
     (gamma, nu, epsilon, alphas, ws, param_change_times) = p
 
     # Time varying
-    ind_t = searchsortedlast(param_change_times, t) 
+    ind_t = max(searchsortedlast(param_change_times, t), 1)
     alpha = alphas[ind_t]
     w = ws[ind_t]
 
@@ -38,6 +38,7 @@ function eihr_ode!(du, u, p, t)
         du[1] = exposed_in - progression # E
         du[2] = progression - (hospitalization + non_hospitalized_recovery) # I
         du[3] = hospitalization - hospitalized_recovery # H
+        du[4] = hospitalization # C_h
     end
 end
 
@@ -63,7 +64,7 @@ function eihr_ode_const_w!(du, u, p, t)
     (gamma, nu, epsilon, alphas, w, param_change_times) = p
 
     # Time varying
-    ind_t = searchsortedlast(param_change_times, t) 
+    ind_t = max(searchsortedlast(param_change_times, t), 1)
     alpha = alphas[ind_t]
 
     # -> E
@@ -81,5 +82,6 @@ function eihr_ode_const_w!(du, u, p, t)
         du[1] = exposed_in - progression # E
         du[2] = progression - (hospitalization + non_hospitalized_recovery) # I
         du[3] = hospitalization - hospitalized_recovery # H
+        du[4] = hospitalization # C_H
     end
 end

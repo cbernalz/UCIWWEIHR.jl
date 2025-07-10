@@ -28,26 +28,30 @@ function fit(
     obstimes_wastewater,
     param_change_times,
     params::model_params_time_var_hosp;
+    incidence_model_bool=false,
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1,
     n_discard_initial::Int64=0, seed::Int64=2024,
     init_params=nothing
     )
     println("Using uciwweihr_model with wastewater.  With time-varying hospitalization probability!!!")
+    if incidence_model_bool
+        println("Using incidence model!!!")
+    else
+        println("Using prevalence model!!!")
+    end
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
     param_change_times = vcat(0, param_change_times)
-    obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
-    obstimes = sort(obstimes)
     my_model = uciwweihr_model(
         data_hosp,
         data_wastewater,
         obstimes_hosp,
         obstimes_wastewater,
-        obstimes,
         param_change_times,
         params;
+        incidence_model_bool=incidence_model_bool
     )
     # Sample Posterior
     if priors_only
