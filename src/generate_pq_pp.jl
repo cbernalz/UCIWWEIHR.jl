@@ -31,7 +31,8 @@ function generate_pq_pp(
     params::model_params_time_var_hosp;
     incidence_model_bool=false,
     seed::Int64=2024,
-    forecast::Bool=false, forecast_days::Int64=14
+    forecast::Bool=false, forecast_days::Int64=14,
+    weekly_bool::Bool=false
 )
     println("Using uciwweihr_model with wastewater and time-varying hospitlaization probability!!!")
     if incidence_model_bool
@@ -48,8 +49,13 @@ function generate_pq_pp(
     
     if forecast
         last_value = obstimes_hosp[end]
-        obstimes_hosp = vcat(obstimes_hosp,(last_value+1):(last_value+forecast_days))
-        obstimes_wastewater = vcat(obstimes_wastewater,(last_value+1):(last_value+forecast_days))
+        if weekly_bool
+            obstimes_hosp = vcat(obstimes_hosp,(last_value+7):7:(last_value+forecast_days))
+            obstimes_wastewater = vcat(obstimes_wastewater,(last_value+7):7:(last_value+forecast_days))
+        else
+            obstimes_hosp = vcat(obstimes_hosp,(last_value+1):(last_value+forecast_days))
+            obstimes_wastewater = vcat(obstimes_wastewater,(last_value+1):(last_value+forecast_days))
+        end
         missing_data_hosp = repeat([missing], length(obstimes_hosp))
         missing_data_ww = repeat([missing], length(obstimes_wastewater))
         data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_days))

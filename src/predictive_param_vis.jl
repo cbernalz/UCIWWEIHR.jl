@@ -17,6 +17,8 @@ function predictive_param_vis(;
     pp_samples = nothing,
     data_wastewater = nothing,
     data_hosp = nothing,
+    obstimes_wastewater = nothing,
+    obstimes_hosp = nothing,
     forecast_days = 0,
     vars_to_pred = ["data_wastewater", "data_hosp"],
     quantiles = [0.5, 0.8, 0.95],
@@ -39,6 +41,7 @@ function predictive_param_vis(;
             preped_lower_bounds = lower_bounds  # repeat_last_n_elements(lower_bounds, forecast_weeks, 7)
             preped_upper_bounds = upper_bounds  # repeat_last_n_elements(upper_bounds, forecast_weeks, 7)
             time_index = 1:length(preped_medians)
+            println(time_index)
             plt = plot(title = "$bayes_dist_type Quantiles for Chain $chain for $var_prefix",
                         xlabel = "Time Points (daily scale)",
                         ylabel = "Value for $var_prefix")

@@ -12,6 +12,7 @@ function likelihood_helpers(
     param_change_times,
     params::model_params_time_var_hosp;
     incidence_model::Bool,
+    inc_offset::Int=1,
     E_init_non_centered, I_init_non_centered, H_init_non_centered,
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
     rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
@@ -79,13 +80,14 @@ function likelihood_helpers(
         E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
         H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
         CH_comp_sol = clamp.(sol_array[4,1:end], 1, 1e10)
-        H_inc_comp_sol = CH_comp_sol[2:end] - CH_comp_sol[1:end-1]
+        CH_comp_sol_f_H_inc = CH_comp_sol[vcat([1], obstimes_hosp .+ 1)]
+        H_inc_comp_sol = CH_comp_sol_f_H_inc[2:end] .- CH_comp_sol_f_H_inc[1:(end-1)]
         full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene)
         log_W_means = full_log_genes_mean[obstimes_wastewater]
 
 
         if incidence_model
-            H_inc_means = H_inc_comp_sol[obstimes_hosp]
+            H_inc_means = H_inc_comp_sol#[obstimes_hosp]
             # Return --------------------------
             return (
                 success = true,
