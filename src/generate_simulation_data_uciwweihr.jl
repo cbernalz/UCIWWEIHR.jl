@@ -150,7 +150,7 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
     # ODE SETUP--------------------------
     u0 = [params.E_init, params.I_init, params.H_init, params.H_init_inc]
     p0 = (params.gamma, params.nu, params.epsilon, alpha_t, params.w, 1:time_points)
-    prob = ODEProblem(eihr_ode!, u0, (1.0, time_points), p0)
+    prob = ODEProblem(eihr_ode_sim!, u0, (1.0, time_points), p0)
     extra_ode_precision = false
     abstol = extra_ode_precision ? 1e-11 : 1e-9
     reltol = extra_ode_precision ? 1e-8 : 1e-6

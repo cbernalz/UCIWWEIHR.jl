@@ -78,18 +78,14 @@ function optimize_many_MAP2_wrapper(
     obstimes_hosp,
     obstimes_wastewater,
     param_change_times,
-    params::model_params_time_var_hosp;
-    incidence_model_bool=false,
+    params::model_params_time_var_hosp_prev;
     n_reps=100,
     top_n=1,
     verbose=true,
     warning_bool=true
 )
-    if incidence_model_bool
-        println("Using incidence model!!!")
-    else
-        println("Using prevalence model!!!")
-    end
+# prevalence model
+    println("Optimizing initializations for uciwweihr_model with wastewater and time-varying hospitalization probability - Prevalence Model!!!")
     ## model with wastewater and time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
@@ -102,7 +98,38 @@ function optimize_many_MAP2_wrapper(
         obstimes_wastewater,
         param_change_times,
         params;
-        incidence_model_bool=incidence_model_bool,
+        warning_bool=warning_bool
+    )
+    return optimize_many_MAP2(my_model, n_reps, top_n, verbose)
+end
+
+
+function optimize_many_MAP2_wrapper(
+    data_hosp,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    params::model_params_time_var_hosp_inc;
+    n_reps=100,
+    top_n=1,
+    verbose=true,
+    warning_bool=true
+)
+# incidence model
+    println("Optimizing initializations for uciwweihr_model with wastewater and time-varying hospitalization probability - Incidence Model!!!")
+    ## model with wastewater and time-varying hospitalization probability
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    param_change_times = vcat(0, param_change_times)
+    my_model = uciwweihr_model(
+        data_hosp,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater,
+        param_change_times,
+        params;
         warning_bool=warning_bool
     )
     return optimize_many_MAP2(my_model, n_reps, top_n, verbose)
@@ -118,6 +145,8 @@ function optimize_many_MAP2_wrapper(
     verbose=true,
     warning_bool=true
 )
+
+    println("Optimizing initializations for uciwweihr_model without wastewater and nontime-varying hospitalization probability!!!")
     ## model without wastewater and without time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)

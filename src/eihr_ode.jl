@@ -14,7 +14,68 @@ Returns:
 
 """
 function eihr_ode!(du, u, p, t)
-    # ODE for EIHR model with constant beta
+    # Prevalence ODE
+    (E, I, H) = u
+    (gamma, nu, epsilon, alphas, ws, param_change_times) = p
+
+    # Time varying
+    ind_t = max(searchsortedlast(param_change_times, t), 1)
+    alpha = alphas[ind_t]
+    w = ws[ind_t]
+
+    # -> E
+    exposed_in = alpha * I
+    # E -> I
+    progression = gamma * E
+    # I -> H
+    hospitalization = nu * w * I
+    # I -> R
+    non_hospitalized_recovery = nu * (1 - w) * I
+    # H -> R
+    hospitalized_recovery = epsilon * H
+
+    @inbounds begin
+        du[1] = exposed_in - progression # E
+        du[2] = progression - (hospitalization + non_hospitalized_recovery) # I
+        du[3] = hospitalization - hospitalized_recovery # H
+        #du[4] = hospitalization # C_h
+    end
+end
+
+
+function eihr_ode_inc!(du, u, p, t)
+    # Incidence ODE
+    (E, I, N_ih) = u
+    (gamma, nu, alphas, ws, param_change_times) = p
+
+    # Time varying
+    ind_t = max(searchsortedlast(param_change_times, t), 1)
+    alpha = alphas[ind_t]
+    w = ws[ind_t]
+
+    # -> E
+    exposed_in = alpha * I
+    # E -> I
+    progression = gamma * E
+    # I -> H
+    hospitalization = nu * w * I
+    # I -> R
+    non_hospitalized_recovery = nu * (1 - w) * I
+    # H -> R
+    #hospitalized_recovery = epsilon * H
+
+    @inbounds begin
+        du[1] = exposed_in - progression # E
+        du[2] = progression - (hospitalization + non_hospitalized_recovery) # I
+        #du[3] = hospitalization - hospitalized_recovery # H
+        du[3] = hospitalization # N_ih
+    end
+end
+
+
+
+function eihr_ode_sim!(du, u, p, t)
+    # Simulation ODE
     (E, I, H) = u
     (gamma, nu, epsilon, alphas, ws, param_change_times) = p
 
@@ -41,7 +102,6 @@ function eihr_ode!(du, u, p, t)
         du[4] = hospitalization # C_h
     end
 end
-
 
 """
 eihr_ode_const_w!(du, u, p, t)

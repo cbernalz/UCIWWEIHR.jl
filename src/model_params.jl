@@ -34,14 +34,13 @@ This will use a time-varying hospitalization probability.
 - `sigma_w_sd::Float64=0.2`: Standard deviation for normal prior of log time-varying hospitalization rate standard deviation.
 - `sigma_w_mean::Float64=-3.5`: Mean for normal prior of time-varying hospitalization rate standard deviation.
 """
-struct model_params_time_var_hosp
+struct model_params_time_var_hosp_prev
     E_init_sd::Float64
     log_E_init_mean::Float64
     I_init_sd::Float64
     log_I_init_mean::Float64
     H_init_sd::Float64
     log_H_init_mean::Float64
-    CH_init::Float64
     gamma_sd::Float64
     log_gamma_mean::Float64
     nu_sd::Float64
@@ -77,11 +76,10 @@ Creates a `model_params_time_var_hosp` or `model_params2` struct with the option
 # Returns
 - `params::model_params_time_var_hosp` or `params::model_params_non_time_var_hosp`: A struct with simulation parameters.
 """
-function create_model_params_time_var_hosp(
+function create_model_params_time_var_hosp_prev(
     E_init_sd::Float64, log_E_init_mean::Float64,
     I_init_sd::Float64, log_I_init_mean::Float64,
     H_init_sd::Float64, log_H_init_mean::Float64,
-    CH_init::Float64,
     gamma_sd::Float64, log_gamma_mean::Float64,
     nu_sd::Float64, log_nu_mean::Float64,
     epsilon_sd::Float64, log_epsilon_mean::Float64,
@@ -97,17 +95,92 @@ function create_model_params_time_var_hosp(
     message::Bool;
     )
     if message
-        println("Using time-varying hospitalization probability!!!") 
+        println("Using time-varying hospitalization probability - Prevalence Model parameters!!!") 
     end
 
-    return model_params_time_var_hosp(
+    return model_params_time_var_hosp_prev(
         E_init_sd, log_E_init_mean,
         I_init_sd, log_I_init_mean,
         H_init_sd, log_H_init_mean,
-        CH_init,
         gamma_sd, log_gamma_mean,
         nu_sd, log_nu_mean,
         epsilon_sd, log_epsilon_mean,
+        rho_gene_sd, log_rho_gene_mean,
+
+        sigma_ww_sd, log_sigma_ww_mean,
+        sigma_hosp_sd, log_sigma_hosp_mean,
+
+        Rt_init_sd, Rt_init_mean,
+        sigma_Rt_sd, sigma_Rt_mean,
+        w_init_sd, w_init_mean,
+        sigma_w_sd, sigma_w_mean
+    )
+end
+
+
+struct model_params_time_var_hosp_inc
+    E_init_sd::Float64
+    log_E_init_mean::Float64
+    I_init_sd::Float64
+    log_I_init_mean::Float64
+    gamma_sd::Float64
+    log_gamma_mean::Float64
+    nu_sd::Float64
+    log_nu_mean::Float64
+    rho_gene_sd::Float64
+    log_rho_gene_mean::Float64
+
+    sigma_ww_sd::Float64
+    log_sigma_ww_mean::Float64
+    sigma_hosp_sd::Float64
+    log_sigma_hosp_mean::Float64
+
+    Rt_init_sd::Float64
+    Rt_init_mean::Float64
+    sigma_Rt_sd::Float64
+    sigma_Rt_mean::Float64
+    w_init_sd::Float64
+    w_init_mean::Float64
+    sigma_w_sd::Float64
+    sigma_w_mean::Float64
+end
+
+
+"""
+    create_model_params_time_var_hosp(; kwargs...) or create_model_params_non_time_var_hosp(; kwargs...)
+
+Creates a `model_params_time_var_hosp` or `model_params2` struct with the option to either have time-varying hospitalization probability or not.
+# Arguments
+- `kwargs...`: Named arguments corresponding to the fields in `model_params1` or `model_params2`.
+
+# Returns
+- `params::model_params_time_var_hosp` or `params::model_params_non_time_var_hosp`: A struct with simulation parameters.
+"""
+function create_model_params_time_var_hosp_inc(
+    E_init_sd::Float64, log_E_init_mean::Float64,
+    I_init_sd::Float64, log_I_init_mean::Float64,
+    gamma_sd::Float64, log_gamma_mean::Float64,
+    nu_sd::Float64, log_nu_mean::Float64,
+    rho_gene_sd::Float64, log_rho_gene_mean::Float64,
+
+    sigma_ww_sd::Float64, log_sigma_ww_mean::Float64,
+    sigma_hosp_sd::Float64, log_sigma_hosp_mean::Float64,
+
+    Rt_init_sd::Float64, Rt_init_mean::Float64,
+    sigma_Rt_sd::Float64, sigma_Rt_mean::Float64,
+    w_init_sd::Float64, w_init_mean::Float64,
+    sigma_w_sd::Float64, sigma_w_mean::Float64,
+    message::Bool;
+    )
+    if message
+        println("Using time-varying hospitalization probability - Incidence Model parameters!!!") 
+    end
+
+    return model_params_time_var_hosp_inc(
+        E_init_sd, log_E_init_mean,
+        I_init_sd, log_I_init_mean,
+        gamma_sd, log_gamma_mean,
+        nu_sd, log_nu_mean,
         rho_gene_sd, log_rho_gene_mean,
 
         sigma_ww_sd, log_sigma_ww_mean,
@@ -194,7 +267,7 @@ function create_model_params_non_time_var_hosp(
     message::Bool;
     )
     if message
-        println("Using model without time-varying hospitalization probability w/out wastewater!!!") 
+        println("Using model without time-varying hospitalization probability w/out wastewater parameters!!!") 
     end
 
     return model_params_non_time_var_hosp_no_ww(

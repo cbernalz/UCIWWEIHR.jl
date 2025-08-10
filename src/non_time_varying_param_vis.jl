@@ -116,7 +116,7 @@ end
 
 
 function non_time_varying_param_vis(
-    build_params::model_params_time_var_hosp,
+    build_params::model_params_time_var_hosp_prev,
     data_hosp, 
     data_wastewater,
     obstimes_hosp,
@@ -131,7 +131,7 @@ function non_time_varying_param_vis(
     save_plots::Bool=false,
     plot_name_to_save = "mcmc_nontime_varying_parameter_plots"
     )
-    println("Generating non-time varying parameter plots (with wastewater and with time-varying hospitalization probability)...")
+    println("Generating non-time varying parameter plots (with wastewater and with time-varying hospitalization probability - prevalence model)...")
     chains = unique(gq_samples.chain)
     samples = fit(
         data_hosp,
@@ -214,6 +214,109 @@ function non_time_varying_param_vis(
     end
 
 end
+
+
+
+function non_time_varying_param_vis(
+    build_params::model_params_time_var_hosp_inc,
+    data_hosp, 
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    seed,
+    forecast,
+    forecast_days;
+    gq_samples=nothing,
+    desired_params=nothing,
+    actual_non_time_varying_vals::uciwweihr_sim_params = nothing,
+    save_plots::Bool=false,
+    plot_name_to_save = "mcmc_nontime_varying_parameter_plots"
+    )
+    println("Generating non-time varying parameter plots (with wastewater and with time-varying hospitalization probability - incidence model)...")
+    chains = unique(gq_samples.chain)
+    samples = fit(
+        data_hosp,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater,
+        param_change_times,
+        build_params;
+        priors_only=true,
+        n_chains=length(chains),
+        seed=seed
+        )
+    prior_model_output = generate_pq_pp(
+        samples,
+        data_hosp,
+        data_wastewater,
+        obstimes_hosp,
+        obstimes_wastewater,
+        param_change_times,
+        build_params;
+        seed=seed,
+        forecast=forecast, forecast_days=forecast_days
+    )
+    gq_samples_priors = prior_model_output[2]
+
+    non_time_varying_plots = []    
+    for param_group in desired_params
+        for curr_param in param_group
+            chains = unique(gq_samples.chain)
+            for chain in chains
+                curr_param_chain_df = filter(row -> row.chain == chain, gq_samples)
+                prior_param_samples = filter(row -> row.chain == chain, gq_samples_priors)
+                plt = histogram(prior_param_samples[:, curr_param], 
+                           label = "Chain $chain (Prior)", 
+                           bins = 50,
+                            normalize = :probability,
+                           color = :blue,
+                           alpha = 0.1)
+                histogram!(plt, curr_param_chain_df[:, curr_param], 
+                                label = "Chain $chain (Posterior)", 
+                                title = "$curr_param",
+                                bins = 50,
+                                normalize = :probability,
+                                xlabel = "Value for $curr_param",
+                                ylabel = "Probability",
+                                alpha = 0.7,
+                                color = :blue,
+                                legend = :topright)
+                if !isnothing(actual_non_time_varying_vals.time_points)
+                    actual_param_value = round(getfield(actual_non_time_varying_vals, Symbol(curr_param)), digits=3)
+                    vline!(plt, 
+                            [actual_param_value],
+                            label = "Actual Value: $actual_param_value",
+                            color = :red, 
+                            linewidth = 3,
+                            linestyle=:dash)
+                end
+                
+                push!(non_time_varying_plots, plt) 
+            end
+        end
+    end
+    
+    if !isempty(non_time_varying_plots)
+        num_plots = length(non_time_varying_plots)
+        num_chains = length(unique(gq_samples.chain))
+        num_params = length(desired_params)
+        layout_rows = num_chains * length(desired_params[1])
+        layout_cols = num_params
+    
+        final_plot = plot(non_time_varying_plots..., 
+                            layout = (layout_rows, layout_cols), 
+                            size = (1500, 1500))
+        display(final_plot)
+        if save_plots
+            save_plots_to_docs(final_plot, plot_name_to_save)
+        end
+    else
+        println("NO NON-TIME VARYING PARAMETER PLOTS TO DISPLAY!!!")
+    end
+
+end
+
 
 ## model with wastewater and without time-varying hospitalization probability - not implemented
 ## model without wastewater and with time-varying hospitalization probability - not implemented
