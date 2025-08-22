@@ -38,7 +38,6 @@ function fit(
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     my_model = uciwweihr_model(
         data_hosp,
         data_wastewater,
@@ -84,7 +83,6 @@ function fit(
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     my_model = uciwweihr_model(
         data_hosp,
         data_wastewater,
@@ -126,7 +124,6 @@ function fit(
     println("Fitting using uciwweihr_model w/out wastewater.  With time-varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     obstimes = unique(vcat(obstimes_hosp))
     obstimes = sort(obstimes)
     my_model = uciwweihr_model(

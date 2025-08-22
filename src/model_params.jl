@@ -123,6 +123,8 @@ struct model_params_time_var_hosp_inc
     log_E_init_mean::Float64
     I_init_sd::Float64
     log_I_init_mean::Float64
+    CH_init_sd::Float64
+    log_CH_init_mean::Float64
     gamma_sd::Float64
     log_gamma_mean::Float64
     nu_sd::Float64
@@ -159,6 +161,7 @@ Creates a `model_params_time_var_hosp` or `model_params2` struct with the option
 function create_model_params_time_var_hosp_inc(
     E_init_sd::Float64, log_E_init_mean::Float64,
     I_init_sd::Float64, log_I_init_mean::Float64,
+    CH_init_sd::Float64, log_CH_init_mean::Float64,
     gamma_sd::Float64, log_gamma_mean::Float64,
     nu_sd::Float64, log_nu_mean::Float64,
     rho_gene_sd::Float64, log_rho_gene_mean::Float64,
@@ -179,6 +182,7 @@ function create_model_params_time_var_hosp_inc(
     return model_params_time_var_hosp_inc(
         E_init_sd, log_E_init_mean,
         I_init_sd, log_I_init_mean,
+        CH_init_sd, log_CH_init_mean,
         gamma_sd, log_gamma_mean,
         nu_sd, log_nu_mean,
         rho_gene_sd, log_rho_gene_mean,

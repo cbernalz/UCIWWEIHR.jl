@@ -38,7 +38,6 @@ function generate_pq_pp(
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
     obstimes = sort(obstimes)
     
@@ -112,7 +111,6 @@ function generate_pq_pp(
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
     obstimes = sort(obstimes)
     
@@ -180,7 +178,6 @@ function generate_pq_pp(
     println("Generating quantities using uciwweihr_model w/out wastewater and non-time varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     
     if forecast
         last_value = obstimes_hosp[end]

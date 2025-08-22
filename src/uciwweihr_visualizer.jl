@@ -153,9 +153,9 @@ function uciwweihr_visualizer(
     if pred_param_plots
         predictive_param_vis(
             pp_samples = pp_samples,
-            data_wastewater = obs_data_wastewater,
+            data_wastewater = nothing,
             data_hosp = obs_data_hosp,
-            obstimes_wastewater = obstimes_wastewater,
+            obstimes_wastewater = nothing,
             obstimes_hosp = obstimes_hosp,
             forecast_days = forecast_days,
             vars_to_pred = var_to_pred, 
@@ -357,7 +357,7 @@ function uciwweihr_visualizer(
     actual_H_ode_sol = nothing,
     actual_non_time_varying_vals::uciwweihr_sim_params = uciwweihr_sim_params(ntuple(x->nothing, fieldcount(uciwweihr_sim_params))...),
     desired_params = [
-        ["E_init", "I_init"],
+        ["E_init", "I_init", "CH_init"],
         ["gamma", "nu"],
         ["rt_init", "w_init"],
         ["sigma_w", "sigma_Rt"],

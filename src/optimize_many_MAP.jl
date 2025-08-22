@@ -90,7 +90,6 @@ function optimize_many_MAP2_wrapper(
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     my_model = uciwweihr_model(
         data_hosp,
         data_wastewater,
@@ -122,7 +121,6 @@ function optimize_many_MAP2_wrapper(
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     my_model = uciwweihr_model(
         data_hosp,
         data_wastewater,
@@ -150,7 +148,6 @@ function optimize_many_MAP2_wrapper(
     ## model without wastewater and without time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    param_change_times = vcat(0, param_change_times)
     my_model = uciwweihr_model(
         data_hosp,
         obstimes_hosp,

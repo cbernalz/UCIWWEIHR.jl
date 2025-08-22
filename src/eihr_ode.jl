@@ -23,6 +23,7 @@ function eihr_ode!(du, u, p, t)
     alpha = alphas[ind_t]
     w = ws[ind_t]
 
+
     # -> E
     exposed_in = alpha * I
     # E -> I

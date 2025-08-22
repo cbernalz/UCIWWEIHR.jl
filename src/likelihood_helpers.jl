@@ -60,23 +60,24 @@ function likelihood_helpers(
         w_t = vcat(w_init, w_no_init)
 
         # ODE SETUP--------------------------
+        first_obs_time = min(obstimes_hosp[1], obstimes_wastewater[1])
         max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
-        prob = ODEProblem{true}(eihr_ode!, zeros(3), (0.0, max_obstime_end), ones(5))
+        prob = ODEProblem{true}(eihr_ode!, zeros(3), (first_obs_time, max_obstime_end), ones(5))
         u0 = [E_init, I_init, H_init]
         p0 = (gamma, nu, epsilon, alpha_t, w_t, param_change_times)
         extra_ode_precision = true
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); saveat=0.0:max_obstime_end, save_start=true, 
-                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, max_obstime_end))
+        sol = solve(prob, Tsit5(); saveat=first_obs_time:1:max_obstime_end, save_start=true,
+                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
             throw(ArgumentError("ODE solver failed!!!"))
         end
         sol_array = Array(sol)
-        E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
-        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
-        H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
+        E_comp_sol = clamp.(sol_array[1,1:end],1, 1e10)
+        I_comp_sol = clamp.(sol_array[2,1:end],1, 1e10)
+        H_comp_sol = clamp.(sol_array[3,1:end], 1, 1e10)
         full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene)
 
         log_W_means = full_log_genes_mean[obstimes_wastewater]
@@ -110,7 +111,7 @@ function likelihood_helpers(
     obstimes_wastewater,
     param_change_times,
     params::model_params_time_var_hosp_inc;
-    E_init_non_centered, I_init_non_centered,
+    E_init_non_centered, I_init_non_centered, CH_init_non_centered,
     gamma_non_centered, nu_non_centered,
     rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
     Rt_params_non_centered, w_params_non_centered,
@@ -133,6 +134,7 @@ function likelihood_helpers(
         # Compartments
         E_init = exp(E_init_non_centered * params.E_init_sd + params.log_E_init_mean)
         I_init = exp(I_init_non_centered * params.I_init_sd + params.log_I_init_mean)
+        CH_init = exp(CH_init_non_centered * params.CH_init_sd + params.log_CH_init_mean)
         # Parameters for compartments
         gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
         nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
@@ -157,23 +159,25 @@ function likelihood_helpers(
         w_t = vcat(w_init, w_no_init)
 
         # ODE SETUP--------------------------
+        first_obs_time = min(obstimes_hosp[1], obstimes_wastewater[1])
         max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
-        prob = ODEProblem{true}(eihr_ode_inc!, zeros(2), (0.0, max_obstime_end), ones(5))
-        u0 = [E_init, I_init, 0.0]
+        prob = ODEProblem{true}(eihr_ode_inc!, zeros(2), (first_obs_time, max_obstime_end), ones(5))
+        u0 = [E_init, I_init, CH_init]
         p0 = (gamma, nu, alpha_t, w_t, param_change_times)
         extra_ode_precision = true
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); saveat=0.0:max_obstime_end, save_start=true, 
-                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, max_obstime_end))
+        sol = solve(prob, Tsit5(); saveat=first_obs_time:1:max_obstime_end, save_start=true,
+                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
             throw(ArgumentError("ODE solver failed!!!"))
         end
         sol_array = Array(sol)
-        E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
-        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
+        E_comp_sol = clamp.(sol_array[1,1:end],1, 1e10)
+        I_comp_sol = clamp.(sol_array[2,1:end],1, 1e10)
         CH_comp_sol = clamp.(sol_array[3,1:end], 1, 1e10)
+        CH_comp_sol = vcat(0.0, CH_comp_sol)
         CH_comp_sol_f_H_inc = CH_comp_sol[vcat([1], obstimes_hosp .+ 1)]
         H_inc_comp_sol = CH_comp_sol_f_H_inc[2:end] .- CH_comp_sol_f_H_inc[1:(end-1)]
         full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene)
@@ -183,7 +187,7 @@ function likelihood_helpers(
         # Return --------------------------
         return (
             success = true,
-            E_init = E_init, I_init = I_init,
+            E_init = E_init, I_init = I_init, CH_init = CH_init,
             gamma = gamma, nu = nu,
             rho_gene = rho_gene, sigma_ww = sigma_ww, 
             sigma_hosp = sigma_hosp,
@@ -245,26 +249,26 @@ function likelihood_helpers(
         # Non-constant Hosp Prob w
 
         # ODE SETUP--------------------------
+        first_obs_time = obstimes_prev_hosp[1]
         max_obstime_end = obstimes_prev_hosp[end]
-        prob = ODEProblem{true}(eihr_ode_const_w!, zeros(3), (0.0, max_obstime_end), ones(5))
+        prob = ODEProblem{true}(eihr_ode_const_w!, zeros(3), (first_obs_time, max_obstime_end), ones(5))
         u0 = [E_init, I_init, H_init, params.CH_init]
         p0 = (gamma, nu, epsilon, alpha_t, w, param_change_times)
         extra_ode_precision = true
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
-        sol = solve(prob, Tsit5(); saveat=0.0:max_obstime_end, save_start=true, 
-                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(0.0, max_obstime_end))
+        sol = solve(prob, Tsit5(); saveat=first_obs_time:1:max_obstime_end, save_start=true,
+                    verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
             throw(ArgumentError("ODE solver failed!!!"))
         end
 
         sol_array = Array(sol)
-        I_comp_sol = clamp.(sol_array[2,2:end],1, 1e10)
-        E_comp_sol = clamp.(sol_array[1,2:end],1, 1e10)
-        H_comp_sol = clamp.(sol_array[3,2:end], 1, 1e10)
-        CH_comp_sol = clamp.(sol_array[4,2:end], 1, 1e10)
-        H_inc_comp_sol = CH_comp_sol[2:end] - CH_comp_sol[1:end-1]
+        I_comp_sol = clamp.(sol_array[2,1:end],1, 1e10)
+        E_comp_sol = clamp.(sol_array[1,1:end],1, 1e10)
+        H_comp_sol = clamp.(sol_array[3,1:end], 1, 1e10)
+        CH_comp_sol = clamp.(sol_array[4,1:end], 1, 1e10)
         H_prev_means = H_comp_sol[obstimes_prev_hosp]
 
         # Return --------------------------
@@ -275,7 +279,7 @@ function likelihood_helpers(
             sigma_hosp = sigma_hosp,
             Rt_t = Rt_t, Rt_init = Rt_init, sigma_Rt = sigma_Rt, alpha_t = alpha_t,
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol, 
-            CH_comp_sol = CH_comp_sol, H_inc_comp_sol = H_inc_comp_sol,
+            CH_comp_sol = CH_comp_sol,
             H_prev_means = H_prev_means
         )
     catch e
