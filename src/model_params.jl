@@ -233,7 +233,7 @@ Creates a `model_params_time_var_hosp` or `model_params2` struct with the option
 # Returns
 - `params::model_params_time_var_hosp` or `params::model_params_non_time_var_hosp`: A struct with simulation parameters.
 """
-function create_model_params_time_var_hosp_inc(
+function create_model_params_time_var_hosp_inc_no_ww(
     E_init_sd::Float64, log_E_init_mean::Float64,
     I_init_sd::Float64, log_I_init_mean::Float64,
     CH_init_sd::Float64, log_CH_init_mean::Float64,
@@ -251,7 +251,7 @@ function create_model_params_time_var_hosp_inc(
         println("Using time-varying hospitalization probability - Incidence Model parameters!!!") 
     end
 
-    return model_params_time_var_hosp_inc(
+    return model_params_time_var_hosp_inc_no_ww(
         E_init_sd, log_E_init_mean,
         I_init_sd, log_I_init_mean,
         CH_init_sd, log_CH_init_mean,
