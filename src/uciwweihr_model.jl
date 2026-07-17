@@ -156,9 +156,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 
 @model function uciwweihr_model(
     data_hosp,
-    data_wastewater,
     obstimes_hosp,
-    obstimes_wastewater,
     param_change_times,
     params::model_params_time_var_hosp_inc_no_ww;
     warning_bool=true
@@ -184,7 +182,6 @@ The defaults for this fuction will follow those of the default simulation in gen
         # TRANSFORMATIONS-----------------------------
         trans = likelihood_helpers(
             obstimes_hosp,
-            obstimes_wastewater,
             param_change_times,
             params;
             E_init_non_centered, I_init_non_centered, CH_init_non_centered,
