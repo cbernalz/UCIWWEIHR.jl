@@ -177,7 +177,7 @@ function generate_pq_pp(
     weekly_bool::Bool=false
 )
     ## incidence model
-    println("Generating quantities using uciwweihr_model w/out wastewater and time-varying hospitalization probability - Incidence Model!!!")
+    println("Generating quantities using uciwweihr_model w/out wastewater and nontime-varying hospitalization probability - Incidence Model!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     obstimes = unique(vcat(obstimes_hosp))

@@ -123,7 +123,7 @@ function fit(
     init_params=nothing
     )
     ## incidence model
-    println("Fitting using uciwweihr_model with wastewater - Incidence Model!!!")
+    println("Fitting using uciwweihr_model w/out wastewater and constant hospitalization probability - Incidence Model!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     my_model = uciwweihr_model(

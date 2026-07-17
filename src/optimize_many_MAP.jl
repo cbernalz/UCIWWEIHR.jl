@@ -145,7 +145,7 @@ function optimize_many_MAP2_wrapper(
     warning_bool=true
 )
 # incidence model
-    println("Optimizing initializations for uciwweihr_model w/out wastewater and time-varying hospitalization probability - Incidence Model!!!")
+    println("Optimizing initializations for uciwweihr_model w/out wastewater and nontime-varying hospitalization probability - Incidence Model!!!")
     ## model with wastewater and time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)

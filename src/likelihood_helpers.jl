@@ -214,7 +214,7 @@ function likelihood_helpers(
     E_init_non_centered, I_init_non_centered, CH_init_non_centered,
     gamma_non_centered, nu_non_centered,
     sigma_hosp_non_centered,
-    Rt_params_non_centered, w_params_non_centered,
+    Rt_params_non_centered, w_param_non_centered,
     warning_bool=true
 )
     # model w/ time-varying hosp prob and w/ wastewater - incidence model
@@ -223,11 +223,8 @@ function likelihood_helpers(
         sigma_Rt_non_centered = Rt_params_non_centered[1]
         Rt_init_non_centered = Rt_params_non_centered[2]
         log_Rt_steps_non_centered = Rt_params_non_centered[3:end]
-        # Non-constant Hosp Rate w
-        sigma_w_non_centered = w_params_non_centered[1]
-        w_init_non_centered = w_params_non_centered[2]
-        logit_w_steps_non_centered = w_params_non_centered[3:end]
-
+        # constant Hosp Rate w
+        w = logistic(w_param_non_centered * params.w_sd + params.logit_w_mean)
 
 
         # TRANSFORMATIONS--------------------
@@ -247,20 +244,13 @@ function likelihood_helpers(
         alpha_init = Rt_init * nu
         alpha_t = vcat(alpha_init, alpha_t_no_init)
         Rt_t = alpha_t / nu
-        # Non-constant Hosp Prob w
-        w_init_logit = w_init_non_centered * params.w_init_sd + params.w_init_mean
-        sigma_w = exp(sigma_w_non_centered * params.sigma_w_sd + params.sigma_w_mean)
-        logit_w_no_init = w_init_logit .+ cumsum(logit_w_steps_non_centered) * sigma_w
-        w_init = logistic(w_init_logit)
-        w_no_init = logistic.(logit_w_no_init)
-        w_t = vcat(w_init, w_no_init)
 
         # ODE SETUP--------------------------
         first_obs_time = min(obstimes_hosp[1], obstimes_wastewater[1])
         max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
         prob = ODEProblem{true}(eihr_ode_inc!, zeros(2), (first_obs_time, max_obstime_end), ones(5))
         u0 = [E_init, I_init, CH_init]
-        p0 = (gamma, nu, alpha_t, w_t, param_change_times)
+        p0 = (gamma, nu, alpha_t, w, param_change_times)
         extra_ode_precision = true
         abstol = extra_ode_precision ? 1e-11 : 1e-9
         reltol = extra_ode_precision ? 1e-8 : 1e-6
@@ -286,7 +276,7 @@ function likelihood_helpers(
             gamma = gamma, nu = nu,
             sigma_hosp = sigma_hosp,
             Rt_t = Rt_t, Rt_init = Rt_init, sigma_Rt = sigma_Rt, alpha_t = alpha_t,
-            w_init = w_init, sigma_w = sigma_w, w_t = w_t,
+            w = w,
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, 
             CH_comp_sol = CH_comp_sol, H_inc_comp_sol = H_inc_comp_sol,
             H_inc_means = H_inc_means

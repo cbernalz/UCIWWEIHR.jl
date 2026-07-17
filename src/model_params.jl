@@ -218,10 +218,8 @@ struct model_params_time_var_hosp_inc_no_ww
     Rt_init_mean::Float64
     sigma_Rt_sd::Float64
     sigma_Rt_mean::Float64
-    w_init_sd::Float64
-    w_init_mean::Float64
-    sigma_w_sd::Float64
-    sigma_w_mean::Float64
+    w_sd::Float64
+    logit_w_mean::Float64
 end
 
 
@@ -246,8 +244,7 @@ function create_model_params_time_var_hosp_inc(
 
     Rt_init_sd::Float64, Rt_init_mean::Float64,
     sigma_Rt_sd::Float64, sigma_Rt_mean::Float64,
-    w_init_sd::Float64, w_init_mean::Float64,
-    sigma_w_sd::Float64, sigma_w_mean::Float64,
+    w_sd::Float64, logit_w_mean::Float64,
     message::Bool;
     )
     if message
@@ -267,8 +264,7 @@ function create_model_params_time_var_hosp_inc(
 
         Rt_init_sd, Rt_init_mean,
         sigma_Rt_sd, sigma_Rt_mean,
-        w_init_sd, w_init_mean,
-        sigma_w_sd, sigma_w_mean
+        w_sd, logit_w_mean
     )
 end
 

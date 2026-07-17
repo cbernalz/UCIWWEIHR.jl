@@ -177,8 +177,9 @@ The defaults for this fuction will follow those of the default simulation in gen
         sigma_hosp_non_centered ~ Normal()
         # Non-constant Rt
         Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
-        # Non-constant Hosp Rate w
-        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
+        # Constant Hosp Rate w
+        w_param_non_centered ~ Normal()
+        
 
         # TRANSFORMATIONS-----------------------------
         trans = likelihood_helpers(
@@ -189,7 +190,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             E_init_non_centered, I_init_non_centered, CH_init_non_centered,
             gamma_non_centered, nu_non_centered,
             sigma_hosp_non_centered,
-            Rt_params_non_centered, w_params_non_centered,
+            Rt_params_non_centered, w_param_non_centered,
             warning_bool=warning_bool
         )
         # Reject if the helper function failed and skip sample
@@ -207,7 +208,8 @@ The defaults for this fuction will follow those of the default simulation in gen
             E_init = trans.E_init, I_init = trans.I_init, CH_init = trans.CH_init,
             alpha_t = trans.alpha_t, w_t = trans.w_t, rt_vals = trans.Rt_t,
             gamma = trans.gamma, nu = trans.nu,
-            sigma_Rt = trans.sigma_Rt, sigma_w = trans.sigma_w, rt_init = trans.Rt_init, w_init = trans.w_init,
+            sigma_Rt = trans.sigma_Rt, rt_init = trans.Rt_init,
+            w = trans.w,
             sigma_hosp = trans.sigma_hosp,
             I = trans.I_comp_sol, E = trans.E_comp_sol, CH = trans.CH_comp_sol, H_inc_comp_sol = trans.H_inc_comp_sol,
             H_inc_means = trans.H_inc_means,
