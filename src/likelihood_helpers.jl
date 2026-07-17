@@ -258,6 +258,10 @@ function likelihood_helpers(
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
+            showerror(stdout, e)
+            println()
+            Base.show_backtrace(stdout, catch_backtrace())
+            println()
             throw(ArgumentError("ODE solver failed!!!"))
         end
         sol_array = Array(sol)
