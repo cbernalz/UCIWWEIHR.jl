@@ -74,6 +74,33 @@ function eihr_ode_inc!(du, u, p, t)
 end
 
 
+function eihr_ode_inc_const_w!(du, u, p, t)
+    # Incidence ODE
+    (E, I, N_ih) = u
+    (gamma, nu, alphas, w, param_change_times) = p
+
+    # Time varying
+    ind_t = max(searchsortedlast(param_change_times, t), 1)
+    alpha = alphas[ind_t]
+
+    # -> E
+    exposed_in = alpha * I
+    # E -> I
+    progression = gamma * E
+    # I -> H
+    hospitalization = nu * w * I
+    # I -> R
+    non_hospitalized_recovery = nu * (1 - w) * I
+    # H -> R
+    #hospitalized_recovery = epsilon * H
+
+    @inbounds begin
+        du[1] = exposed_in - progression # E
+        du[2] = progression - (hospitalization + non_hospitalized_recovery) # I
+        #du[3] = hospitalization - hospitalized_recovery # H
+        du[3] = hospitalization # N_ih
+    end
+end
 
 function eihr_ode_sim!(du, u, p, t)
     # Simulation ODE

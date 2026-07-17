@@ -43,6 +43,7 @@ include("uciwweihr_visualizer.jl")
 
 export eihr_ode
 export eihr_ode_const_w
+export eihr_ode_inc_const_w
 export uciwweihr_sim_params
 export create_uciwweihr_sim_params
 export generate_random_walk

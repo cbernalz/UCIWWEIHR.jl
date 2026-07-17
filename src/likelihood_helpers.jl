@@ -217,6 +217,7 @@ function likelihood_helpers(
     Rt_params_non_centered, w_param_non_centered,
     warning_bool=true
 )
+    println("using this")
     # model w/out time-varying hosp prob and w/ wastewater - incidence model
     try
         # Non-constant Rt
@@ -246,9 +247,9 @@ function likelihood_helpers(
         Rt_t = alpha_t / nu
 
         # ODE SETUP--------------------------
-        first_obs_time = obstimes_hosp[1]
-        max_obstime_end = obstimes_hosp[end]
-        prob = ODEProblem{true}(eihr_ode_inc!, zeros(2), (first_obs_time, max_obstime_end), ones(5))
+        first_obs_time = min(obstimes_hosp[1])
+        max_obstime_end = max(obstimes_hosp[end])
+        prob = ODEProblem{true}(eihr_ode_inc_const_w!, zeros(3), (first_obs_time, max_obstime_end), ones(5))
         u0 = [E_init, I_init, CH_init]
         p0 = (gamma, nu, alpha_t, w, param_change_times)
         extra_ode_precision = true
@@ -258,10 +259,6 @@ function likelihood_helpers(
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
         if sol.retcode != :Success
-            showerror(stdout, e)
-            println()
-            Base.show_backtrace(stdout, catch_backtrace())
-            println()
             throw(ArgumentError("ODE solver failed!!!"))
         end
         sol_array = Array(sol)
