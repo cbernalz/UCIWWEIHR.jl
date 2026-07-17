@@ -55,6 +55,7 @@ export model_params_time_var_hosp_inc
 export model_params_non_time_var_hosp
 export create_model_params_time_var_hosp_prev
 export create_model_params_time_var_hosp_inc
+export create_model_params_time_var_hosp_inc_no_ww
 export create_model_params_non_time_var_hosp
 export likelihood_helpers
 export uciwweihr_model
