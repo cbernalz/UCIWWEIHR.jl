@@ -171,6 +171,67 @@ function generate_pq_pp(
     data_hosp,
     obstimes_hosp,
     param_change_times,
+    params::model_params_time_var_hosp_inc_no_ww;
+    seed::Int64=2024,
+    forecast::Bool=false, forecast_days::Int64=14,
+    weekly_bool::Bool=false
+)
+    ## incidence model
+    println("Generating quantities using uciwweihr_model w/out wastewater and time-varying hospitalization probability - Incidence Model!!!")
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    obstimes = unique(vcat(obstimes_hosp))
+    obstimes = sort(obstimes)
+    
+    if forecast
+        last_value = obstimes_hosp[end]
+        if weekly_bool
+            obstimes_hosp = vcat(obstimes_hosp,(last_value+7):7:(last_value+forecast_days))
+        else
+            obstimes_hosp = vcat(obstimes_hosp,(last_value+1):(last_value+forecast_days))
+        end
+        missing_data_hosp = repeat([missing], length(obstimes_hosp))
+        data_hosp = vcat(data_hosp, repeat([data_hosp[end]], forecast_days))
+    else
+        missing_data_hosp = repeat([missing], length(data_hosp))
+    end
+
+    my_model = uciwweihr_model(
+        data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+    )
+    my_model_forecast_missing = uciwweihr_model(
+        missing_data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+    )
+
+    samples_df = DataFrame(samples)
+
+    indices_to_keep = .!isnothing.(generated_quantities(my_model, samples))
+    samples_randn = ChainsCustomIndex(samples, indices_to_keep)
+
+    Random.seed!(seed)
+    predictive_randn = predict(my_model_forecast_missing, samples_randn)
+    Random.seed!(seed)
+    println("Generating quantities...")
+    gq_randn = Chains(generated_quantities(my_model, samples_randn))
+    results = [DataFrame(predictive_randn), DataFrame(gq_randn), samples_df]
+
+    return(results)
+    
+end
+
+
+
+function generate_pq_pp(
+    samples,
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
     params::model_params_non_time_var_hosp_no_ww;
     seed::Int64=2024,
     forecast::Bool=false, forecast_days::Int64=14

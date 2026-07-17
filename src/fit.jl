@@ -115,6 +115,47 @@ function fit(
     data_hosp,
     obstimes_hosp,
     param_change_times,
+    params::model_params_time_var_hosp_inc_no_ww;
+    incidence_model_bool=false,
+    priors_only::Bool=false,
+    n_samples::Int64=500, n_chains::Int64=1,
+    n_discard_initial::Int64=0, seed::Int64=2024,
+    init_params=nothing
+    )
+    ## incidence model
+    println("Fitting using uciwweihr_model with wastewater - Incidence Model!!!")
+    obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    my_model = uciwweihr_model(
+        data_hosp,
+        obstimes_hosp,
+        param_change_times,
+        params;
+    )
+    # Sample Posterior
+    if priors_only
+        Random.seed!(seed)
+        samples = sample(my_model, Prior(), MCMCThreads(), 400, n_chains)
+    else
+        Random.seed!(seed)
+        # Optimize
+        if init_params === nothing
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
+        else
+            println("Using Initial Parameters...")
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
+        end
+    end 
+    return(samples)
+ 
+end
+
+
+
+function fit(
+    data_hosp,
+    obstimes_hosp,
+    param_change_times,
     params::model_params_non_time_var_hosp_no_ww;
     priors_only::Bool=false,
     n_samples::Int64=500, n_chains::Int64=1,

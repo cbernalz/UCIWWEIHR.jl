@@ -152,6 +152,70 @@ The defaults for this fuction will follow those of the default simulation in gen
 
     end
 
+
+
+@model function uciwweihr_model(
+    data_hosp,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    params::model_params_time_var_hosp_inc_no_ww;
+    warning_bool=true
+    )
+        # hosp_ww model w/ time-varying w - incidence model
+
+        # PRIORS-----------------------------
+        # Compartments
+        E_init_non_centered ~ Normal()
+        I_init_non_centered ~ Normal()
+        CH_init_non_centered ~ Normal()
+        # Parameters for compartments
+        gamma_non_centered ~ Normal()
+        nu_non_centered ~ Normal()
+        # Parameters for hospital
+        sigma_hosp_non_centered ~ Normal()
+        # Non-constant Rt
+        Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
+        # Non-constant Hosp Rate w
+        w_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
+
+        # TRANSFORMATIONS-----------------------------
+        trans = likelihood_helpers(
+            obstimes_hosp,
+            obstimes_wastewater,
+            param_change_times,
+            params;
+            E_init_non_centered, I_init_non_centered, CH_init_non_centered,
+            gamma_non_centered, nu_non_centered,
+            sigma_hosp_non_centered,
+            Rt_params_non_centered, w_params_non_centered,
+            warning_bool=warning_bool
+        )
+        # Reject if the helper function failed and skip sample
+        if !trans.success
+            Turing.@addlogprob! -Inf
+            return
+        end
+
+        # Likelihood calculations------------
+        for i in 1:length(obstimes_hosp)
+            data_hosp[i] ~ NegativeBinomial2(trans.H_inc_means[i], trans.sigma_hosp)
+        end
+
+        return (
+            E_init = trans.E_init, I_init = trans.I_init, CH_init = trans.CH_init,
+            alpha_t = trans.alpha_t, w_t = trans.w_t, rt_vals = trans.Rt_t,
+            gamma = trans.gamma, nu = trans.nu,
+            sigma_Rt = trans.sigma_Rt, sigma_w = trans.sigma_w, rt_init = trans.Rt_init, w_init = trans.w_init,
+            sigma_hosp = trans.sigma_hosp,
+            I = trans.I_comp_sol, E = trans.E_comp_sol, CH = trans.CH_comp_sol, H_inc_comp_sol = trans.H_inc_comp_sol,
+            H_inc_means = trans.H_inc_means,
+        )
+
+    end
+
+
 @model function uciwweihr_model(
     data_hosp,
     obstimes_hosp,
