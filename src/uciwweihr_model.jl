@@ -203,7 +203,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 
         return (
             E_init = trans.E_init, I_init = trans.I_init, CH_init = trans.CH_init,
-            alpha_t = trans.alpha_t, w_t = trans.w_t, rt_vals = trans.Rt_t,
+            alpha_t = trans.alpha_t, rt_vals = trans.Rt_t,
             gamma = trans.gamma, nu = trans.nu,
             sigma_Rt = trans.sigma_Rt, rt_init = trans.Rt_init,
             w = trans.w,

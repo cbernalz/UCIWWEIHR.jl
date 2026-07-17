@@ -217,7 +217,6 @@ function likelihood_helpers(
     Rt_params_non_centered, w_param_non_centered,
     warning_bool=true
 )
-    println("using this")
     # model w/out time-varying hosp prob and w/ wastewater - incidence model
     try
         # Non-constant Rt
