@@ -217,7 +217,7 @@ function likelihood_helpers(
     Rt_params_non_centered, w_param_non_centered,
     warning_bool=true
 )
-    # model w/ time-varying hosp prob and w/ wastewater - incidence model
+    # model w/out time-varying hosp prob and w/ wastewater - incidence model
     try
         # Non-constant Rt
         sigma_Rt_non_centered = Rt_params_non_centered[1]
@@ -246,8 +246,8 @@ function likelihood_helpers(
         Rt_t = alpha_t / nu
 
         # ODE SETUP--------------------------
-        first_obs_time = min(obstimes_hosp[1], obstimes_wastewater[1])
-        max_obstime_end = max(obstimes_hosp[end], obstimes_wastewater[end])
+        first_obs_time = obstimes_hosp[1]
+        max_obstime_end = obstimes_hosp[end]
         prob = ODEProblem{true}(eihr_ode_inc!, zeros(2), (first_obs_time, max_obstime_end), ones(5))
         u0 = [E_init, I_init, CH_init]
         p0 = (gamma, nu, alpha_t, w, param_change_times)
