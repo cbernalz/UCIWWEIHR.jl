@@ -157,10 +157,10 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
     sol = solve(prob, Tsit5(); saveat=1:time_points, save_start=true, 
                 verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(1, time_points))
     # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
-    if sol.retcode != :Success
-        Turing.@addlogprob! -Inf
-        return
-    end
+    #if sol.retcode != :Success
+    #    Turing.@addlogprob! -Inf
+    #    return
+    #end
     sol_array = Array(sol)
     I_comp_sol = clamp.(sol_array[2, 1:end], 1, 1e10)
     H_comp_sol = clamp.(sol_array[3, 1:end], 1, 1e10)
