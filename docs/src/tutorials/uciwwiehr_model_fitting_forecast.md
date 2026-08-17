@@ -44,7 +44,7 @@ obstimes_wastewater = df.obstimes
 max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
 param_change_times = 1:7:max_obstime # Change every week
 priors_only = false
-n_samples = 500
+n_samples = 50
 forecast = true
 forecast_days = 14
 
@@ -80,16 +80,37 @@ model_params = create_model_params_time_var_hosp_prev(
     sigma_w_sd, sigma_w_mean,
     message;
 )
-init_params = optimize_many_MAP2_wrapper(
-    data_hosp,
-    data_wastewater,
-    obstimes_hosp,
-    obstimes_wastewater,
-    param_change_times,
-    model_params;
-    verbose=false,
-    warning_bool=false,
-)
+#init_params = optimize_many_MAP2_wrapper(
+#    data_hosp,
+#    data_wastewater,
+#    obstimes_hosp,
+#    obstimes_wastewater,
+#    param_change_times,
+#    model_params;
+#    verbose=false,
+#    warning_bool=false,
+#)
+init_params = [
+    0.0, # E_init_non_centered
+    0.0, # I_init_non_centered
+    0.0, # H_init_non_centered
+    0.0, # gamma_non_centered
+    0.0, # nu_non_centered
+    0.0, # epsilon_non_centered
+    0.0, # rho_gene_non_centered
+    0.0, # sigma_ww_non_centered
+    0.0, # sigma_hosp_non_centered
+
+    # Rt_params_non_centered (11)
+    0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0,
+
+    # w_params_non_centered (11)
+    0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0,
+]
 samples = fit(
     data_hosp,
     data_wastewater,
