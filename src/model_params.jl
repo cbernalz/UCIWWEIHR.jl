@@ -197,11 +197,13 @@ function create_model_params_time_var_hosp_inc(
     )
 end
 
-struct model_params_time_var_hosp_inc_expanded
+struct model_params_hosp_inc_prev
     E_init_sd::Float64
     log_E_init_mean::Float64
     I_init_sd::Float64
     log_I_init_mean::Float64
+    H_init_sd::Float64
+    log_H_init_mean::Float64
     CH_init_sd::Float64
     log_CH_init_mean::Float64
     gamma_sd::Float64
@@ -228,9 +230,10 @@ struct model_params_time_var_hosp_inc_expanded
     sigma_w_mean::Float64
 end
 
-function create_model_params_time_var_hosp_inc_expanded(
+function create_model_params_hosp_inc_prev(
     E_init_sd::Float64, log_E_init_mean::Float64,
     I_init_sd::Float64, log_I_init_mean::Float64,
+    H_init_sd::Float64, log_H_init_mean::Float64,
     CH_init_sd::Float64, log_CH_init_mean::Float64,
     gamma_sd::Float64, log_gamma_mean::Float64,
     nu_sd::Float64, log_nu_mean::Float64,
@@ -250,9 +253,10 @@ function create_model_params_time_var_hosp_inc_expanded(
         println("Using time-varying hospitalization probability - Incidence Model expanded parameters!!!") 
     end
 
-    return model_params_time_var_hosp_inc_expanded(
+    return model_params_hosp_inc_prev(
         E_init_sd, log_E_init_mean,
         I_init_sd, log_I_init_mean,
+        H_init_sd, log_H_init_mean,
         CH_init_sd, log_CH_init_mean,
         gamma_sd, log_gamma_mean,
         nu_sd, log_nu_mean,
