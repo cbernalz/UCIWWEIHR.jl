@@ -171,7 +171,6 @@ The defaults for this fuction will follow those of the default simulation in gen
         E_init_non_centered ~ Normal()
         I_init_non_centered ~ Normal()
         H_init_non_centered ~ Normal()
-        CH_init_non_centered ~ Normal()
         # Parameters for compartments
         gamma_non_centered ~ Normal()
         nu_non_centered ~ Normal()
@@ -180,7 +179,8 @@ The defaults for this fuction will follow those of the default simulation in gen
         rho_gene_non_centered ~ Normal()
         sigma_ww_non_centered ~ Normal()
         # Parameters for hospital
-        sigma_hosp_non_centered ~ Normal()
+        sigma_hosp_inc_non_centered ~ Normal()
+        sigma_hosp_prev_non_centered ~ Normal()
         # Non-constant Rt
         Rt_params_non_centered ~ MvNormal(zeros(length(param_change_times) - 1 + 2), I) # +2 for sigma and init
         # Non-constant Hosp Rate w
@@ -195,7 +195,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             params;
             E_init_non_centered, I_init_non_centered, H_init_non_centered, CH_init_non_centered,
             gamma_non_centered, nu_non_centered, epsilon_non_centered,
-            rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
+            rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_inc_non_centered, sigma_hosp_prev_non_centered,
             Rt_params_non_centered, w_params_non_centered,
             warning_bool=warning_bool
         )
@@ -210,10 +210,10 @@ The defaults for this fuction will follow those of the default simulation in gen
             data_wastewater[i] ~ Normal(trans.log_W_means[i], trans.sigma_ww)
         end
         for i in 1:length(obstimes_hosp_prev)
-            data_hosp_prev[i] ~ NegativeBinomial2(trans.H_prev_means[i], trans.sigma_hosp)
+            data_hosp_prev[i] ~ NegativeBinomial2(trans.H_prev_means[i], trans.sigma_hosp_prev)
         end
         for i in 1:length(obstimes_hosp_inc)
-            data_hosp_inc[i] ~ NegativeBinomial2(trans.H_inc_means[i], trans.sigma_hosp)
+            data_hosp_inc[i] ~ NegativeBinomial2(trans.H_inc_means[i], trans.sigma_hosp_inc)
         end
 
         return (
@@ -222,7 +222,7 @@ The defaults for this fuction will follow those of the default simulation in gen
             gamma = trans.gamma, nu = trans.nu, epsilon = trans.epsilon,
             sigma_Rt = trans.sigma_Rt, sigma_w = trans.sigma_w, rt_init = trans.Rt_init, w_init = trans.w_init,
             rho_gene = trans.rho_gene,
-            sigma_ww = trans.sigma_ww, sigma_hosp = trans.sigma_hosp,
+            sigma_ww = trans.sigma_ww, sigma_hosp_prev = trans.sigma_hosp_prev, sigma_hosp_inc = trans.sigma_hosp_inc,
             H = trans.H_comp_sol, I = trans.I_comp_sol, E = trans.E_comp_sol, CH = trans.CH_comp_sol, H_inc_comp_sol = trans.H_inc_comp_sol,
             H_inc_means = trans.H_inc_means, H_prev_means = trans.H_prev_means, log_genes_mean = trans.log_W_means,
         )
