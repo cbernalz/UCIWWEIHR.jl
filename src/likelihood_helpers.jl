@@ -214,7 +214,7 @@ function likelihood_helpers(
     params::model_params_hosp_inc_prev;
     E_init_non_centered, I_init_non_centered, H_init_non_centered,
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
-    rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_non_centered,
+    rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_inc_non_centered, sigma_hosp_prev_non_centered,
     Rt_params_non_centered, w_params_non_centered,
     warning_bool=true
 )
@@ -236,7 +236,7 @@ function likelihood_helpers(
         E_init = exp(E_init_non_centered * params.E_init_sd + params.log_E_init_mean)
         I_init = exp(I_init_non_centered * params.I_init_sd + params.log_I_init_mean)
         H_init = exp(H_init_non_centered * params.H_init_sd + params.log_H_init_mean)
-        CH_init = exp(CH_init_non_centered * params.CH_init_sd + params.log_CH_init_mean)
+        CH_init = H_init
         # Parameters for compartments
         gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
         nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
@@ -245,7 +245,8 @@ function likelihood_helpers(
         rho_gene = exp(rho_gene_non_centered * params.rho_gene_sd + params.log_rho_gene_mean)
         sigma_ww = exp(sigma_ww_non_centered * params.sigma_ww_sd + params.log_sigma_ww_mean)
         # Parameters for hospital
-        sigma_hosp = exp(sigma_hosp_non_centered * params.sigma_hosp_sd + params.log_sigma_hosp_mean) 
+        sigma_hosp_inc = exp(sigma_hosp_inc_non_centered * params.sigma_hosp_inc_sd + params.log_sigma_hosp_inc_mean)
+        sigma_hosp_prev = exp(sigma_hosp_prev_non_centered * params.sigma_hosp_prev_sd + params.log_sigma_hosp_prev_mean)
         # Non-constant Rt
         Rt_init = exp(Rt_init_non_centered * params.Rt_init_sd + params.Rt_init_mean)
         sigma_Rt = exp(sigma_Rt_non_centered * params.sigma_Rt_sd + params.sigma_Rt_mean)
@@ -287,8 +288,8 @@ function likelihood_helpers(
         full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene)
 
         log_W_means = full_log_genes_mean[obstimes_wastewater]
-        H_prev_means = H_comp_sol[obstimes_hosp]
-        H_inc_means = H_inc_comp_sol
+        H_prev_means = H_comp_sol[obstimes_hosp_prev]
+        H_inc_means = H_inc_comp_sol[obstimes_hosp_inc] #TODO: Ask about this part?
 
         # Return --------------------------
         return (
@@ -296,7 +297,7 @@ function likelihood_helpers(
             E_init = E_init, I_init = I_init, H_init = H_init, CH_init = CH_init,
             gamma = gamma, nu = nu, epsilon = epsilon,
             rho_gene = rho_gene, sigma_ww = sigma_ww, 
-            sigma_hosp = sigma_hosp,
+            sigma_hosp_prev = sigma_hosp_prev, sigma_hosp_inc = sigma_hosp_inc,
             Rt_t = Rt_t, Rt_init = Rt_init, sigma_Rt = sigma_Rt, alpha_t = alpha_t,
             w_init = w_init, sigma_w = sigma_w, w_t = w_t,
             E_comp_sol = E_comp_sol, I_comp_sol = I_comp_sol, H_comp_sol = H_comp_sol, CH_comp_sol = CH_comp_sol,
