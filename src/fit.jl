@@ -109,6 +109,54 @@ function fit(
  
 end
 
+function fit(
+    data_hosp_prev,
+    data_hosp_inc,
+    data_wastewater,
+    obstimes_hosp_prev,
+    obstimes_hosp_inc,
+    obstimes_wastewater,
+    param_change_times,
+    params::model_params_hosp_inc_prev;
+    priors_only::Bool=false,
+    n_samples::Int64=500, n_chains::Int64=1,
+    n_discard_initial::Int64=0, seed::Int64=2024,
+    init_params=nothing
+    )
+    ## prevalence model
+    println("Fitting using uciwweihr_model with wastewater - Incidence and Prevalence Model!!!")
+    obstimes_hosp_prev = convert(Vector{Int64}, obstimes_hosp_prev)
+    obstimes_hosp_inc = convert(Vector{Int64}, obstimes_hosp_inc)
+    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    my_model = uciwweihr_model(
+        data_hosp_prev,
+        data_hosp_inc,
+        data_wastewater,
+        obstimes_hosp_prev,
+        obstimes_hosp_inc,
+        obstimes_wastewater,
+        param_change_times,
+        params;
+    )
+    # Sample Posterior
+    if priors_only
+        Random.seed!(seed)
+        samples = sample(my_model, Prior(), MCMCThreads(), 400, n_chains)
+    else
+        Random.seed!(seed)
+        # Optimize
+        if init_params === nothing
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial)
+        else
+            println("Using Initial Parameters...")
+            samples = sample(my_model, NUTS(), MCMCThreads(), n_samples, n_chains, discard_initial = n_discard_initial, init_params = init_params)
+        end
+    end 
+    return(samples)
+ 
+end
+
 
 
 function fit(
