@@ -133,6 +133,41 @@ function optimize_many_MAP2_wrapper(
     return optimize_many_MAP2(my_model, n_reps, top_n, verbose)
 end
 
+function optimize_many_MAP2_wrapper(
+    data_hosp_prev,
+    data_hosp_inc,
+    data_wastewater,
+    obstimes_hosp_prev,
+    obstimes_hosp_inc,
+    obstimes_wastewater,
+    param_change_times,
+    params::model_params_hosp_inc_prev;
+    n_reps=100,
+    top_n=1,
+    verbose=true,
+    warning_bool=true
+)
+# prevalence model
+    println("Optimizing initializations for uciwweihr_model with wastewater and time-varying hospitalization probability - Incidence and Prevalence Model!!!")
+    ## model with wastewater and time-varying hospitalization probability
+    obstimes_hosp_prev = convert(Vector{Int64}, obstimes_hosp_prev)
+    obstimes_hosp_inc = convert(Vector{Int64}, obstimes_hosp_inc)
+    obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
+    param_change_times = convert(Vector{Int64}, param_change_times)
+    my_model = uciwweihr_model(
+        data_hosp_prev,
+        data_hosp_inc,
+        data_wastewater,
+        obstimes_hosp_prev,
+        obstimes_hosp_inc,
+        obstimes_wastewater,
+        param_change_times,
+        params;
+        warning_bool=warning_bool
+    )
+    return optimize_many_MAP2(my_model, n_reps, top_n, verbose)
+end
+
 
 function optimize_many_MAP2_wrapper(
     data_hosp,
