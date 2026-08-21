@@ -189,8 +189,7 @@ function generate_pq_pp(
     obstimes = sort(obstimes)
     
     if forecast
-        last_value_prev = obstimes_hosp_prev[end]
-        last_value_inc = obstimes_hosp_inc[end]
+        last_value = max(obstimes_hosp_prev, obstimes_hosp_inc)
         if weekly_bool
             obstimes_hosp_prev = vcat(obstimes_hosp_prev,(last_value+7):7:(last_value+forecast_days))
             obstimes_hosp_inc = vcat(obstimes_hosp_inc,(last_value+7):7:(last_value+forecast_days))
