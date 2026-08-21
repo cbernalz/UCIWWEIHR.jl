@@ -266,7 +266,7 @@ function likelihood_helpers(
         first_obs_time = min(obstimes_hosp_prev[1], obstimes_hosp_inc[1], obstimes_wastewater[1])
         max_obstime_end = max(obstimes_hosp_prev[end], obstimes_hosp_inc[end], obstimes_wastewater[end])
         prob = ODEProblem{true}(eihr_ode!, zeros(3), (first_obs_time, max_obstime_end), ones(5))
-        u0 = [E_init, I_init, H_init]
+        u0 = [E_init, I_init, H_init, CH_init]
         p0 = (gamma, nu, epsilon, alpha_t, w_t, param_change_times)
         extra_ode_precision = true
         abstol = extra_ode_precision ? 1e-11 : 1e-9
@@ -281,7 +281,7 @@ function likelihood_helpers(
         E_comp_sol = clamp.(sol_array[1,1:end],1, 1e10)
         I_comp_sol = clamp.(sol_array[2,1:end],1, 1e10)
         H_comp_sol = clamp.(sol_array[3,1:end], 1, 1e10)
-        CH_comp_sol = clamp.(sol_array[3,1:end], 1, 1e10)
+        CH_comp_sol = clamp.(sol_array[4,1:end], 1, 1e10)
         CH_comp_sol = vcat(0.0, CH_comp_sol)
         CH_comp_sol_f_H_inc = CH_comp_sol[vcat([1], obstimes_hosp .+ 1)]
         H_inc_comp_sol = CH_comp_sol_f_H_inc[2:end] .- CH_comp_sol_f_H_inc[1:(end-1)]
