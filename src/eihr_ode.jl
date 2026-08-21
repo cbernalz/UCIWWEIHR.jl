@@ -39,7 +39,7 @@ function eihr_ode!(du, u, p, t)
         du[1] = exposed_in - progression # E
         du[2] = progression - (hospitalization + non_hospitalized_recovery) # I
         du[3] = hospitalization - hospitalized_recovery # H
-        #du[4] = hospitalization # C_h
+        du[4] = hospitalization # C_h
     end
 end
 
