@@ -212,7 +212,7 @@ function likelihood_helpers(
     obstimes_wastewater,
     param_change_times,
     params::model_params_hosp_inc_prev;
-    E_init_non_centered, I_init_non_centered, H_init_non_centered,
+    E_init_non_centered, I_init_non_centered, H_init_non_centered, CH_init_non_centered,
     gamma_non_centered, nu_non_centered, epsilon_non_centered,
     rho_gene_non_centered, sigma_ww_non_centered, sigma_hosp_inc_non_centered, sigma_hosp_prev_non_centered,
     Rt_params_non_centered, w_params_non_centered,
@@ -283,7 +283,7 @@ function likelihood_helpers(
         H_comp_sol = clamp.(sol_array[3,1:end], 1, 1e10)
         CH_comp_sol = clamp.(sol_array[4,1:end], 1, 1e10)
         CH_comp_sol = vcat(0.0, CH_comp_sol)
-        CH_comp_sol_f_H_inc = CH_comp_sol[vcat([1], obstimes_hosp .+ 1)]
+        CH_comp_sol_f_H_inc = CH_comp_sol[vcat([1], obstimes_hosp_prev .+ 1)] #TODO ask if should be prev or inc
         H_inc_comp_sol = CH_comp_sol_f_H_inc[2:end] .- CH_comp_sol_f_H_inc[1:(end-1)]
         full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene)
 

@@ -171,6 +171,7 @@ The defaults for this fuction will follow those of the default simulation in gen
         E_init_non_centered ~ Normal()
         I_init_non_centered ~ Normal()
         H_init_non_centered ~ Normal()
+        CH_init_non_centered ~ Normal()
         # Parameters for compartments
         gamma_non_centered ~ Normal()
         nu_non_centered ~ Normal()

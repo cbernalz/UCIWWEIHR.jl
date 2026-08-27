@@ -210,6 +210,8 @@ struct model_params_hosp_inc_prev
     log_gamma_mean::Float64
     nu_sd::Float64
     log_nu_mean::Float64
+    epsilon_sd::Float64
+    log_epsilon_mean::Float64
     rho_gene_sd::Float64
     log_rho_gene_mean::Float64
 
@@ -238,6 +240,7 @@ function create_model_params_hosp_inc_prev(
     gamma_sd::Float64, log_gamma_mean::Float64,
     nu_sd::Float64, log_nu_mean::Float64,
     rho_gene_sd::Float64, log_rho_gene_mean::Float64,
+    epsilon_sd::Float64, log_epsilon_mean::Float64,
 
     sigma_ww_sd::Float64, log_sigma_ww_mean::Float64,
     sigma_hosp_prev_sd::Float64, log_sigma_hosp_prev_mean::Float64,
@@ -261,6 +264,7 @@ function create_model_params_hosp_inc_prev(
         gamma_sd, log_gamma_mean,
         nu_sd, log_nu_mean,
         rho_gene_sd, log_rho_gene_mean,
+        epsilon_sd, log_epsilon_mean,
 
         sigma_ww_sd, log_sigma_ww_mean,
         sigma_hosp_prev_sd, log_sigma_hosp_prev_mean,
