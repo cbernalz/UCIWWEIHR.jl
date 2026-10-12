@@ -1,7 +1,7 @@
 """
     model_params_time_var_hosp
 
-Struct for holding parameters used in the UCIWWEIHR ODE compartmental model.  Use `create_model_params_time_var_hosp` to create an instance of this struct.
+Struct for holding parameters used in the ComModeForecasting ODE compartmental model.  Use `create_model_params_time_var_hosp` to create an instance of this struct.
 This will use a time-varying hospitalization probability.
 
 # Fields
@@ -352,7 +352,7 @@ end
 """
     model_params_non_time_var_hosp_no_ww
 
-Struct for holding parameters used in the UCIWWEIHR ODE compartmental model without wastewater.  Use `create_model_params_non_time_var_hosp_no_ww` to create an instance of this struct.
+Struct for holding parameters used in the ComModeForecasting ODE compartmental model without wastewater.  Use `create_model_params_non_time_var_hosp_no_ww` to create an instance of this struct.
 This will not use a time-varying hospitalization probability.
 
 # Fields
