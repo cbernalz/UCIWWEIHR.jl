@@ -1,8 +1,8 @@
 
 """
-    uciwweihr_sim_params
+    ComModeForecasting_sim_params
 
-Struct for holding parameters used in the UCIWWEIHR ODE compartmental model simulation.  Use `create_uciwweihr_sim_params` to create an instance of this struct.
+Struct for holding parameters used in the ComModeForecasting ODE compartmental model simulation.  Use `create_ComModeForecasting_sim_params` to create an instance of this struct.
 
 # Fields
 - `time_points::Int64`: Number of time points for the simulation.
@@ -22,10 +22,10 @@ Struct for holding parameters used in the UCIWWEIHR ODE compartmental model simu
 - `sigma_Rt::Float64`: Standard deviation for random walk of time-varying reproduction number.
 - `w::Union{Float64, Vector{Float64}}`: Initial value or time series of the time-varying hospitalization rate.
 - `sigma_w::Float64`: Standard deviation for random walk of time-varying hospitalization rate.
-- `rt_init::Float64`: Initial value of the time-varying reproduction number, NOT USER SPECIFIED `create_uciwweihr_params` TAKES CARE OF THIS.
-- `w_init::Float64`: Initial value of the time-varying hospitalization rate, NOT USER SPECIFIED `create_uciwweihr_params` TAKES CARE OF THIS.
+- `rt_init::Float64`: Initial value of the time-varying reproduction number, NOT USER SPECIFIED `create_ComModeForecasting_params` TAKES CARE OF THIS.
+- `w_init::Float64`: Initial value of the time-varying hospitalization rate, NOT USER SPECIFIED `create_ComModeForecasting_params` TAKES CARE OF THIS.
 """
-struct uciwweihr_sim_params
+struct ComModeForecasting_sim_params
     time_points::Union{Int64, Nothing}
     seed::Union{Int64, Nothing}
     E_init::Union{Int64, Nothing}
@@ -49,17 +49,17 @@ end
 
 
 """
-create_uciwweihr_sim_params(; kwargs...)
+create_ComModeForecasting_sim_params(; kwargs...)
 
-Creates a `uciwweihr_sim_params` struct with the option to either use a predetermined `Rt` and `w` or generate them as random walks.
+Creates a `ComModeForecasting_sim_params` struct with the option to either use a predetermined `Rt` and `w` or generate them as random walks.
 
 # Arguments
-- `kwargs...`: Named arguments corresponding to the fields in `uciwweihr_sim_params`.
+-- `kwargs...`: Named arguments corresponding to the fields in `ComModeForecasting_sim_params`.
 
 # Returns
-- `params::uciwweihr_sim_params`: A struct with simulation parameters.
+-- `params::ComModeForecasting_sim_params`: A struct with simulation parameters.
 """
-function create_uciwweihr_sim_params(; time_points::Int64=150, seed::Int64=1,
+function create_ComModeForecasting_sim_params(; time_points::Int64=150, seed::Int64=1,
                                   E_init::Int64=200, I_init::Int64=100, H_init::Int64=20, H_init_inc::Int64=5,
                                   gamma::Float64=1/4, nu::Float64=1/7, epsilon::Float64=1/5,
                                   rho_gene::Float64=0.011, sigma_ww::Float64=0.2,
@@ -77,7 +77,7 @@ function create_uciwweihr_sim_params(; time_points::Int64=150, seed::Int64=1,
     Rt_t = isa(Rt, Float64) ? generate_random_walk(time_points, sigma_Rt, Rt, seed) : Rt
     w_t = isa(w, Float64) ? generate_logit_normal_random_walk(time_points, sigma_w, w, seed) : w
 
-    return uciwweihr_sim_params(time_points, seed, E_init, I_init, H_init, H_init_inc, gamma, nu, epsilon,
+    return ComModeForecasting_sim_params(time_points, seed, E_init, I_init, H_init, H_init_inc, gamma, nu, epsilon,
                                 rho_gene, sigma_ww, sigma_hosp, sigma_hosp_inc, Rt_t, sigma_Rt, w_t, sigma_w, rt_init, w_init)
 end
 
@@ -130,17 +130,17 @@ function generate_logit_normal_random_walk(time_points::Int64, sigma::Float64, i
 end
 
 """
-    generate_simulation_data(params::UCIWWEIHRParams)
+    generate_simulation_data_ComModeForecasting(params::ComModeForecasting_sim_params)
 
-Generates simulation data for the UCIWWEIHR ODE compartmental model.
+Generates simulation data for the ComModeForecasting ODE compartmental model.
 
 # Arguments
-- `params::uciwweihr_sim_params`: Struct containing parameters for the simulation.
+-- `params::ComModeForecasting_sim_params`: Struct containing parameters for the simulation.
 
 # Returns
 - `df::DataFrame`: A DataFrame containing the simulation data with columns `obstimes`, `log_ww_conc`, `hosp`, `rt`, and `wt`.
 """
-function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
+function generate_simulation_data_ComModeForecasting(params::ComModeForecasting_sim_params)
     Random.seed!(params.seed)
     time_points = params.time_points
 

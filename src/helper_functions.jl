@@ -238,7 +238,7 @@ end
 """
     subset_desired_ode_from_gq(gq, desired_var::Regex)
 
-Subsets the generated quantities dataframe from the `uciwweihr_gq_pp` output to only include the desired variable.
+Subsets the generated quantities dataframe from the `ComModeForecasting_gq_pp` output to only include the desired variable.
 desired_var should be put in the following form : `r"I(\\[|\\])"` for example.
 """
 function subset_desired_ode_from_gq(gq, desired_var::Regex)
