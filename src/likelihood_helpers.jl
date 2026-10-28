@@ -236,7 +236,7 @@ function likelihood_helpers(
         E_init = exp(E_init_non_centered * params.E_init_sd + params.log_E_init_mean)
         I_init = exp(I_init_non_centered * params.I_init_sd + params.log_I_init_mean)
         H_init = exp(H_init_non_centered * params.H_init_sd + params.log_H_init_mean)
-        CH_init = H_init
+        CH_init = exp(CH_init_non_centered * params.CH_init_sd + params.log_CH_init_mean)
         # Parameters for compartments
         gamma = exp(gamma_non_centered * params.gamma_sd + params.log_gamma_mean)
         nu = exp(nu_non_centered * params.nu_sd + params.log_nu_mean)
@@ -283,13 +283,14 @@ function likelihood_helpers(
         H_comp_sol = clamp.(sol_array[3,1:end], 1, 1e10)
         CH_comp_sol = clamp.(sol_array[4,1:end], 1, 1e10)
         CH_comp_sol = vcat(0.0, CH_comp_sol)
-        CH_comp_sol_f_H_inc = CH_comp_sol[vcat([1], obstimes_hosp_prev .+ 1)] #TODO ask if should be prev or inc
+        CH_comp_sol_f_H_inc = CH_comp_sol[vcat([1], obstimes_hosp_inc .+ 1)]
+        #Prior - 0
         H_inc_comp_sol = CH_comp_sol_f_H_inc[2:end] .- CH_comp_sol_f_H_inc[1:(end-1)]
         full_log_genes_mean = log.(I_comp_sol) .+ log(rho_gene)
 
         log_W_means = full_log_genes_mean[obstimes_wastewater]
         H_prev_means = H_comp_sol[obstimes_hosp_prev]
-        H_inc_means = H_inc_comp_sol[obstimes_hosp_inc] #TODO: Ask about this part?
+        H_inc_means = H_inc_comp_sol[obstimes_hosp_inc]
 
         # Return --------------------------
         return (

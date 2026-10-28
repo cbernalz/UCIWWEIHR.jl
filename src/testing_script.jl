@@ -13,6 +13,7 @@ using Random
 using OrdinaryDiffEq
 using Logging
 using CSV
+using Dates
 using DataFrames
 using StatsBase
 using Plots
@@ -29,11 +30,15 @@ include("negativebinomial2.jl")
 include("uciwweihr_model.jl")
 include("helper_functions.jl")
 
+save_csv = false
+
 # Running simulation function with presets
 params = create_uciwweihr_sim_params(
-    time_points = 70
+    time_points = 90
 )
 df = generate_simulation_data_uciwweihr(params)
+
+#SAVE HERE AND USE FOR TIME INFORMATION
 
 # params_ext = create_uciwweihr_sim_params(
 #     time_points = 84
@@ -56,21 +61,21 @@ forecast_days = 14
 
 E_init_sd=0.2; log_E_init_mean=log(200)
 I_init_sd=0.2; log_I_init_mean=log(100)
-H_init_sd=0.2; log_H_init_mean=log(20)
-CH_init_sd=0.2; log_CH_init_mean=log(20)
+H_init_sd=0.2; log_H_init_mean=log(27) # Initial prevalence from df
+CH_init_sd=0.2; log_CH_init_mean=log(6) # Initial incidence from df
 gamma_sd=0.02; log_gamma_mean=log(1/4)
 nu_sd=0.02; log_nu_mean=log(1/7)
 epsilon_sd=0.02; log_epsilon_mean=log(1/5)
 rho_gene_sd=0.02; log_rho_gene_mean=log(0.011)
     
-sigma_ww_sd=0.02; log_sigma_ww_mean=log(0.1)
-sigma_hosp_prev_sd=0.01; log_sigma_hosp_prev_mean=log(500.0)
-sigma_hosp_inc_sd=0.01; log_sigma_hosp_inc_mean=log(500.0)
+sigma_ww_sd=0.02; log_sigma_ww_mean=log(0.2)
+sigma_hosp_prev_sd=0.01; log_sigma_hosp_prev_mean=log(350.0)
+sigma_hosp_inc_sd=0.01; log_sigma_hosp_inc_mean=log(350.0)
 
-Rt_init_sd=0.3; Rt_init_mean=0.2
-sigma_Rt_sd=0.2; sigma_Rt_mean=-3.0
+Rt_init_sd=0.3; Rt_init_mean=log(1.0)
+sigma_Rt_sd=0.2; sigma_Rt_mean=log(0.1)
 w_init_sd=0.04; w_init_mean=logit(0.35)
-sigma_w_sd=0.2; sigma_w_mean=-3.5
+sigma_w_sd=0.2; sigma_w_mean=log(0.001)
 message = true
 model_params = create_model_params_hosp_inc_prev(
     E_init_sd, log_E_init_mean,
@@ -143,6 +148,17 @@ model_output = generate_pq_pp(
     forecast=true, forecast_days=forecast_days
 )
 
-first(model_output[1][:,1:5], 5)
-first(model_output[2][:,1:5], 5)
-first(model_output[3][:,1:5], 5)
+if save_csv
+    suffix = ""
+    if priors_only
+        suffix = "priors_"
+    end
+    # CSV.write("simulated_data.csv", df)
+    CSV.write((suffix * "pp.csv"), model_output[1])
+    CSV.write((suffix * "gq.csv"), model_output[2])
+    CSV.write((suffix * "samples.csv"), model_output[3])
+end
+
+first(model_output[1][:,1:6], 5)
+first(model_output[2][:,1:6], 5)
+first(model_output[3][:,1:6], 5)
