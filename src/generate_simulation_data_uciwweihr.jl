@@ -143,6 +143,7 @@ Generates simulation data for the UCIWWEIHR ODE compartmental model.
 function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
     Random.seed!(params.seed)
     time_points = params.time_points
+    dates = collect((today() - Day(params.time_points - 1)):Day(1):today())
 
     # Preping weekly params
     alpha_t = params.Rt .* params.nu
@@ -177,6 +178,7 @@ function generate_simulation_data_uciwweihr(params::uciwweihr_sim_params)
 
     df = DataFrame(
         obstimes = 1:time_points,
+        dates = dates,
         log_ww_conc = data_wastewater,
         hosp = data_hosp,
         hosp_inc = data_hosp_inc,
