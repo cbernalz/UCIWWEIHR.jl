@@ -1,0 +1,1388 @@
+---
+title: "sdp_hosp_inc_prev_rmd"
+author: "Thomas Evans-Barton"
+date: "2026-10-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(patchwork)
+library(formattable)
+library(paletteer)
+library(sns) 
+library(scoringutils)
+```
+
+
+```{r}
+custom_theme = theme_bw() + 
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    plot.background = element_rect(fill = "whitesmoke"),
+    strip.background = element_blank(),
+    panel.border = element_rect(colour = "black", fill = NA),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    legend.text = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
+```
+
+
+```{r}
+raw_pp = read_csv(
+  here(
+    "pp.csv"
+  )
+)
+raw_gq =  read_csv(
+  here(
+    "gq.csv"
+  )
+)
+raw_samples =  read_csv(
+  here(
+    "samples.csv"
+  )
+)
+## Priors
+prior_pp = read_csv(
+  here(
+    "priors_pp.csv"
+  )
+)
+prior_gq =  read_csv(
+  here(
+    "priors_gq.csv"
+  )
+)
+prior_samples =  read_csv(
+  here(
+    "UCIMaterials/LabWork/VolodLab/UCIWWEIHR.jl/priors_samples.csv"
+  )
+)
+## Reading in data from path in preliminaries, ww is assumed to be included.
+df = read_csv(
+  here(
+    "UCIMaterials/LabWork/VolodLab/UCIWWEIHR.jl/simulated_data.csv"
+  )
+)
+```
+
+
+```{r}
+params_of_inter = c("E_init", "I_init", "H_init", "CH_init",
+                    "gamma", "nu", "epsilon", 
+                    "rho_gene", "sigma_ww", "sigma_hosp_prev", "sigma_hosp_inc")
+param_trace_plot = raw_gq %>%
+  pivot_longer(
+    cols = -c(chain, iteration)
+  ) %>%
+  filter(
+    name %in% params_of_inter
+  ) %>%
+  mutate(
+    name = factor(
+      name,
+      levels = params_of_inter
+    ),
+    chain = factor(chain)
+  ) %>%
+  ggplot(
+    aes(
+      x = iteration,
+      y = value,
+      color = chain
+    )
+  ) +
+  geom_line() +
+  scale_color_paletteer_d("fishualize::Acanthurus_coeruleus") +
+  facet_wrap(
+    .~name,
+    scales = "free"
+  ) +
+  labs(
+    y = "Sample",
+    x = "Iteration",
+    color = "Chain"
+  ) +
+  custom_theme +
+  theme(
+    axis.text.y = element_text()
+  )
+param_trace_plot
+```
+
+
+```{r}
+param_effective_samp_size = raw_gq %>%
+  pivot_longer(
+    cols = -c(chain, iteration)
+  ) %>%
+  filter(
+    name %in% params_of_inter
+  ) %>%
+  mutate(
+    Parameter = factor(
+      name,
+      levels = params_of_inter
+    ),
+    Chain = factor(chain)
+  ) %>%
+  select(-chain, -name) %>%
+  group_by(Chain, Parameter) %>%
+  summarise(
+    `Effective Sample Size` = ess(value)
+  ) %>%
+  formattable(
+    list(
+      `Effective Sample Size` = formatter(
+        "span", 
+        style = x ~ ifelse(
+          x > 200, #Generally arbitrary (trace plots reaching convergence) 
+          "color: green;", 
+          "color: red;"
+        )
+      )
+    )
+  )
+param_effective_samp_size
+```
+```{r}
+acf_plots = raw_gq %>%
+  pivot_longer(
+    cols = -c(chain, iteration)
+  ) %>%
+  filter(
+    name %in% params_of_inter
+  ) %>%
+  mutate(
+    name = factor(
+      name,
+      levels = params_of_inter
+    ),
+    chain = factor(chain)
+  ) %>%
+  group_by(chain, name) %>%
+  nest() %>%
+  mutate(
+    acf_result = map(data, ~ acf(.x$value, plot = FALSE)),
+    acf_data = map(acf_result, ~ data.frame(
+      lag = .$lag, 
+      acf = .$acf, 
+      ci = qnorm(0.975) / sqrt(.$n.used)
+    ))
+  ) %>%
+  unnest(acf_data) %>%
+  ungroup() %>%
+  ggplot(
+    aes(
+      x = lag, 
+      y = acf, 
+      color = chain
+    )
+  ) +
+  geom_hline(
+    yintercept = 0, 
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    yintercept = 0.1, 
+    linetype = "dashed",
+    color = "red"
+  ) +
+  geom_hline(
+    yintercept = -0.1,
+    linetype = "dashed",
+    color = "red"
+  ) +
+  geom_segment(
+    aes(
+      xend = lag, 
+      yend = 0
+    )
+  ) +
+  scale_color_paletteer_d("fishualize::Acanthurus_coeruleus") +
+  facet_wrap(
+    .~name, 
+    scales = "free_y"
+  ) +
+  labs(
+    x = "Lag", 
+    y = "ACF"
+  ) +
+  custom_theme +
+  theme(
+    axis.text.y = element_text(),
+  )
+acf_plots
+```
+```{r}
+gq = rbind(
+  raw_gq %>%
+    mutate(bayes = "Posterior"),
+  prior_gq %>%
+    mutate(bayes = "Prior")
+)
+params_of_inter = c("E_init", "I_init", "H_init", "CH_init",
+                    "gamma", "nu", "epsilon", 
+                    "rho_gene", "sigma_ww", "sigma_hosp_prev", "sigma_hosp_inc")
+hosp_ww_nt_plot = gq %>%
+  select(-chain, -iteration) %>%
+  pivot_longer(
+    cols = c(-bayes)
+  ) %>%
+  filter(
+    name %in% params_of_inter
+  ) %>%
+  mutate(
+    name = factor(
+      name,
+      levels = params_of_inter
+    )
+  ) %>%
+  ggplot(
+    aes(
+      x = value,
+      fill = bayes,
+      color = bayes
+    )
+  ) +
+  geom_density(
+    color = "black",
+    alpha = 0.6
+  ) +
+  geom_rug(
+    sides = "b"
+  ) +
+  scale_color_paletteer_d("fishualize::Acanthurus_coeruleus") +
+  scale_fill_paletteer_d("fishualize::Acanthurus_coeruleus") +
+  facet_wrap(
+    .~name,
+    scales = "free"
+  ) +
+  labs(
+    y = "Density",
+    x = "Parameter"
+  ) +
+  custom_theme
+hosp_ww_nt_plot
+```
+```{r}
+# temp <- gq %>%
+#   select(-iteration, -chain) %>%
+#   pivot_longer(
+#     cols = -bayes
+#   ) %>%
+#   filter(
+#     str_detect(name, "rt_vals") | str_detect(name, "w_t")
+#   ) %>%
+#   mutate(
+#     obstime = str_extract(
+#       name, 
+#       "(?<=\\[)\\d+(?=\\])"
+#     ),
+#     obstime = as.numeric(obstime),
+#     param = str_extract(name, "^[^\\[]+")
+#   ) %>% 
+#   select(
+#     bayes, obstime, param, value
+#   ) %>%
+#   group_by(bayes, obstime, param) %>%
+#   summarize(
+#     lower_50th = quantile(value, 0.25),
+#     lower_80th = quantile(value, 0.1),
+#     lower_95th = quantile(value, 0.025),
+#     upper_50th = quantile(value, 0.75),
+#     upper_80th = quantile(value, 0.9),
+#     upper_95th = quantile(value, 0.975),
+#     median = median(value)
+#   ) %>%
+#   slice(rep(row_number(), 7)) %>%
+#   arrange(
+#     obstime
+#   ) %>%
+#   filter(
+#     obstime != 1
+#   ) %>%
+#   ungroup() %>%
+#   group_by(bayes, param) %>%
+#   mutate(
+#     obstime = row_number(),
+#     param = case_when(
+#       param == "rt_vals" ~ "Effective Reproduction Number",
+#       param == "w_t" ~ "Hospitalization Probability"
+#     )
+#   ) %>%
+#   filter(
+#     obstime <= 89
+#   )
+# 
+# temp
+```
+
+
+```{r}
+gq %>%
+  select(-iteration, -chain) %>%
+  pivot_longer(
+    cols = -bayes
+  ) %>%
+  filter(
+    str_detect(name, "rt_vals") | str_detect(name, "w_t")
+  ) %>%
+  mutate(
+    obstime = str_extract(
+      name, 
+      "(?<=\\[)\\d+(?=\\])"
+    ),
+    obstime = as.numeric(obstime),
+    param = str_extract(name, "^[^\\[]+")
+  ) %>% 
+  select(
+    bayes, obstime, param, value
+  ) %>%
+  group_by(bayes, obstime, param) %>%
+  summarize(
+    lower_50th = quantile(value, 0.25),
+    lower_80th = quantile(value, 0.1),
+    lower_95th = quantile(value, 0.025),
+    upper_50th = quantile(value, 0.75),
+    upper_80th = quantile(value, 0.9),
+    upper_95th = quantile(value, 0.975),
+    median = median(value)
+  ) %>%
+  slice(rep(row_number(), 7)) %>%
+  arrange(
+    obstime
+  ) %>%
+  filter(
+    obstime != 1
+  ) %>%
+  ungroup() %>%
+  group_by(bayes, param) %>%
+  mutate(
+    obstime = row_number(),
+    param = case_when(
+      param == "rt_vals" ~ "Effective Reproduction Number",
+      param == "w_t" ~ "Hospitalization Probability"
+    )
+  ) %>%
+  filter(
+    obstime <= 89
+  ) %>%
+  ggplot() +
+  geom_hline(
+    aes(yintercept = ifelse(param == "Effective Reproduction Number", 1, NA)),
+    color = "red",
+    linetype = "dashed"
+  ) +
+  geom_ribbon(
+    aes(
+      x = obstime,
+      ymin = lower_95th,
+      ymax = upper_95th,
+      fill = bayes
+    ),
+    alpha = 0.3
+  ) +
+  geom_line(
+    data = df %>%
+      mutate(param = "Effective Reproduction Number") %>%
+      filter(obstimes <= 89),
+    aes(
+      x = obstimes,
+      y = rt,
+      color = " "
+    )
+  ) +
+  geom_hline(
+    aes(
+      yintercept = ifelse(param == "Hospitalization Probability", .35, NA),
+      color = "red",
+      linetype="dashed"
+    )
+  ) +
+  geom_ribbon(
+    aes(
+      x = obstime,
+      ymin = lower_95th,
+      ymax = upper_95th,
+      fill = bayes
+    ),
+    alpha = 0.3
+  ) +
+  geom_line(
+    data = df %>%
+      mutate(param = "Hospitalization Probability") %>%
+      filter(obstimes <= 89),
+    aes(
+      x = obstimes,
+      y = wt,
+      color = " "
+    )
+  ) +
+  scale_color_manual(
+    breaks = c(" "),
+    values = c("black")
+  ) +
+  scale_fill_paletteer_d("fishualize::Acanthurus_coeruleus") +
+  facet_wrap(
+    param~.,
+    scales = "free",
+    ncol = 1
+  ) +
+  labs(
+    y = "Time-varying Parameter",
+    x = "Time",
+    fill = "Distribution Type - 95th QI",
+    color = "Obs Data"
+  ) +
+  custom_theme +
+  theme(axis.text.y = element_text())
+```
+
+```{r}
+prepped_pp = raw_pp %>%
+  select(-iteration, -chain) %>%
+  pivot_longer(
+    everything()
+  ) %>%
+  filter(
+    str_detect(name, "data_wastewater") | str_detect(name, "data_hosp_prev") | str_detect(name, "data_hosp_inc")
+  ) %>%
+  mutate(
+    obstime = str_extract(
+      name, 
+      "(?<=\\[)\\d+(?=\\])"
+    ),
+    obstime = as.numeric(obstime),
+    param = str_extract(name, "^[^\\[]+")
+  ) %>%
+  select(-name) %>%
+  group_by(obstime, param) %>%
+  summarize(
+    lower_50th = quantile(value, 0.25),
+    lower_80th = quantile(value, 0.1),
+    lower_95th = quantile(value, 0.025),
+    upper_50th = quantile(value, 0.75),
+    upper_80th = quantile(value, 0.9),
+    upper_95th = quantile(value, 0.975),
+    median = median(value)
+  ) %>%
+  arrange(
+    as.numeric(obstime)
+  )
+
+# hosp plot
+hosp_pp_prev_plot = ggplot() +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_hosp_prev"),
+    aes(
+      x = obstime,
+      ymin = lower_50th,
+      ymax = upper_50th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.35
+  ) +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_hosp_prev"),
+    aes(
+      x = obstime,
+      ymin = lower_80th,
+      ymax = upper_80th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.25,
+  ) +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_hosp_prev"),
+    aes(
+      x = obstime,
+      ymin = lower_95th,
+      ymax = upper_95th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.1
+  ) +
+  geom_line(
+    data = prepped_pp %>% filter(param == "data_hosp_prev"),
+    aes(
+      x = obstime,
+      y = median,
+    ),
+    color = "dodgerblue"
+  ) +
+  geom_line(
+    data = df,
+    aes(
+      x = obstimes,
+      y = hosp,
+      #color = period
+    ),
+    linetype = "dashed"
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = obstimes,
+      y = hosp,
+      #shape = period,
+      #color = period
+    ),
+    size = 2.5
+  ) +
+  scale_color_manual(
+    breaks = c("Fit", "Eval"),
+    values = c("black", "red")
+  ) +
+  scale_shape_manual(
+    breaks = c("Fit", "Eval"),
+    values = c(16, 1)
+  ) +
+  expand_limits(
+    y = 0
+  ) +
+  labs(
+    y = "Hospitalization Prevalence",
+    x = "Time",
+    #shape = "Period",
+    #color = "Period"
+  ) +
+  custom_theme +
+  theme(axis.text.y = element_text())
+
+# hosp plot
+hosp_pp_inc_plot = ggplot() +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_hosp_inc"),
+    aes(
+      x = obstime,
+      ymin = lower_50th,
+      ymax = upper_50th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.35
+  ) +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_hosp_inc"),
+    aes(
+      x = obstime,
+      ymin = lower_80th,
+      ymax = upper_80th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.25,
+  ) +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_hosp_inc"),
+    aes(
+      x = obstime,
+      ymin = lower_95th,
+      ymax = upper_95th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.1
+  ) +
+  geom_line(
+    data = prepped_pp %>% filter(param == "data_hosp_inc"),
+    aes(
+      x = obstime,
+      y = median,
+    ),
+    color = "dodgerblue"
+  ) +
+  geom_line(
+    data = df,
+    aes(
+      x = obstimes,
+      y = hosp_inc,
+      #color = period
+    ),
+    linetype = "dashed"
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = obstimes,
+      y = hosp_inc,
+      #shape = period,
+      #color = period
+    ),
+    size = 2.5
+  ) +
+  scale_color_manual(
+    breaks = c("Fit", "Eval"),
+    values = c("black", "red")
+  ) +
+  scale_shape_manual(
+    breaks = c("Fit", "Eval"),
+    values = c(16, 1)
+  ) +
+  expand_limits(
+    y = 0
+  ) +
+  labs(
+    y = "Hospitalization Incidence",
+    x = "Time",
+    #shape = "Period",
+    #color = "Period"
+  ) +
+  custom_theme +
+  theme(axis.text.y = element_text())
+
+# ww plot
+ww_pp_plot = ggplot() +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_wastewater"),
+    aes(
+      x = obstime,
+      ymin = lower_50th,
+      ymax = upper_50th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.35
+  ) +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_wastewater"),
+    aes(
+      x = obstime,
+      ymin = lower_80th,
+      ymax = upper_80th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.25,
+  ) +
+  geom_ribbon(
+    data = prepped_pp %>% filter(param == "data_wastewater"),
+    aes(
+      x = obstime,
+      ymin = lower_95th,
+      ymax = upper_95th
+    ),
+    fill = "dodgerblue",
+    alpha = 0.1
+  ) +
+  geom_line(
+    data = prepped_pp %>% filter(param == "data_wastewater"),
+    aes(
+      x = obstime,
+      y = median,
+    ),
+    color = "dodgerblue"
+  ) +
+  geom_line(
+    data = df,
+    aes(
+      x = obstimes,
+      y = log_ww_conc,
+      #color = period
+    ),
+    linetype = "dashed"
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = obstimes,
+      y = log_ww_conc,
+      #shape = period,
+      #color = period
+    ),
+    size = 2.5
+  ) +
+  scale_color_manual(
+    breaks = c("Fit", "Eval"),
+    values = c("black", "red")
+  ) +
+  scale_shape_manual(
+    breaks = c("Fit", "Eval"),
+    values = c(16, 1)
+  ) +
+  expand_limits(
+    y = 0
+  ) +
+  labs(
+    y = "Log Conc",
+    x = "Time",
+    #shape = "Period",
+    #color = "Period"
+  ) +
+  custom_theme +
+  theme(axis.text.y = element_text())
+
+ww_pp_plot / hosp_pp_prev_plot / hosp_pp_inc_plot  + 
+  plot_layout(
+    guides = "collect",
+    axes = "collect"
+  ) &
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r}
+gq$bayes
+```
+
+
+```{r}
+subset_ode_df = gq %>%
+  filter(
+    bayes == "Posterior"
+  ) %>%
+  select(-iteration, -chain, -bayes) %>%
+  pivot_longer(
+    everything()
+  ) %>%
+  filter(
+    str_detect(name, "^I\\[\\d+\\]$") | 
+      str_detect(name, "^E\\[\\d+\\]$") | 
+      str_detect(name, "^H\\[\\d+\\]$")
+  ) %>%
+  mutate(
+    obstime = str_extract(name, "(?<=\\[)\\d+(?=\\])"),
+    obstime = as.numeric(obstime),
+    ode_curve = str_extract(name, "^[^\\[]+")
+  ) %>%
+  select(-name) %>%
+  group_by(obstime, ode_curve) %>%
+  summarize(
+    lower_50th = quantile(value, 0.25),
+    lower_80th = quantile(value, 0.1),
+    lower_95th = quantile(value, 0.025),
+    upper_50th = quantile(value, 0.75),
+    upper_80th = quantile(value, 0.9),
+    upper_95th = quantile(value, 0.975),
+    median = median(value)
+  ) %>%
+  arrange(
+    as.numeric(obstime)
+  ) %>%
+  mutate(
+    model = "EIHR-h-ww"
+  )
+subset_ode_df
+```
+
+
+```{r}
+## Latent Curves - ODE Solutions
+subset_ode_df = gq %>%
+  filter(
+    bayes == "Posterior"
+  ) %>%
+  select(-iteration, -chain, -bayes) %>%
+  pivot_longer(
+    everything()
+  ) %>%
+  filter(
+    str_detect(name, "^I\\[\\d+\\]$") | 
+      str_detect(name, "^E\\[\\d+\\]$") | 
+      str_detect(name, "^H\\[\\d+\\]$")
+  ) %>%
+  mutate(
+    obstime = str_extract(name, "(?<=\\[)\\d+(?=\\])"),
+    obstime = as.numeric(obstime),
+    ode_curve = str_extract(name, "^[^\\[]+")
+  ) %>%
+  select(-name) %>%
+  group_by(obstime, ode_curve) %>%
+  summarize(
+    lower_50th = quantile(value, 0.25),
+    lower_80th = quantile(value, 0.1),
+    lower_95th = quantile(value, 0.025),
+    upper_50th = quantile(value, 0.75),
+    upper_80th = quantile(value, 0.9),
+    upper_95th = quantile(value, 0.975),
+    median = median(value)
+  ) %>%
+  arrange(
+    as.numeric(obstime)
+  ) %>%
+  mutate(
+    model = "EIHR-h-ww"
+  )%>%
+  group_by(ode_curve, model) %>%
+  mutate(
+    date = c(
+      df$dates[1:83],
+      seq.Date(
+        from = as.Date("2026-10-22"), 
+        to = as.Date("2026-11-11"), 
+        by = "day"
+      )
+    )
+  )
+
+ode_plot = ggplot(subset_ode_df) +
+  geom_ribbon(
+    aes(
+      x = date,
+      ymin = lower_50th,
+      ymax = upper_50th,
+      fill = model
+    ),
+    alpha = 0.35
+  ) +
+  geom_ribbon(
+    aes(
+      x = date,
+      ymin = lower_80th,
+      ymax = upper_80th,
+      fill = model
+    ),
+    alpha = 0.25,
+  ) +
+  geom_ribbon(
+    aes(
+      x = date,
+      ymin = lower_95th,
+      ymax = upper_95th,
+      fill = model
+    ),
+    alpha = 0.1
+  ) +
+  geom_line(
+    aes(
+      x = date,
+      y = median,
+      color = model
+    ),
+  ) +
+  # geom_vline(
+  #   xintercept = as.Date("2025-02-26"),
+  #   linetype = "dashed"
+  # ) +
+  scale_x_date( 
+    date_breaks = "1 month", 
+    date_labels =  "%b %Y"
+  ) +
+  scale_fill_manual(
+    breaks = c("EIHR-h-ww", "EIHR-h"),
+    values = c("dodgerblue", "salmon")
+  ) +
+  scale_color_manual(
+    breaks = c("EIHR-h-ww", "EIHR-h"),
+    values = c("dodgerblue", "salmon")
+  ) +
+  facet_wrap(
+    ode_curve~.,
+    scales = "free"
+  ) +
+  expand_limits(
+    y = 0
+  ) +
+  labs(
+    title = "ODE Cruves for E, I, H Compartments",
+    y = "Compartment Count",
+    x = "Date",
+    fill = "Model",
+    color = "Model"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1),
+    #axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    #plot.background = element_rect(fill = "whitesmoke"),
+    strip.background = element_blank(),
+    panel.border = element_rect(colour = "black", fill = NA),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    legend.text = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    text = element_text(size = 18)
+  )
+ode_plot
+```
+
+
+
+```{r}
+# temp = raw_pp %>%
+#   select(-iteration, -chain) %>%
+#   pivot_longer(
+#     everything()
+#   ) %>%
+#   filter(
+#     str_detect(name, "data_wastewater")
+#   ) %>%
+#   mutate(
+#     obstime = str_extract(
+#       name, 
+#       "(?<=\\[)\\d+(?=\\])"
+#     ),
+#     obstime = as.numeric(obstime)
+#   ) %>%
+#   select(
+#     -name
+#   ) %>%
+#   group_by(
+#     obstime
+#   ) %>%
+#   summarize(
+#     lower_50th = quantile(value, 0.25),
+#     lower_80th = quantile(value, 0.1),
+#     lower_95th = quantile(value, 0.025),
+#     upper_50th = quantile(value, 0.75),
+#     upper_80th = quantile(value, 0.9),
+#     upper_95th = quantile(value, 0.975),
+#     median = median(value)
+#   ) %>%
+#   arrange(
+#     as.numeric(obstime)
+#   ) %>%
+#   mutate(
+#     date = c(
+#       df$dates[1:83],
+#       seq.Date(
+#         from = as.Date("2026-10-22"), 
+#         to = as.Date("2026-11-11"), 
+#         by = "day"
+#       )
+#     ),
+#     model = "EIHR-inc-prev-ww"
+#   ) 
+# temp[c("date", "lower_95th", "upper_95th")]
+```
+
+
+```{r}
+## Posterior Predictives - Wastewater
+ww_pp_plot = raw_pp %>%
+  select(-iteration, -chain) %>%
+  pivot_longer(
+    everything()
+  ) %>%
+  filter(
+    str_detect(name, "data_wastewater")
+  ) %>%
+  mutate(
+    obstime = str_extract(
+      name, 
+      "(?<=\\[)\\d+(?=\\])"
+    ),
+    obstime = as.numeric(obstime)
+  ) %>%
+  select(
+    -name
+  ) %>%
+  group_by(
+    obstime
+  ) %>%
+  summarize(
+    lower_50th = quantile(value, 0.25),
+    lower_80th = quantile(value, 0.1),
+    lower_95th = quantile(value, 0.025),
+    upper_50th = quantile(value, 0.75),
+    upper_80th = quantile(value, 0.9),
+    upper_95th = quantile(value, 0.975),
+    median = median(value)
+  ) %>%
+  arrange(
+    as.numeric(obstime)
+  ) %>%
+  mutate(
+    date = c(
+      df$dates[1:83],
+      seq.Date(
+        from = as.Date("2026-10-22"), 
+        to = as.Date("2026-11-11"), 
+        by = "day"
+      )
+    ),
+    model = "EIHR-inc-prev-ww"
+  ) %>%
+  ggplot() +
+  geom_ribbon(
+    aes(
+      x = date,
+      ymin = lower_95th,
+      ymax = upper_95th,
+      fill = model
+    ),
+    alpha = 0.3
+  ) +
+  geom_line(
+    aes(
+      x = date,
+      y = median,
+      color = model
+    ),
+  ) +
+  geom_line(
+    data = df,
+    aes(
+      x = dates,
+      y = log_ww_conc
+    ),
+    color = "black"
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = dates,
+      y = log_ww_conc,
+      shape = "Fit"
+    ),
+    color = "black",
+    size = 2.5
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = dates,
+      y = log_ww_conc,
+      shape = "Fit"
+    ),
+    color = "red",
+    size = 2.5
+  ) +
+  # geom_vline(
+  #   xintercept = as.Date("2026-10-06"),
+  #   linetype = "dashed"
+  # ) +
+  scale_x_date( 
+    date_breaks = "1 month", 
+    date_labels =  "%b %Y"
+  ) +
+  scale_fill_manual(
+    breaks = c("EIHR-inc-prev-ww"),
+    values = c("dodgerblue")
+  ) +
+  scale_color_manual(
+    breaks = c("EIHR-inc-prev-ww"),
+    values = c("dodgerblue")
+  ) +
+  # scale_shape_manual(
+  #   breaks = c("Fit", "Forecast"),
+  #   values = c(16, 1)
+  # ) +
+  labs(
+    title = "Viral RNA Conc.",
+    y = "Log Conc",
+    x = "Date",
+    fill = "Model",
+    color = "Model",
+    shape = "Period"
+  ) +
+  theme_bw() +
+  theme(
+    #axis.text.x = element_text(angle = 45, hjust=1),
+    #axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    #plot.background = element_rect(fill = "whitesmoke"),
+    strip.background = element_blank(),
+    panel.border = element_rect(colour = "black", fill = NA),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    legend.text = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    text = element_text(size = 18)
+  )
+ww_pp_plot
+```
+
+
+```{r}
+## Posterior Predictives - Hospitalization Prevalence
+hosp_prev_plot = raw_pp %>%
+  select(-iteration, -chain) %>%
+  pivot_longer(
+    everything()
+  ) %>%
+  filter(
+    str_detect(name, "data_hosp_prev")
+  ) %>%
+  mutate(
+    obstime = str_extract(
+      name, 
+      "(?<=\\[)\\d+(?=\\])"
+    ),
+    obstime = as.numeric(obstime)
+  ) %>%
+  select(
+    -name
+  ) %>%
+  group_by(
+    obstime
+  ) %>%
+  summarize(
+    lower_50th = quantile(value, 0.25),
+    lower_80th = quantile(value, 0.1),
+    lower_95th = quantile(value, 0.025),
+    upper_50th = quantile(value, 0.75),
+    upper_80th = quantile(value, 0.9),
+    upper_95th = quantile(value, 0.975),
+    median = median(value)
+  ) %>%
+  arrange(
+    as.numeric(obstime)
+  ) %>%
+  mutate(
+    date = c(
+      df$dates[1:83],
+      seq.Date(
+        from = as.Date("2026-10-22"), 
+        to = as.Date("2026-11-11"), 
+        by = "day"
+      )
+    ),
+    model = "EIHR-inc-prev-ww"
+  ) %>%
+  ggplot() +
+  geom_ribbon(
+    aes(
+      x = date,
+      ymin = lower_95th,
+      ymax = upper_95th,
+      fill = model
+    ),
+    alpha = 0.3
+  ) +
+  geom_line(
+    aes(
+      x = date,
+      y = median,
+      color = model
+    ),
+  ) +
+  geom_line(
+    data = df,
+    aes(
+      x = dates,
+      y = hosp
+    ),
+    color = "black"
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = dates,
+      y = hosp,
+      shape = "Fit"
+    ),
+    color = "black",
+    size = 2.5
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = dates,
+      y = hosp,
+      shape = "Fit"
+    ),
+    color = "red",
+    size = 2.5
+  ) +
+  # geom_vline(
+  #   xintercept = as.Date("2026-10-06"),
+  #   linetype = "dashed"
+  # ) +
+  scale_x_date( 
+    date_breaks = "1 month", 
+    date_labels =  "%b %Y"
+  ) +
+  scale_fill_manual(
+    breaks = c("EIHR-inc-prev-ww"),
+    values = c("dodgerblue")
+  ) +
+  scale_color_manual(
+    breaks = c("EIHR-inc-prev-ww"),
+    values = c("dodgerblue")
+  ) +
+  labs(
+    title = "Hospitalization Prevalence",
+    y = "Prevalence",
+    x = "Date",
+    fill = "Model",
+    color = "Model",
+    shape = "Period"
+  ) +
+  theme_bw() +
+  theme(
+    #axis.text.x = element_text(angle = 45, hjust=1),
+    #axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    #plot.background = element_rect(fill = "whitesmoke"),
+    strip.background = element_blank(),
+    panel.border = element_rect(colour = "black", fill = NA),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    legend.text = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    text = element_text(size = 18)
+  )
+hosp_prev_plot
+```
+
+
+```{r}
+df
+```
+
+```{r}
+raw_pp
+```
+
+
+```{r}
+## Posterior Predictives - Hospitalization Incidence
+hosp_inc_plot = raw_pp %>%
+  select(-iteration, -chain) %>%
+  pivot_longer(
+    everything()
+  ) %>%
+  filter(
+    str_detect(name, "data_hosp_inc")
+  ) %>%
+  mutate(
+    obstime = str_extract(
+      name, 
+      "(?<=\\[)\\d+(?=\\])"
+    ),
+    obstime = as.numeric(obstime)
+  ) %>%
+  select(
+    -name
+  ) %>%
+  group_by(
+    obstime
+  ) %>%
+  summarize(
+    lower_50th = quantile(value, 0.25),
+    lower_80th = quantile(value, 0.1),
+    lower_95th = quantile(value, 0.025),
+    upper_50th = quantile(value, 0.75),
+    upper_80th = quantile(value, 0.9),
+    upper_95th = quantile(value, 0.975),
+    median = median(value)
+  ) %>%
+  arrange(
+    as.numeric(obstime)
+  ) %>%
+  mutate(
+    date = c(
+      df$dates[1:83],
+      seq.Date(
+        from = as.Date("2026-10-22"), 
+        to = as.Date("2026-11-11"), 
+        by = "day"
+      )
+    ),
+    model = "EIHR-inc-prev-ww"
+  ) %>%
+  ggplot() +
+  geom_ribbon(
+    aes(
+      x = date,
+      ymin = lower_95th,
+      ymax = upper_95th,
+      fill = model
+    ),
+    alpha = 0.3
+  ) +
+  geom_line(
+    aes(
+      x = date,
+      y = median,
+      color = model
+    ),
+  ) +
+  geom_line(
+    data = df,
+    aes(
+      x = dates,
+      y = hosp_inc
+    ),
+    color = "black"
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = dates,
+      y = hosp_inc,
+      shape = "Fit"
+    ),
+    color = "black",
+    size = 2.5
+  ) +
+  geom_point(
+    data = df,
+    aes(
+      x = dates,
+      y = hosp_inc,
+      shape = "Fit"
+    ),
+    color = "red",
+    size = 2.5
+  ) +
+  # geom_vline(
+  #   xintercept = as.Date("2026-10-06"),
+  #   linetype = "dashed"
+  # ) +
+  scale_x_date( 
+    date_breaks = "1 month", 
+    date_labels =  "%b %Y"
+  ) +
+  scale_fill_manual(
+    breaks = c("EIHR-inc-prev-ww"),
+    values = c("dodgerblue")
+  ) +
+  scale_color_manual(
+    breaks = c("EIHR-inc-prev-ww"),
+    values = c("dodgerblue")
+  ) +
+  labs(
+    title = "Hospitalization Incidence",
+    y = "Incidence",
+    x = "Date",
+    fill = "Model",
+    color = "Model",
+    shape = "Period"
+  ) +
+  theme_bw() +
+  theme(
+    #axis.text.x = element_text(angle = 45, hjust=1),
+    #axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    #plot.background = element_rect(fill = "whitesmoke"),
+    strip.background = element_blank(),
+    panel.border = element_rect(colour = "black", fill = NA),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    legend.text = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    text = element_text(size = 18)
+  )
+hosp_inc_plot
+```
+

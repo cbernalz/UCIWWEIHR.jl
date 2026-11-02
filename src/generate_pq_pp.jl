@@ -189,7 +189,7 @@ function generate_pq_pp(
     obstimes = sort(obstimes)
     
     if forecast
-        last_value = max(obstimes_hosp_prev[end], obstimes_hosp_inc[end]) #TODO: Changed this to add end because threw no method matching +(::Vector{Int64}, ::Int64)
+        last_value = max(obstimes_hosp_prev[end], obstimes_hosp_inc[end]) #TODO: Recheck this later
         if weekly_bool
             obstimes_hosp_prev = vcat(obstimes_hosp_prev,(last_value+7):7:(last_value+forecast_days))
             obstimes_hosp_inc = vcat(obstimes_hosp_inc,(last_value+7):7:(last_value+forecast_days))
