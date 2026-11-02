@@ -50,7 +50,7 @@ obstimes_wastewater = df.obstimes
 max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
 param_change_times = 1:7:max_obstime # Change every week
 priors_only = false
-n_samples = 50
+n_samples = 25
 forecast = false
 forecast_days = 0
 
@@ -70,7 +70,7 @@ sigma_Rt_sd=0.2; sigma_Rt_mean=-3.0
 w_init_sd=0.04; w_init_mean=logit(0.35)
 sigma_w_sd=0.2; sigma_w_mean=-3.5
 message = true
-model_params = create_model_params_time_var_hosp_prev(
+model_params = create_ComModeForecasting_model_params_time_var_hosp_prev(
     E_init_sd, log_E_init_mean,
     I_init_sd, log_I_init_mean,
     H_init_sd, log_H_init_mean,
