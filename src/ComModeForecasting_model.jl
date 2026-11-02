@@ -1,5 +1,5 @@
 """
-    uciwweihr_model(...)
+    ComModeForecasting_model(...)
 This is the bayesian semi-parametric model for the wastewater EIHR compartmental model.  
 The defaults for this fuction will follow those of the default simulation in generate_simulation_data_ww_eihr.jl function.
 
@@ -13,7 +13,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 - `return_bool`: A boolean to indicate if the model is to use the return statement.  **Only set to false if only forecast is desired**
 
 """
-@model function uciwweihr_model(
+@model function ComModeForecasting_model(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
@@ -84,7 +84,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 
 
 
-@model function uciwweihr_model(
+@model function ComModeForecasting_model(
     data_hosp,
     data_wastewater,
     obstimes_hosp,
@@ -153,7 +153,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     end
 
 
-@model function uciwweihr_model(
+@model function ComModeForecasting_model(
     data_hosp_prev,
     data_hosp_inc,
     data_wastewater,
@@ -232,7 +232,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 
 
 
-@model function uciwweihr_model(
+@model function ComModeForecasting_model(
     data_hosp,
     obstimes_hosp,
     param_change_times,
@@ -293,7 +293,7 @@ The defaults for this fuction will follow those of the default simulation in gen
     end
 
 
-@model function uciwweihr_model(
+@model function ComModeForecasting_model(
     data_hosp,
     obstimes_hosp,
     param_change_times,

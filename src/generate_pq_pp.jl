@@ -1,9 +1,9 @@
-# GQ & PP UCIWWEIHR model
+# GQ & PP ComModeForecasting model
 # -------------------------------------------------
 """
     generate_pq_pp(...)
-This generates quantities and a posterior predictive distribution for the bayesian semi-parametric model for the wastewater EIHR compartmental model.
-The defaults for this fuction will follow those of the default simulation in generate_simulation_data_ww_eihr.jl function.
+This generates quantities and a posterior predictive distribution for the bayesian semi-parametric model for the ComModeForecasting wastewater EIHR compartmental model.
+The defaults for this fuction will follow those of the default simulation in generate_simulation_data_ComModeForecasting.jl function.
 
 # Arguments
 - `samples`: Samples from the posterior/prior distribution.
@@ -12,7 +12,7 @@ The defaults for this fuction will follow those of the default simulation in gen
 - `obstimes`: An array of timepoints for observed hosp/wastewater.
 - `param_change_times`: An array of timepoints where the parameters change.
 - `seed::Int64=2024`: Seed for the random number generator.
-- `params::uciwweihr_model_params`: A struct containing parameters for the model.
+- `params::ComModeForecasting_model_params`: A struct containing parameters for the model.
 - `forecast::Bool=false`: A boolean to indicate if forecasting is to be done.
 - `forecast_weeks::Int64=4`: Number of weeks to forecast.
 - `return_bool::Bool=true`: A boolean to indicate if the model is to use the return statement.  **Only set to false if only forecast is desired**
@@ -34,7 +34,7 @@ function generate_pq_pp(
     weekly_bool::Bool=false
 )
 ## prevalence model
-    println("Generating quantities using uciwweihr_model with wastewater and time-varying hospitalization probability - Prevalence Model!!!")
+    println("Generating quantities using ComModeForecasting_model with wastewater and time-varying hospitalization probability - Prevalence Model!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
@@ -59,7 +59,7 @@ function generate_pq_pp(
         missing_data_hosp = repeat([missing], length(data_hosp))
     end
 
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         data_wastewater,
         obstimes_hosp,
@@ -67,7 +67,7 @@ function generate_pq_pp(
         param_change_times,
         params;
     )
-    my_model_forecast_missing = uciwweihr_model(
+    my_model_forecast_missing = ComModeForecasting_model(
         missing_data_hosp,
         missing_data_ww,
         obstimes_hosp,
@@ -107,7 +107,7 @@ function generate_pq_pp(
     weekly_bool::Bool=false
 )
     ## incidence model
-    println("Generating quantities using uciwweihr_model with wastewater and time-varying hospitalization probability - Incidence Model!!!")
+    println("Generating quantities using ComModeForecasting_model with wastewater and time-varying hospitalization probability - Incidence Model!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
@@ -132,7 +132,7 @@ function generate_pq_pp(
         missing_data_hosp = repeat([missing], length(data_hosp))
     end
 
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         data_wastewater,
         obstimes_hosp,
@@ -140,7 +140,7 @@ function generate_pq_pp(
         param_change_times,
         params;
     )
-    my_model_forecast_missing = uciwweihr_model(
+    my_model_forecast_missing = ComModeForecasting_model(
         missing_data_hosp,
         missing_data_ww,
         obstimes_hosp,
@@ -180,7 +180,7 @@ function generate_pq_pp(
     weekly_bool::Bool=false
 )
 ## prevalence model
-    println("Generating quantities using uciwweihr_model with wastewater and time-varying hospitalization probability - Incidence and Prevalence Model!!!")
+    println("Generating quantities using ComModeForecasting_model with wastewater and time-varying hospitalization probability - Incidence and Prevalence Model!!!")
     obstimes_hosp_prev = convert(Vector{Int64}, obstimes_hosp_prev)
     obstimes_hosp_inc = convert(Vector{Int64}, obstimes_hosp_inc)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
@@ -211,7 +211,7 @@ function generate_pq_pp(
         missing_data_hosp_inc = repeat([missing], length(data_hosp_inc))
     end
 
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp_prev,
         data_hosp_inc,
         data_wastewater,
@@ -221,7 +221,7 @@ function generate_pq_pp(
         param_change_times,
         params;
     )
-    my_model_forecast_missing = uciwweihr_model(
+    my_model_forecast_missing = ComModeForecasting_model(
         missing_data_hosp_prev,
         missing_data_hosp_inc,
         missing_data_ww,
@@ -260,7 +260,7 @@ function generate_pq_pp(
     weekly_bool::Bool=false
 )
     ## incidence model
-    println("Generating quantities using uciwweihr_model w/out wastewater and nontime-varying hospitalization probability - Incidence Model!!!")
+    println("Generating quantities using ComModeForecasting_model w/out wastewater and nontime-varying hospitalization probability - Incidence Model!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     obstimes = unique(vcat(obstimes_hosp))
@@ -279,13 +279,13 @@ function generate_pq_pp(
         missing_data_hosp = repeat([missing], length(data_hosp))
     end
 
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         obstimes_hosp,
         param_change_times,
         params;
     )
-    my_model_forecast_missing = uciwweihr_model(
+    my_model_forecast_missing = ComModeForecasting_model(
         missing_data_hosp,
         obstimes_hosp,
         param_change_times,
@@ -319,7 +319,7 @@ function generate_pq_pp(
     seed::Int64=2024,
     forecast::Bool=false, forecast_days::Int64=14
 )
-    println("Generating quantities using uciwweihr_model w/out wastewater and non-time varying hospitalization probability!!!")
+    println("Generating quantities using ComModeForecasting_model w/out wastewater and non-time varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     
@@ -332,13 +332,13 @@ function generate_pq_pp(
         missing_data_hosp = repeat([missing], length(data_hosp))
     end
 
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         obstimes_hosp,
         param_change_times,
         params;
     )
-    my_model_forecast_missing = uciwweihr_model(
+    my_model_forecast_missing = ComModeForecasting_model(
         missing_data_hosp,
         obstimes_hosp,
         param_change_times,

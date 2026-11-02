@@ -85,12 +85,12 @@ function optimize_many_MAP2_wrapper(
     warning_bool=true
 )
 # prevalence model
-    println("Optimizing initializations for uciwweihr_model with wastewater and time-varying hospitalization probability - Prevalence Model!!!")
+    println("Optimizing initializations for ComModeForecasting_model with wastewater and time-varying hospitalization probability - Prevalence Model!!!")
     ## model with wastewater and time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         data_wastewater,
         obstimes_hosp,
@@ -116,12 +116,12 @@ function optimize_many_MAP2_wrapper(
     warning_bool=true
 )
 # incidence model
-    println("Optimizing initializations for uciwweihr_model with wastewater and time-varying hospitalization probability - Incidence Model!!!")
+    println("Optimizing initializations for ComModeForecasting_model with wastewater and time-varying hospitalization probability - Incidence Model!!!")
     ## model with wastewater and time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         data_wastewater,
         obstimes_hosp,
@@ -148,13 +148,13 @@ function optimize_many_MAP2_wrapper(
     warning_bool=true
 )
 # prevalence model
-    println("Optimizing initializations for uciwweihr_model with wastewater and time-varying hospitalization probability - Incidence and Prevalence Model!!!")
+    println("Optimizing initializations for ComModeForecasting_model with wastewater and time-varying hospitalization probability - Incidence and Prevalence Model!!!")
     ## model with wastewater and time-varying hospitalization probability
     obstimes_hosp_prev = convert(Vector{Int64}, obstimes_hosp_prev)
     obstimes_hosp_inc = convert(Vector{Int64}, obstimes_hosp_inc)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp_prev,
         data_hosp_inc,
         data_wastewater,
@@ -180,11 +180,11 @@ function optimize_many_MAP2_wrapper(
     warning_bool=true
 )
 # incidence model
-    println("Optimizing initializations for uciwweihr_model w/out wastewater and nontime-varying hospitalization probability - Incidence Model!!!")
+    println("Optimizing initializations for ComModeForecasting_model w/out wastewater and nontime-varying hospitalization probability - Incidence Model!!!")
     ## model with wastewater and time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         obstimes_hosp,
         param_change_times,
@@ -206,11 +206,11 @@ function optimize_many_MAP2_wrapper(
     warning_bool=true
 )
 
-    println("Optimizing initializations for uciwweihr_model without wastewater and nontime-varying hospitalization probability!!!")
+    println("Optimizing initializations for ComModeForecasting_model without wastewater and nontime-varying hospitalization probability!!!")
     ## model without wastewater and without time-varying hospitalization probability
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         obstimes_hosp,
         param_change_times,

@@ -1,8 +1,8 @@
-# Fitting UCIWWEIHR model
+# Fitting ComModeForecasting model
 # -------------------------------------------------
 """
     fit(...)
-This is the sampler for the bayesian semi-parametric model for the wastewater EIHR compartmental model.  
+This is the sampler for the bayesian semi-parametric model for the ComModeForecasting ODE compartmental model.
 The defaults for this fuction will follow those of the default simulation in generate_simulation_data_ww_eihr.jl function.
 
 # Arguments
@@ -14,8 +14,8 @@ The defaults for this fuction will follow those of the default simulation in gen
 - `n_chains::Int64=1`: Number of chains to be run.
 - `n_discard_initial::Int64=0`: Number of samples to be discarded.
 - `seed::Int64=2024`: Seed for the random number generator.
-- `params::uciwweihr_model_params#`: A struct containing parameters for the model.  # is either 1 or 2 for prior or hardcoded sigma_ww and sigma_hosp.
-- `init_params`: Initial parameters for the model.  If supplied, `uciwweihr_init_param` can supply these values.
+- `params::ComModeForecasting_model_params#`: A struct containing parameters for the model.  # is either 1 or 2 for prior or hardcoded sigma_ww and sigma_hosp.
+- `init_params`: Initial parameters for the model.  If supplied, `ComModeForecasting_init_param` can supply these values.
 - `return_bool`: A boolean to indicate if the model is to use the return statement.  **Only set to false if only forecast is desired**
 
 # Returns
@@ -34,11 +34,11 @@ function fit(
     init_params=nothing
     )
     ## prevalence model
-    println("Fitting using uciwweihr_model with wastewater - Prevalence Model!!!")
+    println("Fitting using ComModeForecasting_model with wastewater - Prevalence Model!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         data_wastewater,
         obstimes_hosp,
@@ -79,11 +79,11 @@ function fit(
     init_params=nothing
     )
     ## incidence model
-    println("Fitting using uciwweihr_model with wastewater - Incidence Model!!!")
+    println("Fitting using ComModeForecasting_model with wastewater - Incidence Model!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         data_wastewater,
         obstimes_hosp,
@@ -124,12 +124,12 @@ function fit(
     init_params=nothing
     )
     ## prevalence model
-    println("Fitting using uciwweihr_model with wastewater - Incidence and Prevalence Model!!!")
+    println("Fitting using ComModeForecasting_model with wastewater - Incidence and Prevalence Model!!!")
     obstimes_hosp_prev = convert(Vector{Int64}, obstimes_hosp_prev)
     obstimes_hosp_inc = convert(Vector{Int64}, obstimes_hosp_inc)
     obstimes_wastewater = convert(Vector{Int64}, obstimes_wastewater)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp_prev,
         data_hosp_inc,
         data_wastewater,
@@ -171,10 +171,10 @@ function fit(
     init_params=nothing
     )
     ## incidence model
-    println("Fitting using uciwweihr_model w/out wastewater and constant hospitalization probability - Incidence Model!!!")
+    println("Fitting using ComModeForecasting_model w/out wastewater and constant hospitalization probability - Incidence Model!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         obstimes_hosp,
         param_change_times,
@@ -210,12 +210,12 @@ function fit(
     n_discard_initial::Int64=0, seed::Int64=2024,
     init_params=nothing
     )
-    println("Fitting using uciwweihr_model w/out wastewater.  With time-varying hospitalization probability!!!")
+    println("Fitting using ComModeForecasting_model w/out wastewater.  With time-varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
     obstimes = unique(vcat(obstimes_hosp))
     obstimes = sort(obstimes)
-    my_model = uciwweihr_model(
+    my_model = ComModeForecasting_model(
         data_hosp,
         obstimes_hosp,
         param_change_times,
