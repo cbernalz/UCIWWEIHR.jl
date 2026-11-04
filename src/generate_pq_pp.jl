@@ -40,6 +40,10 @@ function generate_pq_pp(
     param_change_times = convert(Vector{Int64}, param_change_times)
     obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
     obstimes = sort(obstimes)
+
+    if !(samples isa MCMCChains.Chains)
+        samples = MCMCChains.Chains(samples)
+    end
     
     if forecast
         last_value = obstimes_hosp[end]
@@ -113,6 +117,10 @@ function generate_pq_pp(
     param_change_times = convert(Vector{Int64}, param_change_times)
     obstimes = unique(vcat(obstimes_hosp, obstimes_wastewater))
     obstimes = sort(obstimes)
+
+    if !(samples isa MCMCChains.Chains)
+        samples = MCMCChains.Chains(samples)
+    end
     
     if forecast
         last_value = obstimes_hosp[end]
@@ -187,6 +195,10 @@ function generate_pq_pp(
     param_change_times = convert(Vector{Int64}, param_change_times)
     obstimes = unique(vcat(obstimes_hosp_prev, obstimes_hosp_inc, obstimes_wastewater))
     obstimes = sort(obstimes)
+
+    if !(samples isa MCMCChains.Chains)
+        samples = MCMCChains.Chains(samples)
+    end
     
     if forecast
         last_value = max(obstimes_hosp_prev[end], obstimes_hosp_inc[end]) #TODO: Recheck this later
@@ -265,6 +277,10 @@ function generate_pq_pp(
     param_change_times = convert(Vector{Int64}, param_change_times)
     obstimes = unique(vcat(obstimes_hosp))
     obstimes = sort(obstimes)
+
+    if !(samples isa MCMCChains.Chains)
+        samples = MCMCChains.Chains(samples)
+    end
     
     if forecast
         last_value = obstimes_hosp[end]
@@ -322,6 +338,10 @@ function generate_pq_pp(
     println("Generating quantities using ComModeForecasting_model w/out wastewater and non-time varying hospitalization probability!!!")
     obstimes_hosp = convert(Vector{Int64}, obstimes_hosp)
     param_change_times = convert(Vector{Int64}, param_change_times)
+
+    if !(samples isa MCMCChains.Chains)
+        samples = MCMCChains.Chains(samples)
+    end
     
     if forecast
         last_value = obstimes_hosp[end]

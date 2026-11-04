@@ -1,9 +1,6 @@
 [deps]
+ComModeForecasting = "176850df-a79a-485c-b76d-f2c16e00fafb"
+DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 LogExpFunctions = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
-ComModeForecasting = "176850df-a79a-485c-b76d-f2c16e00fafb"
-LinearSolve = "7ed4a6bd-45f5-4d41-b270-4a48e9bafcae"
-
-
-[compat]
-LinearSolve = "=3.18.2"
+SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
