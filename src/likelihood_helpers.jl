@@ -71,8 +71,8 @@ function likelihood_helpers(
         sol = solve(prob, Tsit5(); saveat=first_obs_time:1:max_obstime_end, save_start=true,
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
-        if sol.retcode != :Success
-            throw(ArgumentError("ODE solver failed!!!"))
+        if !SciMLBase.successful_retcode(sol)
+            throw(ArgumentError("ODE solver failed with retcode: $(sol.retcode)"))
         end
         sol_array = Array(sol)
         E_comp_sol = clamp.(sol_array[1,1:end],1, 1e10)
@@ -97,9 +97,11 @@ function likelihood_helpers(
         )
 
     catch e
-        if warning_bool
-            @warn "ODE solver or transformation failed: $e"
-        end
+        println("likelihood_helper failed:")
+        showerror(stdout, e)
+        println()
+        Base.show_backtrace(stdout, catch_backtrace())
+        println()
         return (success = false,)
     end
 
@@ -170,8 +172,8 @@ function likelihood_helpers(
         sol = solve(prob, Tsit5(); saveat=first_obs_time:1:max_obstime_end, save_start=true,
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
-        if sol.retcode != :Success
-            throw(ArgumentError("ODE solver failed!!!"))
+        if !SciMLBase.successful_retcode(sol)
+            throw(ArgumentError("ODE solver failed with retcode: $(sol.retcode)"))
         end
         sol_array = Array(sol)
         E_comp_sol = clamp.(sol_array[1,1:end],1, 1e10)
@@ -274,8 +276,8 @@ function likelihood_helpers(
         sol = solve(prob, Tsit5(); saveat=first_obs_time:1:max_obstime_end, save_start=true,
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
-        if sol.retcode != :Success
-            throw(ArgumentError("ODE solver failed!!!"))
+        if !SciMLBase.successful_retcode(sol)
+            throw(ArgumentError("ODE solver failed with retcode: $(sol.retcode)"))
         end
         sol_array = Array(sol)
         E_comp_sol = clamp.(sol_array[1,1:end],1, 1e10)
@@ -366,8 +368,8 @@ function likelihood_helpers(
         sol = solve(prob, Tsit5(); saveat=first_obs_time:1:max_obstime_end, save_start=true,
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
-        if sol.retcode != :Success
-            throw(ArgumentError("ODE solver failed!!!"))
+        if !SciMLBase.successful_retcode(sol)
+            throw(ArgumentError("ODE solver failed with retcode: $(sol.retcode)"))
         end
         sol_array = Array(sol)
         E_comp_sol = clamp.(sol_array[1,1:end],1, 1e10)
@@ -454,8 +456,8 @@ function likelihood_helpers(
         sol = solve(prob, Tsit5(); saveat=first_obs_time:1:max_obstime_end, save_start=true,
                     verbose=false, abstol=abstol, reltol=reltol, u0=u0, p=p0, tspan=(first_obs_time, max_obstime_end))
         # If the ODE solver fails, reject the sample by adding -Inf to the likelihood
-        if sol.retcode != :Success
-            throw(ArgumentError("ODE solver failed!!!"))
+        if !SciMLBase.successful_retcode(sol)
+            throw(ArgumentError("ODE solver failed with retcode: $(sol.retcode)"))
         end
 
         sol_array = Array(sol)
