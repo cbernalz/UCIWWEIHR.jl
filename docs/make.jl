@@ -1,17 +1,17 @@
-using Documenter, UCIWWEIHR
+using Documenter, ComModeForecasting
 
-DocMeta.setdocmeta!(UCIWWEIHR, :DocTestSetup, :(using UCIWWEIHR); recursive = true)
+DocMeta.setdocmeta!(ComModeForecasting, :DocTestSetup, :(using ComModeForecasting); recursive = true)
 
 makedocs(;
-  modules = [UCIWWEIHR],
+  modules = [ComModeForecasting],
   doctest = true,
   linkcheck = true, # Rely on Lint.yml/lychee for the links
   authors = "Chrisitan O. Bernal Zelaya <cbernalz@uci.edu>",
-  repo = "https://github.com/cbernalz/UCIWWEIHR.jl/blob/{commit}{path}#{line}",
-  sitename = "UCIWWEIHR.jl",
+  repo = "https://github.com/cbernalz/ComModeForecasting.jl/blob/{commit}{path}#{line}",
+  sitename = "ComModeForecasting.jl",
   format = Documenter.HTML(;
     prettyurls = get(ENV, "CI", "false") == "true",
-    repolink = "https://cbernalz.github.io/UCIWWEIHR.jl",
+    repolink = "https://cbernalz.github.io/ComModeForecasting.jl",
     size_threshold_warn = nothing,
     size_threshold = nothing # Increase this value
   ),
@@ -20,9 +20,9 @@ makedocs(;
     "TUTORIALS" => [
       "TUTORIAL CONTENTS" => "tutorial_index.md",
       "GETTING STARTED" => "tutorials/getting_started.md",
-      "UCIWWEIHR SIMULATION DATA" => "tutorials/uciwweihr_simulation_data.md",
-      "UCIWWEIHR FITTING MODEL W/OUT FORECASTING" => "tutorials/uciwwiehr_model_fitting_no_forecast.md",
-      "UCIWWEIHR FITTING MODEL W/ FORECASTING" => "tutorials/uciwwiehr_model_fitting_forecast.md",
+      "ComModeForecasting SIMULATION DATA" => "tutorials/ComModeForecasting_simulation_data.md",
+      "ComModeForecasting FITTING MODEL W/OUT FORECASTING" => "tutorials/ComModeForecasting_model_fitting_no_forecast.md",
+      "ComModeForecasting FITTING MODEL W/ FORECASTING" => "tutorials/ComModeForecasting_model_fitting_forecast.md",
     ]
     ,
     "REFERENCE" => "reference.md", 
@@ -30,4 +30,4 @@ makedocs(;
     ],
 )
 
-deploydocs(; repo = "github.com/cbernalz/UCIWWEIHR.jl", push_preview = false)
+deploydocs(; repo = "github.com/cbernalz/ComModeForecasting.jl", push_preview = false)

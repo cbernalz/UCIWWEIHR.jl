@@ -1,19 +1,19 @@
-# [Generating simulated data with UCIWWEIHR ODE compartmental based model.](@id uciwweihr_simulation_data)
+# [Generating simulated data with ComModeForecasting ODE compartmental based model.](@id ComModeForecasting_simulation_data)
 
-This package provides a way to also simulate data using the UCIWWEIHR ODE compartmental based model specified in the future paper.  The function called `generate_simulation_data_uciwweihr.jl` can be used to generate synthetic data for a given number of samples and features.  Here we provide a demonstration using the default settings of `generate_simulation_data_uciwweihr.jl` :
+This package provides a way to also simulate data using the ComModeForecasting ODE compartmental based model specified in the future paper.  The function called `generate_simulation_data_commodeforecasting.jl` can be used to generate synthetic data for a given number of samples and features.  Here we provide a demonstration using the default settings of `generate_simulation_data_commodeforecasting.jl` :
 
 ## 1. Functionality.
 
 ``` @example tutorial
-using UCIWWEIHR
+using ComModeForecasting
 using Plots
 # Running simulation function with defaults
-params = create_uciwweihr_sim_params()
-df = generate_simulation_data_uciwweihr(params)
+params = create_ComModeForecasting_sim_params()
+df = generate_simulation_data_ComModeForecasting(params)
 first(df, 5)
 ```
 
-## 1.2 Visualizing UCIWWEIHR model results.
+## 1.2 Visualizing ComModeForecasting model results.
 
 Here we can make simple plots to visualize the data generated using the [Plots](https://docs.juliaplots.org/stable/) package.
 
@@ -57,7 +57,7 @@ plot(df.obstimes, df.wt,
 We can also use a prespecified effective repordcution number curve or a prespecified hospitaliation probability curve.  Any combintation of presepcified or random walk curves can be used.  Here we provide an example of using both a prespecified effective reproduction number curve and a prespecified hospitalization probability curve.
 
 ``` @example tutorial
-using UCIWWEIHR
+using ComModeForecasting
 using Plots
 # Running simulation function with prespecified Rt and hospitalization probability
 rt_custom = vcat(
@@ -76,16 +76,16 @@ w_custom = vcat(
     range(0.28, stop=0.34, length=7*6),
     range(0.34, stop=0.28, length=7*2)
 )
-params = create_uciwweihr_sim_params(
+params = create_ComModeForecasting_sim_params(
     time_points = length(rt_custom),
     Rt = rt_custom, 
     w = w_custom
 )
-df = generate_simulation_data_uciwweihr(params)
+df = generate_simulation_data_ComModeForecasting(params)
 first(df, 5)
 ```
 
-## 2.2 Visualizing UCIWWEIHR model results.
+## 2.2 Visualizing ComModeForecasting model results.
 
 We can visualize these results using the [Plots](https://docs.juliaplots.org/stable/) package.
 

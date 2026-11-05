@@ -1,7 +1,7 @@
-using UCIWWEIHR
+using ComModeForecasting
 using Test
 
-@testset "UCIWWEIHR.jl" begin
+@testset "ComModeForecasting.jl" begin
     # Write your tests here.
     
 end

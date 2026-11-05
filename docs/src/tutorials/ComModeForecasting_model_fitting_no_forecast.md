@@ -1,0 +1,156 @@
+```@setup tutorial
+using LogExpFunctions;
+
+```
+
+# [Generating Posterior Distribution Samples with ComModeForecasting ODE Compartmental Based Model without Forecasting.](@id ComModeForecasting_model_fitting_no_forecast)
+
+This package has a way to sample from a posterior or prior that is defined in the future paper using the `ComModeForecasting_fit.jl` and `ComModeForecasting_model.jl`.  We can then generate desired quantities and forecast for a given time period with the posterior predictive distribution, using `ComModeForecasting_gq_pp.jl`.  We first generate data using the `generate_simulation_data_ComModeForecasting` function which is a non-mispecified version of the model, we will also be using prespecified effective reproduction curves and prespecified hospitalization probability curves.
+
+
+## 1. Data Generation.
+
+``` @example tutorial
+using ComModeForecasting
+# Running simulation function with presets
+rt_custom = vcat(
+    range(1, stop=1.8, length=7*2),
+    fill(1.8, 7*1),
+    range(1.8, stop=1, length=7*4),
+    range(0.98, stop=0.8, length=7*1),
+    range(0.8, stop=1.1, length=7*3),
+    range(1.1, stop=0.97, length=7*1)
+)
+w_custom = vcat(
+    range(0.3, stop=0.38, length=7*2),
+    fill(0.38, 7*1),
+    range(0.38, stop=0.25, length=7*4),
+    range(0.25, stop=0.28, length=7*1),
+    range(0.28, stop=0.34, length=7*3),
+    range(0.34, stop=0.28, length=7*1)
+)
+params = create_ComModeForecasting_sim_params(
+    time_points = length(rt_custom),
+    Rt = rt_custom, 
+    w = w_custom
+)
+df = generate_simulation_data_ComModeForecasting(params)
+first(df, 5)
+```
+
+## 2. Sampling from the Posterior Distribution and Posterior Predictive Distribution.
+
+Here we sample from the posterior distribution using the `ComModeForecasting_fit.jl` function.  First, we setup some presets, where we need to use `create_ComModeForecasting_model_params()` to get default parameters for the model.  Then we have an array where index 1 contains the posterior/prior predictive samples, index 2 contains the posterior/prior generated quantities samples, and index 3 contains the original sampled parameters for the model.  Again, we can allow misalignment of hospital and wastewater data's observed times.  For this tutorial, we use the same observed points.
+
+``` @example tutorial
+data_hosp = df.hosp
+data_wastewater = df.log_ww_conc
+obstimes_hosp = df.obstimes
+obstimes_wastewater = df.obstimes
+max_obstime = max(length(obstimes_hosp), length(obstimes_wastewater))
+param_change_times = 1:7:max_obstime # Change every week
+priors_only = false
+n_samples = 25
+forecast = false
+forecast_days = 0
+
+E_init_sd=0.2; log_E_init_mean=log(200)
+I_init_sd=0.2; log_I_init_mean=log(100)
+H_init_sd=0.2; log_H_init_mean=log(20)
+gamma_sd=0.02; log_gamma_mean=log(1/4)
+nu_sd=0.02; log_nu_mean=log(1/7)
+epsilon_sd=0.02; log_epsilon_mean=log(1/5)
+rho_gene_sd=0.02; log_rho_gene_mean=log(0.011)
+    
+sigma_ww_sd=0.02; log_sigma_ww_mean=log(0.1)
+sigma_hosp_sd=0.01; log_sigma_hosp_mean=log(500.0)
+
+Rt_init_sd=0.3; Rt_init_mean=0.2
+sigma_Rt_sd=0.2; sigma_Rt_mean=-3.0
+w_init_sd=0.04; w_init_mean=logit(0.35)
+sigma_w_sd=0.2; sigma_w_mean=-3.5
+message = true
+model_params = create_model_params_time_var_hosp_prev(
+    E_init_sd, log_E_init_mean,
+    I_init_sd, log_I_init_mean,
+    H_init_sd, log_H_init_mean,
+    gamma_sd, log_gamma_mean,
+    nu_sd, log_nu_mean,
+    epsilon_sd, log_epsilon_mean,
+    rho_gene_sd, log_rho_gene_mean,
+    sigma_ww_sd, log_sigma_ww_mean,
+    sigma_hosp_sd, log_sigma_hosp_mean,
+    Rt_init_sd, Rt_init_mean,
+    sigma_Rt_sd, sigma_Rt_mean,
+    w_init_sd, w_init_mean,
+    sigma_w_sd, sigma_w_mean,
+    message;
+)
+#init_params = optimize_many_MAP2_wrapper(
+#    data_hosp,
+#    data_wastewater,
+#    obstimes_hosp,
+#    obstimes_wastewater,
+#    param_change_times,
+#    model_params;
+#    verbose=false,
+#    warning_bool=false,
+#)
+init_params = [
+    0.0, # E_init_non_centered
+    0.0, # I_init_non_centered
+    0.0, # H_init_non_centered
+    0.0, # gamma_non_centered
+    0.0, # nu_non_centered
+    0.0, # epsilon_non_centered
+    0.0, # rho_gene_non_centered
+    0.0, # sigma_ww_non_centered
+    0.0, # sigma_hosp_non_centered
+
+    # Rt_params_non_centered (11)
+    0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0,
+
+    # w_params_non_centered (11)
+    0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0,
+]
+samples = fit(
+    data_hosp,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    model_params;
+    priors_only,
+    n_samples,
+    n_discard_initial = 200,
+    n_chains = 1,
+    init_params = init_params
+    )
+model_output = generate_pq_pp(
+    samples,
+    data_hosp,
+    data_wastewater,
+    obstimes_hosp,
+    obstimes_wastewater,
+    param_change_times,
+    model_params;
+    forecast=true, forecast_days=forecast_days
+)
+
+
+first(model_output[1][:,1:5], 5)
+```
+
+``` @example tutorial
+first(model_output[2][:,1:5], 5)
+```
+
+``` @example tutorial
+first(model_output[3][:,1:5], 5)
+```
+
+### [Tutorial Contents](@ref tutorial_home)

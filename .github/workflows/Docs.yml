@@ -29,9 +29,9 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using UCIWWEIHR
-            DocMeta.setdocmeta!(UCIWWEIHR, :DocTestSetup, :(using UCIWWEIHR); recursive=true)
-            doctest(UCIWWEIHR)'
+            using ComModeForecasting
+            DocMeta.setdocmeta!(ComModeForecasting, :DocTestSetup, :(using ComModeForecasting); recursive=true)
+            doctest(ComModeForecasting)'
       - run: julia --project=docs docs/make.jl
         env:
           JULIA_PKG_SERVER: ""
